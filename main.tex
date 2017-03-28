@@ -1,0 +1,146 @@
+\documentclass[a4paper,12pt]{book}
+\usepackage[utf8]{inputenc}
+
+%maths
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+
+%graphics
+\usepackage{tikz}
+\usetikzlibrary{fit,positioning}
+\usetikzlibrary{arrows}
+
+%algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{caption}
+
+%citations
+\usepackage{natbib}
+
+%hyperlinks
+\usepackage{url}
+
+%references
+\usepackage{cleveref}
+
+%others
+\usepackage{enumerate}
+\usepackage{breakcites}
+\usepackage{nicefrac}
+
+%box definition
+\usepackage{tcolorbox}
+\definecolor{mycolor}{rgb}{0.122, 0.435, 0.698}
+\newtcbox{\mybox}{nobeforeafter,colframe=mycolor,colback=mycolor!10!white,boxrule=0.5pt,arc=4pt,
+  boxsep=0pt,left=6pt,right=6pt,top=6pt,bottom=6pt,tcbox raise base}
+
+%some definitions of symbols
+
+\let\bb\mathbb       % BlackBoardBold (double letters)
+
+  \def\AA{{\bb A}}\def\CC{{\bb C}}\def\DD{{\bb D}}\def\Ex{{\bb E}}
+  \def\GG{{\bb G}}\def\HH{{\bb H}}\def\KK{{\bb K}}\def\LL{{\bb L}}
+  \def\MM{{\bb M}}\def\QQ{{\bb Q}}\def\TT{{\bb T}}\def\YY{{\bb Y}}
+  \def\PP{{\bb P}}\def\II{{\bb I}}\def\WW{{\bb W}}\def\XX{{\bb X}}
+  \def\VV{{\bb V}}\def\SS{{\bb S}}\def\BB{{\bb B}}\def\NN{{\bb N}}
+  \def\RR{{\bb R}}\def\ZZ{{\bb Z}}\def\FF{{\bb F}}\def\DD{{\bb D}}
+  \def\OO{{\bb O}}\def\JJ{{\bb J}}\def\UU{{\bb U}}
+
+\def\Ex{\mathbf E}
+\def\calA{\mathcal A}
+\def\calC{\mathcal C}
+\def\calD{\mathcal D}
+\def\calE{\mathcal E}
+\def\calF{\mathcal F}
+\def\calG{\mathcal G}
+\def\calH{\mathcal H}
+\def\calR{\mathcal R}
+\def\calX{\mathcal X}
+\def\calY{\mathcal Y}
+\def\calV{\mathcal V}
+\def\bb{\mathbb}
+\def\hat{\widehat}
+\def\bfX{\mathbf X}
+\def\bfB{\mathbf B}
+\def\bfA{\mathbf A}
+\def\bfH{\mathbf H}
+\def\bSigma{\boldsymbol\Sigma}
+\def\bsigma{\boldsymbol\sigma}
+\def\bOmega{\boldsymbol\Omega}
+\def\beps{\boldsymbol\epsilon}
+\def\bmu{\boldsymbol\mu}
+\def\bnu{\boldsymbol\nu}
+\def\btau{\boldsymbol\tau}
+\def\bTau{\boldsymbol{\mathcal T}}
+\def\btheta{{\boldsymbol\theta}}
+\def\bTheta{{\boldsymbol\Theta}}
+\def\bPi{\boldsymbol\Pi}
+\def\bX{\boldsymbol X}
+\def\bchi{\boldsymbol \chi}
+\def\bA{\boldsymbol A}
+\def\bF{\boldsymbol F}
+\def\bx{\boldsymbol x}
+\def\bu{\boldsymbol u}
+\def\bv{\boldsymbol v}
+\def\bS{\boldsymbol S}
+\def\bbeta{\boldsymbol \beta}
+\def\bY{\boldsymbol Y}
+\def\bxi{\boldsymbol \xi}
+\def\bpi{\boldsymbol \pi}
+\def\bomega{\boldsymbol \omega}
+\def\ci{\perp\!\!\!\perp}
+\def\bZ{\boldsymbol Z}
+\def\11{\mathds 1}
+\def\b1{\mathbf 1}
+\def\Pb{\mathbf P}
+\def\var{{\bf Var}}
+\def\KL{{\rm KL}}
+\def\bfZ{\mathbf Z}
+\def\bfI{\mathbf I}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand*{\pd}[3][]{\ensuremath{\frac{d^{#1} #2}{d#3^{#1}}}}
+
+%definitions
+\newtheorem{remark}{Remark}
+\newtheorem{defi}{Definition}
+\newtheorem{lem}{Lemma}
+\newtheorem{cor}{Corollary}[section]
+\newtheorem{pro}{Proposition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{fact}{Fact}
+\newtheorem{hyp}{Hypothesis}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{prop}{Proposition}[section]
+\newtheorem{theorem}{Theorem}[section]
+
+\begin{document}
+
+\author{Mehdi Sebbar}
+\title{Thesis}
+\date{2017}
+
+\frontmatter
+\maketitle
+\tableofcontents
+
+\mainmatter 
+\include{./TeX_files/introduction}
+\include{./TeX_files/Graphical_Lasso_for_Gaussian_mixtures}
+\include{./TeX_files/Estimating_number_of_clusters}
+\include{./TeX_files/algorithm2}
+\include{./TeX_files/lasso}
+\include{./TeX_files/chapter02}
+\include{TeX_files/weight_vector_estim_algo_analysis}
+
+\backmatter
+% bibliography, glossary and index would go here.
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\end{document}
