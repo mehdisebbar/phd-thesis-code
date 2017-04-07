@@ -4,15 +4,65 @@
 
 In this section we describe the implementation of the algorithm. We also compare its performance with different alternative methods.
 
-\subsection{Implementation details}
+\section{Implementation details}
 
-The implementation of this algorithm is straight forward
+In this section we decribe the implementation of the algorithm described in the previous chapter. But before anything else, we remind the reader the problem setting and the estimator considered. 
+\subsection{Problem considered}
+We observe $n$ independent random vectors $\bX_1,\ldots,\bX_n\in\calX$ drawn from a probability distribution $P^*$ that admits a density function $f^*$. Given a family of mixture components $f_1,\ldots,f_K$, we assumed that this unknown density is well approximated by a convex combination $f_{\bpi}$ of these components
+\begin{equation}
+f_{\bpi}(\bx)=\sum_{j=1}^K\pi_j f_j(\bx), \quad \bpi \in \BB_+^K=\Big\{\bpi\in [0,1]^K: \sum_{j=1}^K\pi_j=1\Big\}.
+\end{equation}
+The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previous experiments or expert knowledge. The problem of construction of this family is an open problem that we try to address in section ?. Our objective is to estimate the weight vector $\bpi$ from the simplex $\BB_+^K$ under the sparsity scenario and investigate the statistical properties of the Maximum Likelihood Estimator (MLE), defined by
+\begin{equation}
+\label{MLE_2}
+\hat\bpi \in \argmin_{\bpi\in \Pi}\big\{-\frac{1}{n}\sum_{i=1}^n\log f_{\bpi}(\bX_i)\big\},
+\end{equation}
+where the minimum is computed over a suitably chosen subset $\Pi$ of $\BB_+^K$. 
+\subsection{Implementation}
+The computation of \cref{MLE_2} is fairly simple as the objective function and the set $\Pi$ are convex and can be easily solved by convex programming. We wrote the algorithm in Python and used the modeling language CVXPY\cite{cvxpy}.\\
+We give a dictionnary of densities in input.\\
+Give pseudo code
+\begin{python}
+from sklearn.base import BaseEstimator
+import numpy as np
+from cvxpy import *
 
-\subsection{Alternative methods}
-\subsubsection{SPADES}
+
+class WeightEstimator(BaseEstimator):
+
+    def __init__(self, densities_dict, select_threshold=10e-3):
+        self.densities_dict  = densities_dict
+        self.K = len(self.densities_dict)
+        self.select_threshold = select_threshold
+
+    def fit(self, X):
+        self.F = np.array([self.densities_dict[i].pdf(X) for i in range(self.K)]).T
+        F = np.array([self.densities_dict[i].pdf(X) for i in range(self.K)]).T
+        self.pi = Variable(self.K)
+        constraints = [sum_entries(self.pi) == 1, self.pi >= 0, self.pi <= 1]
+        objective = Minimize(-sum_entries(log(F * self.pi)))
+        prob = Problem(objective, constraints)
+        prob.solve()
+\end{python}
+
+\section{Alternative methods}
+\subsection{SPADES}
 From \cite{SPADES}
 \subsection{Adaptive Dantzig density estimation}
-From \cite{Bertin}
-\subsubsection{kernel density estimation}
+http://www.cmap.polytechnique.fr/~lepennec/l1en.php
 
-\subsection{Experimental Evaluations}
+From \cite{Bertin}
+\subsection{Kernel density estimation}
+
+The kernel density estimator is a well established non-parametric way of estimating the probability density function of a random variable. We will recall in this section some material about KDE.\\
+Let $X_1,\dots,X_n$ be i.i.d random variables drawn from an unknown probability density $f$ with respect to the Lebesgue measure on $\RR$. The kernel density estimator $\hat f_h $ is given by
+\begin{equation}
+	\hat f_h(x) \triangleq \frac{1}{n}\sum_{i=1}^nK\Big(\frac{X_i-x}{h}\Big)
+\end{equation}
+where $K:\RR \rightarrow \RR$ and $\int K(u)du = 1$ is called a Kernel and $h$ is the bandwidth. We used gaussian kernels and the Shaeter Jones method for the bandwidth selection procedure described below
+
+\section{Experimental Evaluations}
+
+\section{Real use case}
+
+The code is available on github
