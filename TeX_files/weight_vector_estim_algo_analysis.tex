@@ -6,7 +6,7 @@ In this section we describe the implementation of the algorithm. We also compare
 
 \section{Implementation details}
 
-In this section we decribe the implementation of the algorithm described in the previous chapter. But before anything else, we remind the reader the problem setting and the estimator considered. 
+In this section we describe the implementation of the algorithm described in the previous chapter. But before anything else, we remind the reader the problem setting and the estimator considered. 
 \subsection{Problem considered}
 We observe $n$ independent random vectors $\bX_1,\ldots,\bX_n\in\calX$ drawn from a probability distribution $P^*$ that admits a density function $f^*$. Given a family of mixture components $f_1,\ldots,f_K$, we assumed that this unknown density is well approximated by a convex combination $f_{\bpi}$ of these components
 \begin{equation}
@@ -20,7 +20,7 @@ The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previ
 where the minimum is computed over a suitably chosen subset $\Pi$ of $\BB_+^K$. 
 \subsection{Implementation}
 The computation of \cref{MLE_2} is fairly simple as the objective function and the set $\Pi$ are convex and can be easily solved by convex programming. We wrote the algorithm in Python and used the modeling language CVXPY\cite{cvxpy}.\\
-We give a dictionnary of densities in input.\\
+We give a dictionary of densities in input.\\
 Give pseudo code
 \begin{python}
 from sklearn.base import BaseEstimator
@@ -49,9 +49,79 @@ class WeightEstimator(BaseEstimator):
 \subsection{SPADES}
 From \cite{SPADES}
 \subsection{Adaptive Dantzig density estimation}
-http://www.cmap.polytechnique.fr/~lepennec/l1en.php
 
-From \cite{Bertin}
+We will compare our method with the Dantzig estimator in the density model which has been introduced in \cite{Bertin}. This method is similar to ours as it construct an estimator of the unknown density from a linear mixtures of functions taken from a dictionary. The key idea of this paper is to minimize the $\ell_1$-norm of the weight vector of the linear combination under an adaptive Dantzig constraint. This constraint comes from sharp concentration inequalities. We recall here some material about the Dantzig selector. It has been introduced by \cite{candes2007} in the linear regression model
+\begin{equation}
+	Y = A\lambda_0 + \epsilon
+\end{equation}
+where $Y\in \RR^n$, $A$ is a $n$ by $M$ matrix, $\epsilon \in \RR^n$ is the noise vector and $\lambda_0$ the unknown regression parameter to estimate. The Dantzig estimator is then defined by\todos{Définir $\ell_1$ et $\ell_{\infty}$}
+\begin{equation}
+	\hat\lambda^D = \argmin{\lambda \in \RR^M} \|\lambda \|_1 \quad \text{subject to} \quad \| A^T(A\lambda-Y)\|_{\infty} \leq \eta
+\end{equation}
+
+Bickel et all [paper] considered the non-parametric regression framework
+\begin{equation}
+		Y = f(x_i) + e_i, \quad i=1,\dots,n
+\end{equation}
+where $f$ is an unknown function, the design points $(x_i)_{i=1,\dots,n}$ are known and $(e_i)_{i=1,\dots,n}$ is a noise vector. One can estimate $f$ as a weighted sum $f_{\lambda}$ of elements of a dictionary $D=(\varphi_m)_{m=1,\dots,M}$
+\begin{equation}
+	f_{\lambda} = \sum_{i=1}^M\lambda_m\varphi_m
+\end{equation}
+and introduce the Gram matrix $G=A^TA$ with $A=(\varphi_m(x_i))_{i,m}$. The goal of the paper [AD paper] is to estimate an unknown density $f_0$ by using the observation of $n$-sample $X_1,\dots,X_n$ and constructing linear mixture density of elements of the dictionary $D$. Consider the empirical scalar product of $f_0$ and $\varphi_m$
+\begin{equation}
+    \hat\beta_m = \frac{1}{n}\sum_{i=1}^n\varphi_m(X_i).
+\end{equation}
+The Dantzig estimate is then obtained by solving the following constrained minimization problem
+\begin{equation*}
+    \left\{
+    \begin{array}{ll}
+        \text{minimize}\, &\|\lambda\|_1 \\
+        \text{subject to}\, &|(G\lambda)_m-\hat\beta|\leq \eta_{\gamma,m} \quad m\in \{1,\dots,M\}. 
+    \end{array} \right.
+\end{equation*}
+where $(G\lambda)_m$ is the scalar product of $f_{\lambda}$ and $\varphi_m$ and 
+\begin{equation}
+    \eta_{\gamma,m} = \sqrt{\frac{2\tilde\sigma_m^2\gamma\log{M}}{n}}+ \frac{2\|\varphi_m\|_{\infty}\gamma\log{M}}{3n}.
+\end{equation}
+The constant $\gamma$ has to be chosen.
+An important result is the main theorem
+
+The pseudo code of the procedure is given in \ref{algo:ad_algo}, 
+
+\begin{figure}[h]
+\begin{center}
+\mybox{
+\begin{minipage}{0.85\linewidth}
+\begin{algorithmic}[1]
+\small
+\STATE {\bfseries Input:} A sample $\bX_1,\ldots,\bX_n\in\RR^p$ and the dictionary $D=(\varphi_m)_{m=1,\dots,M}$.
+\STATE {\bfseries Output:} Dantzig estimate $\hat \lambda^D$.
+\STATE {\bfseries Init:} Set $\gamma=1.01$.
+\STATE Compute $\hat\beta_m = \frac{1}{n}\sum_{i=1}^N\varphi_m(X_i)$.
+\STATE Compute $\hat\sigma^2_m = \frac{1}{n(n-1)}\sum_{i=2}^n\sum_{j=1}^{i-1}(\varphi_m(X_i)-\varphi_m(X_j))$.
+\STATE Compute $\tilde\sigma_m^2$.
+\begin{equation}
+    \tilde\sigma_m^2 = \hat\sigma_m^2+2\|\varphi_m\|_{\infty}\sqrt{\frac{2\hat\sigma_m^2\gamma\log{M}}{n}}+ \frac{8\|\varphi_m\|_{\infty}^2\gamma\log{M}}{n}.
+\end{equation}
+\STATE Compute $\eta_{\gamma,m}$
+\begin{equation*}
+    \eta_{\gamma,m} = \sqrt{\frac{2\tilde\sigma_m^2\gamma\log{M}}{n}}+ \frac{2\|\varphi_m\|_{\infty}\gamma\log{M}}{3n}.
+\end{equation*}
+\STATE Compute the coefficients $\hat\lambda^{D,\gamma}$ of the Dantzig estimate, $\hat\lambda^{D,\gamma}=\argmin_{\lambda\in\RR^M}\|\lambda \|_1$ such that $\lambda$ satisfies the Dantzig constraint
+\begin{equation}
+    \forall m \in \{1,\dots,m\}, \quad |(G\lambda)_m-\hat\beta_m|\leq \eta_{\gamma,m}.
+\end{equation}
+
+\end{algorithmic}
+\end{minipage}
+}
+   \caption{Adaptive Dantzig density estimation procedure}
+   \label{algo:ad_algo}
+\end{center}
+\vspace{-15pt}
+\end{figure}
+
+
 \subsection{Kernel density estimation}
 
 The kernel density estimator is a well established non-parametric way of estimating the probability density function of a random variable. We will recall in this section some material about KDE.\\
@@ -59,9 +129,12 @@ Let $X_1,\dots,X_n$ be i.i.d random variables drawn from an unknown probability 
 \begin{equation}
 	\hat f_h(x) \triangleq \frac{1}{n}\sum_{i=1}^nK\Big(\frac{X_i-x}{h}\Big)
 \end{equation}
-where $K:\RR \rightarrow \RR$ and $\int K(u)du = 1$ is called a Kernel and $h$ is the bandwidth. We used gaussian kernels and the Shaeter Jones method for the bandwidth selection procedure described below
+where $K:\RR \rightarrow \RR$ and $\int K(u)du = 1$ is called a Kernel and $h$ is the bandwidth. We used gaussian kernels and the Sheather and Jones bandwidth selection procedure\cite{sheather_bdwth} described below
+
+
 
 \section{Experimental Evaluations}
+
 
 \section{Real use case}
 

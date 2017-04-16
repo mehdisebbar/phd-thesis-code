@@ -1,6 +1,12 @@
 \documentclass[a4paper,12pt]{book}
 \usepackage[utf8]{inputenc}
 
+% Custom colors
+\usepackage[dvipsnames]{xcolor}
+%\definecolor{deepblue}{rgb}{0,0,0.5}
+%\definecolor{deepred}{rgb}{0.6,0,0}
+%\definecolor{deepgreen}{rgb}{0,0.5,0}
+
 %maths
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -13,26 +19,26 @@
 \usetikzlibrary{arrows}
 
 %algorithms
-\usepackage{algorithm}
-\usepackage{algorithmic}
+%\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{algcompatible}
 \usepackage{caption}
 
 %citations
 \usepackage{natbib}
+\bibliographystyle{unsrtnat}
 
 %hyperlinks
 \usepackage{url}
+\usepackage[unicode=true, colorlinks=true, linkcolor=red, citecolor=black!40!green, urlcolor=blue]{hyperref}
 
 %references
 \usepackage{cleveref}
 
 %code for python
 \usepackage{listings}
-% Custom colors
-\usepackage{color}
-\definecolor{deepblue}{rgb}{0,0,0.5}
-\definecolor{deepred}{rgb}{0.6,0,0}
-\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+
 \DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
 \DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
 % Python style for highlighting
@@ -40,10 +46,10 @@
 language=Python,
 basicstyle=\ttfamily\footnotesize,
 otherkeywords={self},             % Add keywords here
-keywordstyle=\color{deepblue},
+keywordstyle=\color{blue},
 emph={MyClass,__init__},          % Custom highlighting
-emphstyle=\color{deepred},    % Custom highlighting style
-stringstyle=\color{deepgreen},
+emphstyle=\color{red},    % Custom highlighting style
+stringstyle=\color{green},
 frame=tb,                         % Any extra options here
 showstringspaces=false
          % 
@@ -66,6 +72,10 @@ showstringspaces=false
 \usepackage{enumerate}
 \usepackage{breakcites}
 \usepackage{nicefrac}
+
+%commentaires
+\usepackage[colorinlistoftodos,prependcaption,textsize=small]{todonotes}
+\newcommand{\todos}[1]{\todo[linecolor=RedOrange,backgroundcolor=RedOrange!80!white!25,bordercolor=RedOrange!40!white]{#1}}
 
 %box definition
 \usepackage{tcolorbox}
@@ -163,7 +173,7 @@ showstringspaces=false
 \frontmatter
 \maketitle
 \tableofcontents
-
+\listoftodos
 \mainmatter 
 \include{./TeX_files/introduction}
 \include{./TeX_files/Graphical_Lasso_for_Gaussian_mixtures}
