@@ -1,0 +1,251 @@
+\begin{thebibliography}{41}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Dempster et~al.(1977)Dempster, Laird, and Rubin]{dempster77}
+A.~P. Dempster, N.~M. Laird, and D.~B. Rubin.
+\newblock Maximum likelihood from incomplete data via the em algorithm.
+\newblock \emph{Journal of the Royal Statistical Society. Series B
+  (Methodological)}, 39, No. 1:\penalty0 1--38, 1977.
+
+\bibitem[Friedman et~al.(2007)Friedman, Hastie, and Tibshirani]{glasso07}
+J.~Friedman, T.~Hastie, and R.~Tibshirani.
+\newblock Sparse inverse covariance estimation with the graphical lasso.
+\newblock \emph{Biostatistics}, 2007.
+
+\bibitem[Banerjee et~al.(2008)Banerjee, Ghaoui, and d’Aspremont]{banerjee}
+O.~Banerjee, L.~El Ghaoui, and A.~d’Aspremont.
+\newblock Model selection through sparse maximum likelihood estimation for
+  multivariate gaussian or binary data.
+\newblock \emph{Journal of Machine Learning Research}, 2008.
+
+\bibitem[Mazumder(2012)]{mazum_lasso}
+R.~Mazumder.
+\newblock Topics in sparse multivariate statistics (thesis).
+\newblock 2012.
+
+\bibitem[Tsybakov(2014)]{TsybICM}
+Alexandre~B. Tsybakov.
+\newblock Aggregation and minimax optimality in high-dimensional estimation.
+\newblock In \emph{Proceedings of the International Congress of Mathematicians
+  (Seoul, August 2014)}, volume~3, pages 225--246, 2014.
+
+\bibitem[Catoni(1997)]{Catoni97}
+O~Catoni.
+\newblock The mixture approach to universal model selection.
+\newblock Technical report, 1997.
+\newblock URL \url{http://cds.cern.ch/record/461892}.
+
+\bibitem[Yang(2000)]{Yang2000}
+Yuhong Yang.
+\newblock Mixing strategies for density estimation.
+\newblock \emph{Ann. Statist.}, 28\penalty0 (1):\penalty0 75--87, 2000.
+
+\bibitem[Juditsky et~al.(2008)Juditsky, Rigollet, and Tsybakov]{JRT}
+A.~Juditsky, P.~Rigollet, and A.~B. Tsybakov.
+\newblock Learning by mirror averaging.
+\newblock \emph{Ann. Statist.}, 36\penalty0 (5):\penalty0 2183--2206, 2008.
+
+\bibitem[Yuditski{\u\i} et~al.(2005)Yuditski{\u\i}, Nazin, Tsybakov, and
+  Vayatis]{YNTV}
+A.~B. Yuditski{\u\i}, A.~V. Nazin, A.~B. Tsybakov, and N.~Vayatis.
+\newblock Recursive aggregation of estimators by the mirror descent method with
+  averaging.
+\newblock \emph{Problemy Peredachi Informatsii}, 41\penalty0 (4):\penalty0
+  78--96, 2005.
+
+\bibitem[Dalalyan and Tsybakov(2012)]{DT12a}
+Arnak~S. Dalalyan and Alexandre~B. Tsybakov.
+\newblock Mirror averaging with sparsity priors.
+\newblock \emph{Bernoulli}, 18\penalty0 (3):\penalty0 914--944, 2012.
+
+\bibitem[{Bellec}(2014)]{Bellec2014}
+P.~C. {Bellec}.
+\newblock {Optimal exponential bounds for aggregation of density estimators}.
+\newblock Technical report, arXiv:1405.3907, May 2014.
+
+\bibitem[{Butucea} et~al.(2016){Butucea}, {Delmas}, {Dutfoy}, and
+  {Fischer}]{Butucea1}
+C.~{Butucea}, J.-F. {Delmas}, A.~{Dutfoy}, and R.~{Fischer}.
+\newblock {Optimal exponential bounds for aggregation of estimators for the
+  Kullback-Leibler loss}.
+\newblock Technical report, arXiv:1601.05686, January 2016.
+
+\bibitem[Dai et~al.(2012)Dai, Rigollet, and Zhang]{Dai}
+Dong Dai, Philippe Rigollet, and Tong Zhang.
+\newblock Deviation optimal learning using greedy {$Q$}-aggregation.
+\newblock \emph{Ann. Statist.}, 40\penalty0 (3):\penalty0 1878--1905, 2012.
+
+\bibitem[Rigollet(2012)]{Rigollet12}
+Philippe Rigollet.
+\newblock Kullback-{L}eibler aggregation and misspecified generalized linear
+  models.
+\newblock \emph{Ann. Statist.}, 40\penalty0 (2):\penalty0 639--665, 2012.
+
+\bibitem[Rigollet and Tsybakov(2007)]{RT7}
+Ph. Rigollet and A.~B. Tsybakov.
+\newblock Linear and convex aggregation of density estimators.
+\newblock \emph{Math. Methods Statist.}, 16\penalty0 (3):\penalty0 260--280,
+  2007.
+
+\bibitem[Lounici(2007)]{Lounici7}
+K.~Lounici.
+\newblock Generalized mirror averaging and {$D$}-convex aggregation.
+\newblock \emph{Math. Methods Statist.}, 16\penalty0 (3):\penalty0 246--259,
+  2007.
+
+\bibitem[Bunea et~al.(2007)Bunea, Tsybakov, and Wegkamp]{bunea2007}
+Florentina Bunea, Alexandre~B. Tsybakov, and Marten~H. Wegkamp.
+\newblock Aggregation for gaussian regression.
+\newblock \emph{Ann. Statist.}, 35\penalty0 (4):\penalty0 1674--1697, 08 2007.
+
+\bibitem[Bunea et~al.(2010)Bunea, Tsybakov, Wegkamp, and Barbu]{SPADES}
+Florentina Bunea, Alexandre~B. Tsybakov, Marten~H. Wegkamp, and Adrian Barbu.
+\newblock Spades and mixture models.
+\newblock \emph{Ann. Statist.}, 38\penalty0 (4):\penalty0 2525--2558, 2010.
+
+\bibitem[Bertin et~al.(2011)Bertin, Le~Pennec, and Rivoirard]{Bertin}
+K.~Bertin, E.~Le~Pennec, and V.~Rivoirard.
+\newblock Adaptive {D}antzig density estimation.
+\newblock \emph{Ann. Inst. Henri Poincar\'e Probab. Stat.}, 47\penalty0
+  (1):\penalty0 43--74, 2011.
+
+\bibitem[Li and Barron(1999)]{LiB99}
+Jonathan~Q. Li and Andrew~R. Barron.
+\newblock Mixture density estimation.
+\newblock In \emph{Advances in Neural Information Processing Systems 12}, pages
+  279--285, 1999.
+
+\bibitem[Li(1999)]{Li99}
+Jonathan~Q. Li.
+\newblock \emph{Estimation of Mixture Models}.
+\newblock Phd thesis, {Yale University}, 1999.
+
+\bibitem[Rakhlin et~al.(2005)Rakhlin, Panchenko, and Mukherjee]{Rakhlin5}
+Alexander Rakhlin, Dmitry Panchenko, and Sayan Mukherjee.
+\newblock Risk bounds for mixture density estimation.
+\newblock \emph{ESAIM Probab. Stat.}, 9:\penalty0 220--229, 2005.
+
+\bibitem[Juditsky and Nemirovski(2000)]{Juditski00}
+Anatoli Juditsky and Arkadii Nemirovski.
+\newblock Functional aggregation for nonparametric regression.
+\newblock \emph{The Annals of Statistics}, 28\penalty0 (3):\penalty0 681--712,
+  2000.
+
+\bibitem[Tsybakov(2003)]{Tsybakov03}
+Alexandre~B. Tsybakov.
+\newblock Optimal rates of aggregation.
+\newblock In \emph{Computational Learning Theory and Kernel Machines,
+  COLT/Kernel, Proceedings}, pages 303--313, 2003.
+
+\bibitem[Lecu{\'e}(2006)]{Lecue06}
+Guillaume Lecu{\'e}.
+\newblock Lower bounds and aggregation in density estimation.
+\newblock \emph{J. Mach. Learn. Res.}, 7:\penalty0 971--981, 2006.
+
+\bibitem[Xia and Koltchinskii(2016)]{Xia16}
+Dong Xia and Vladimir Koltchinskii.
+\newblock Estimation of low rank density matrices: {B}ounds in {S}chatten norms
+  and other distances.
+\newblock \emph{Electron. J. Stat.}, 10\penalty0 (2):\penalty0 2717--2745,
+  2016.
+
+\bibitem[van~de Geer and B{\"u}hlmann(2009)]{VandeGeerConditionLasso09}
+Sara van~de Geer and Peter B{\"u}hlmann.
+\newblock On the conditions used to prove oracle results for the {L}asso.
+\newblock \emph{Electron. J. Stat.}, 3:\penalty0 1360--1392, 2009.
+
+\bibitem[Lecu{\'e} and Mendelson(2013)]{LecueMend13}
+Guillaume Lecu{\'e} and Shahar Mendelson.
+\newblock On the optimality of the empirical risk minimization procedure for
+  the convex aggregation problem.
+\newblock \emph{Ann. Inst. Henri Poincar\'e Probab. Stat.}, 49\penalty0
+  (1):\penalty0 288--306, 2013.
+
+\bibitem[Lecu{\'e}(2013)]{Lecue13}
+Guillaume Lecu{\'e}.
+\newblock Empirical risk minimization is optimal for the convex aggregation
+  problem.
+\newblock \emph{Bernoulli}, 19\penalty0 (5B):\penalty0 2153--2166, 2013.
+
+\bibitem[Rigollet and Tsybakov(2011)]{RT11}
+Philippe Rigollet and Alexandre Tsybakov.
+\newblock Exponential screening and optimal rates of sparse estimation.
+\newblock \emph{Ann. Statist.}, 39\penalty0 (2):\penalty0 731--771, 2011.
+
+\bibitem[Rigollet(2006)]{rigollet:these}
+Philippe Rigollet.
+\newblock \emph{{Oracle inequalities, aggregation and adaptation}}.
+\newblock Phd thesis, {Universit{\'e} Pierre et Marie Curie - Paris VI},
+  November 2006.
+
+\bibitem[Raskutti et~al.(2011)Raskutti, Wainwright, and Yu]{Rask11}
+Garvesh Raskutti, Martin~J. Wainwright, and Bin Yu.
+\newblock Minimax rates of estimation for high-dimensional linear regression
+  over {$\ell_q$}-balls.
+\newblock \emph{IEEE Trans. Inform. Theory}, 57\penalty0 (10):\penalty0
+  6976--6994, 2011.
+
+\bibitem[Wang et~al.(2014)Wang, Paterlini, Gao, and Yang]{Wang14}
+Zhan Wang, Sandra Paterlini, Fuchang Gao, and Yuhong Yang.
+\newblock Adaptive minimax regression estimation over sparse {$\ell_q$}-hulls.
+\newblock \emph{J. Mach. Learn. Res.}, 15:\penalty0 1675--1711, 2014.
+
+\bibitem[Bellec et~al.(2016)Bellec, Dalalyan, Grappin, and Paris]{BDGP}
+Pierre~C. Bellec, Arnak~S. Dalalyan, Edwin Grappin, and Quentin Paris.
+\newblock On the prediction loss of the lasso in the partially labeled setting.
+\newblock Technical report, {arXiv:1606.06179}, June 2016.
+
+\bibitem[Boucheron et~al.(2013)Boucheron, Lugosi, and
+  Massart]{boucheron2013concentration}
+S.~Boucheron, G.~Lugosi, and P.~Massart.
+\newblock \emph{Concentration Inequalities: A Nonasymptotic Theory of
+  Independence}.
+\newblock OUP Oxford, 2013.
+\newblock ISBN 9780199535255.
+
+\bibitem[Koltchinskii(2011)]{KoltBook2011}
+Vladimir Koltchinskii.
+\newblock \emph{Oracle inequalities in empirical risk minimization and sparse
+  recovery problems}, volume 2033 of \emph{Lecture Notes in Mathematics}.
+\newblock Springer, 2011.
+\newblock Lectures from the 38th Probability Summer School held in Saint-Flour,
+  2008.
+
+\bibitem[Ledoux and Talagrand(1991)]{LedouxTal:91}
+Michel Ledoux and Michel Talagrand.
+\newblock \emph{Probability in Banach Spaces: isoperimetry and processes}.
+\newblock Springer, Berlin, 1991.
+
+\bibitem[Tsybakov(2009)]{tsybakov2009Nonparametric}
+A.B. Tsybakov.
+\newblock \emph{Introduction to Nonparametric Estimation}.
+\newblock Springer Series in Statistics. Springer, 2009.
+\newblock ISBN 9780387790510.
+
+\bibitem[Diamond and Boyd(2016)]{cvxpy}
+Steven Diamond and Stephen Boyd.
+\newblock {CVXPY}: A {P}ython-embedded modeling language for convex
+  optimization.
+\newblock \emph{Journal of Machine Learning Research}, 17\penalty0
+  (83):\penalty0 1--5, 2016.
+
+\bibitem[Candes and Tao(2007)]{candes2007}
+Emmanuel Candes and Terence Tao.
+\newblock The dantzig selector: Statistical estimation when p is much larger
+  than n.
+\newblock \emph{Ann. Statist.}, 35\penalty0 (6):\penalty0 2313--2351, 12 2007.
+\newblock \doi{10.1214/009053606000001523}.
+\newblock URL \url{http://dx.doi.org/10.1214/009053606000001523}.
+
+\bibitem[Sheather and Jones(1991)]{sheather_bdwth}
+S.~J. Sheather and M.~C. Jones.
+\newblock A reliable data-based bandwidth selection method for kernel density
+  estimation.
+\newblock \emph{Journal of the Royal Statistical Society, Series B:
+  Methodological}, 53:\penalty0 683--690, 1991.
+
+\end{thebibliography}
