@@ -115,7 +115,7 @@ then $(G\lambda_0)_m=\beta_{0,m}$ \todos{a expliquer} and the parameter $\eta_{\
 \STATE {\bfseries Output:} Dantzig estimate $\hat \lambda^D$.
 \STATE {\bfseries Init:} Set $\gamma=1.01$.
 \STATE Compute $\hat\beta_m = \frac{1}{n}\sum_{i=1}^N\varphi_m(X_i)$.
-\STATE Compute $\hat\sigma^2_m = \frac{1}{n(n-1)}\sum_{i=2}^n\sum_{j=1}^{i-1}(\varphi_m(X_i)-\varphi_m(X_j))$.
+\STATE Compute $\hat\sigma^2_m = \frac{1}{n(n-1)}\sum_{i=2}^n\sum_{j=1}^{i-1}(\varphi_m(X_i)-\varphi_m(X_j))^2$.
 \STATE Compute $\tilde\sigma_m^2$.
 \begin{equation}
     \tilde\sigma_m^2 = \hat\sigma_m^2+2\|\varphi_m\|_{\infty}\sqrt{\frac{2\hat\sigma_m^2\gamma\log{M}}{n}}+ \frac{8\|\varphi_m\|_{\infty}^2\gamma\log{M}}{n}.
@@ -150,11 +150,61 @@ where $K:\RR \rightarrow \RR$ and $\int K(u)du = 1$ is called a Kernel and $h$ i
 
 \section{Experimental Evaluations}
 
-In the experimental evaluation, we had to construct a set of target densities $f_0$ with different shapes to evaluate the performances of the estimators. We also had to build different density (more generally functions) dictionaries. Finally we assessed the performance through the Kullback-Leibler and $L_2$ distance.
-
-\subsection{Densities considered}
+In the experimental evaluation, we had to construct a set of target densities with different shapes to evaluate the performances of the estimators. We also had to build different density (more generally functions) dictionaries. Finally we assessed the performance through the Kullback-Leibler and $L_2$ distance.
 
 \subsection{Dictionaries considered}
+\begin{enumerate}
+\item Gaussians
+\item A union of Gaussians and Laplacians densities called $D$. The Gaussians has their means in $[0, 0.2, 0.4, 0.6, 0.8, 1]$ and their variances in $[0.001, 0.01, 0.1, 1]$. The Laplacians has their means in $[0.05, 0.1, 0.5, 1]$ and their scales in $[0, 0.2, 0.4, 0.6, 0.8, 1]$. Therefore $D$ has 48 elements.
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{TeX_files/lapl_gauss_dict.png}
+\caption{Union of Gaussians and Laplacians,}
+\end{figure}
+\item Haar wavelet basis ?
+\item Daubechies wavelet ?
+\item Union of Fourier and Haar aud Gaussians ?
+\end{enumerate}
+
+\subsection{Densities considered}
+We considered 5 target densities
+\begin{enumerate}
+\item[$f_{unif}$:] A uniform on $[0,1]$ 
+\item[$f_{rect}$:] A mix of uniform densities on subintervals called "Rectangular":
+\begin{equation}
+    f_{rect}(x)=\frac{10}{7}\b1_{[0,1/5]}+\frac{5}{7}\b1_{[1/5,2/5]}+
+    \frac{10}{7}\b1_{[2/5,3/5]}+\frac{10}{7}\b1_{[4/5,1]}
+\end{equation}
+\item[$f_{gauss}$:] A mixture of 5 Gaussian densities taken from the dictionary $D$ equally reparted in $[0,1]$.\todos{A retravailler}
+\begin{equation}
+    f_{gauss}(x)=\sum_{k=1}^5 0.2f_{\pi(k)}(x) \quad \text{with}\quad f_k\in D
+\end{equation}
+
+\item[$f_{gauss-lapl}$:] A mix of Gaussian and Laplacian densities taken from the dictionary (donner un nom au dictionaire $D$)
+\begin{equation}
+    f_{gauss-lapl}(x)=\sum_{k=1}^5 0.2f_{k}(x) \quad \text{with}\quad f_k\in D
+\end{equation}
+\item[$f_{ext}$:] A mixture of Gaussian and Laplacian densities  taken from another dictionary $D_{out}$
+\begin{equation}
+    f_{ext}(x)=\sum_{k=1}^7 \frac{1}{7}f_{k}(x) \quad \text{with}\quad f_k\in D_{out}
+\end{equation}
+\end{enumerate}
+These target densities are plotted in \cref{fig:target_densities}.
+\begin{figure}
+\includegraphics[width=1.2\textwidth]{TeX_files/densities_f_star.png}
+\caption{Five target densities considered.}
+\label{fig:target_densities}
+\end{figure}
+
+\subsection{Results}
+The results are ploted in \cref{fig:full_res}. The dictionary used for the Adaptive Dantzig and the Maximum Likelihood estimator is $D$. At first glance, the performance of the MLE seems good in Kullback-Leibler loss and $L_2$. The method showing the worst performance in all scenarios is the Adaptive Dantzig. Note that it is interesting to compare the MLE to A.D as both methods relies on a dictionary. the MLE present a relative small variance, lesser than the Kernel density estimator with the Sheather-Jones bandwidth selector which is the best KDE method studied regarding the loss. Another interesting observation is the small impact of the size of sample for the MLE. We will cover each scenarios. Unsurprisingly the MLE does not perform as well as kernel based methods on the uniform case as the dictionary given could not provide a good mixture density that approach well this target density. This goes as well for the rectangular density $f_{rect}$ which shows the worst performance for the MLE. It should be possible to increase the performance of the MLE by adding uniform on different segments of $[0,1]$.
+\begin{figure}
+    \hspace{-2cm}
+    \includegraphics[width=1.2\textwidth]{./TeX_files/full_results.png}
+    \caption{Results of Adaptive Dantzig, Kernel density estimator with Scott Rule (KDE), Kernel density estimator with the Sheather-Jones bandwidth selector (KDE SJ) and Maximum likelihood estimator. Left column, KL loss, right, $L_2$. From top to bottom the target density is $f_{unif}$, $f_{rect}$, $f_{gauss}$, $f_{gauss-lapl}$, $f_{ext}$. With 200 simulations.  }
+    \label{fig:full_res}
+\end{figure}
 \section{Real use case}
 
 The code is available on github
