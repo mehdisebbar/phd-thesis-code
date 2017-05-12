@@ -20,8 +20,8 @@ The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previ
 where the minimum is computed over a suitably chosen subset $\Pi$ of $\BB_+^K$. 
 \subsection{Implementation}
 The computation of \cref{MLE_2} is fairly simple as the objective function and the set $\Pi$ are convex and can be easily solved by convex programming. We wrote the algorithm in Python and used the modeling language CVXPY\cite{cvxpy}.\\
-We give a dictionary of densities in input.\\
-Give pseudo code
+\todos{We give a dictionary of densities in input.\\
+Give pseudo code}
 \begin{python}
 from sklearn.base import BaseEstimator
 import numpy as np
@@ -46,7 +46,7 @@ class WeightEstimator(BaseEstimator):
 \end{python}
 
 \section{Alternative methods considered}
-\subsection{SPADES}
+\subsection{SPADES}\todos{not working}
 From \cite{SPADES}
 \subsection{Adaptive Dantzig density estimation}
 
@@ -103,7 +103,7 @@ Note that $\eta_{\gamma,m}$ depends on the data which explains the name \textit{
 \begin{equation}
     \textbf{P}_{D}f_0=\sum_{m=1}^M\lambda_{0,m}\varphi_m,
 \end{equation}
-then $(G\lambda_0)_m=\beta_{0,m}$ \todos{a expliquer} and the parameter $\eta_{\gamma,m}$ can be seen as the smallest quantity such that, for $\gamma > 1$, we have $|\beta_{0,m}-\hat\beta_m|\leq \eta_{\gamma,m}$ with high probability. The main result of this paper is a bound on the $L_2$ risk of the adaptive Dantzig density estimator with high probability without any assumptions on the unknown density $f_0$ \todos{parler des hypotheses sur la matrice Gram}. The discussion of this result goes beyond the scope of this section. Note that the assumption $\gamma > 1$ is an almost necessary condition to have a theoretical control on the quadratic error $\Ex\|\hat f^D-f_0 \|^2_2$. Therefore, we will follow the choice of $\gamma=1.01$ made by the authors in our experiments. The pseudo code of the procedure is given in \cref{algo:ad_algo}. 
+then $(G\lambda_0)_m=\beta_{0,m}$ \todos{a expliquer} and the parameter $\eta_{\gamma,m}$ can be seen as the smallest quantity such that, for $\gamma > 1$, we have $|\beta_{0,m}-\hat\beta_m|\leq \eta_{\gamma,m}$ with high probability. The main result of this paper is a bound on the $L_2$ risk of the adaptive Dantzig density estimator with high probability without any assumptions on the unknown density $f_0$ \todos{parler des hypotheses sur la matrice Gram}. The discussion of this result goes beyond the scope of this section. Note that the assumption $\gamma > 1$ is an almost necessary condition to have a theoretical control on the quadratic error $\Ex\|\hat f^D-f_0 \|^2_2$. Therefore, we will follow the choice of $\gamma=1.01$ made by the authors in our experiments. The pseudo code of the procedure is given in \cref{algo:ad_algo}. The Adaptive Dantzig density estimator is noted $\hat f ^{AD}$.
 
 \begin{figure}[H]
 \begin{center}
@@ -112,7 +112,7 @@ then $(G\lambda_0)_m=\beta_{0,m}$ \todos{a expliquer} and the parameter $\eta_{\
 \begin{algorithmic}[1]
 \small
 \STATE {\bfseries Input:} A sample $\bX_1,\ldots,\bX_n\in\RR^p$ and the dictionary $D=(\varphi_m)_{m=1,\dots,M}$.
-\STATE {\bfseries Output:} Dantzig estimate $\hat \lambda^D$.
+\STATE {\bfseries Output:} Dantzig density estimate $\hat f^{AD}=f_{\hat \lambda^D}$.
 \STATE {\bfseries Init:} Set $\gamma=1.01$.
 \STATE Compute $\hat\beta_m = \frac{1}{n}\sum_{i=1}^N\varphi_m(X_i)$.
 \STATE Compute $\hat\sigma^2_m = \frac{1}{n(n-1)}\sum_{i=2}^n\sum_{j=1}^{i-1}(\varphi_m(X_i)-\varphi_m(X_j))^2$.
@@ -128,7 +128,7 @@ then $(G\lambda_0)_m=\beta_{0,m}$ \todos{a expliquer} and the parameter $\eta_{\
 \begin{equation}
     \forall m \in \{1,\dots,m\}, \quad |(G\lambda)_m-\hat\beta_m|\leq \eta_{\gamma,m}.
 \end{equation}
-
+\STATE Compute the mixture density $f_{\hat\lambda^D}=\sum_{m=1}^M\hat\lambda_m^D \varphi_m$.
 \end{algorithmic}
 \end{minipage}
 }
@@ -146,7 +146,7 @@ Let $X_1,\dots,X_n$ be i.i.d random variables drawn from an unknown probability 
 \begin{equation}
 	\hat f_h(x) \triangleq \frac{1}{n}\sum_{i=1}^nK\Big(\frac{X_i-x}{h}\Big)
 \end{equation}
-where $K:\RR \rightarrow \RR$ and $\int K(u)du = 1$ is called a Kernel and $h$ is the bandwidth. We used gaussian kernels and the Sheather and Jones bandwidth selection procedure (\cite{sheather_bdwth}) described below
+where $K:\RR \rightarrow \RR$ and $\int K(u)du = 1$ is called a Kernel and $h$ is the bandwidth. We used gaussian kernels and the Sheather and Jones bandwidth selection procedure (\cite{sheather_bdwth}) described below\todos{à ajouter}
 
 \section{Experimental Evaluations}
 
@@ -155,51 +155,72 @@ In the experimental evaluation, we had to construct a set of target densities wi
 \subsection{Dictionaries considered}
 \begin{enumerate}
 \item Gaussians
-\item A union of Gaussians and Laplacians densities called $D$. The Gaussians has their means in $[0, 0.2, 0.4, 0.6, 0.8, 1]$ and their variances in $[0.001, 0.01, 0.1, 1]$. The Laplacians has their means in $[0.05, 0.1, 0.5, 1]$ and their scales in $[0, 0.2, 0.4, 0.6, 0.8, 1]$. Therefore $D$ has 48 elements.
+\item A union of Gaussians and Laplacians densities called $D_{GL}$. The Gaussians has their means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their variances in $\{0.001, 0.01, 0.1, 1\}$. The Laplacians has their means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their scales in $\{0.05, 0.1, 0.5, 1\}$. Therefore, $D_{GL}$ has 48 elements.\todos{verifier les scales par rapport au code}
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=1\textwidth]{TeX_files/lapl_gauss_dict.png}
-\caption{Union of Gaussians and Laplacians,}
+\caption{$D_{GL}$, union of Gaussians and Laplacians densities.}
 \end{figure}
-\item Haar wavelet basis ?
-\item Daubechies wavelet ?
-\item Union of Fourier and Haar aud Gaussians ?
+\item Haar wavelet basis ?\todos{not positive}
+\item Daubechies wavelet ?\todos{not positive}
+%\item Union of Fourier and Haar aud Gaussians ?
 \end{enumerate}
 
 \subsection{Densities considered}
-We considered 5 target densities
+We considered 5 target densities corresponding to 5 different scenarios. The $1^{st}$ and $2^{nd}$ will asses the performance of our method on uniform based densities, the $3^{rd}$ and $4^th$ on dictionary based density. The last one is a complex density made from elements which are not in the dictionary that we will consider.
 \begin{enumerate}
-\item[$f_{unif}$:] A uniform on $[0,1]$ 
-\item[$f_{rect}$:] A mix of uniform densities on subintervals called "Rectangular":
+\item{$f_{unif}$:} A uniform density on $[0,1]$.
+\item{$f_{rect}$:} A mixture of uniform densities on subintervals. This density is called "Rectangular"
 \begin{equation}
     f_{rect}(x)=\frac{10}{7}\b1_{[0,1/5]}+\frac{5}{7}\b1_{[1/5,2/5]}+
     \frac{10}{7}\b1_{[2/5,3/5]}+\frac{10}{7}\b1_{[4/5,1]}
 \end{equation}
-\item[$f_{gauss}$:] A mixture of 5 Gaussian densities taken from the dictionary $D$ equally reparted in $[0,1]$.\todos{A retravailler}
+\item{$f_{gauss}$:} A mixture of 5 Gaussian densities taken from the dictionary $D_{GL}$ equally centered in $[0,1]$ with same variance.
 \begin{equation}
-    f_{gauss}(x)=\sum_{k=1}^5 0.2f_{\pi(k)}(x) \quad \text{with}\quad f_k\in D
+    f_{gauss}(x)=\sum_{k=1}^5 0.2f_{k}(x) \quad \text{with}\quad f_k=\varphi_{(k/5,0.001)}
 \end{equation}
 
-\item[$f_{gauss-lapl}$:] A mix of Gaussian and Laplacian densities taken from the dictionary (donner un nom au dictionaire $D$)
+\item{$f_{gauss-lapl}$:} A mixture of 5 Gaussian and Laplacian densities taken from the dictionary $D_{GL}$ with different variances and scales.
+%(multivariate_normal(0.2, 10**(-3)))
+%(multivariate_normal(0.6, 10**(-3)))
+%(multivariate_normal(0, 10**(-2)))
+%(laplace(0.4,0.2))
+%(laplace(0.8,0.1))
 \begin{equation}
-    f_{gauss-lapl}(x)=\sum_{k=1}^5 0.2f_{k}(x) \quad \text{with}\quad f_k\in D
+\begin{array}{ll}
+f_{gauss-lapl}(x)=0.2\big(&\varphi_{(0 ,10^{-2})} + \varphi_{(0.2,10^{-3})}+\varphi_{(0.6,10^{-3})}\\
+    &+\text{\small Lapl}_{(0.4,0.2)}+\text{\small Lapl}_{(0.8,0.1)} \big)
+\end{array}
 \end{equation}
-\item[$f_{ext}$:] A mixture of Gaussian and Laplacian densities  taken from another dictionary $D_{out}$
+
+
+\item{$f_{ext}$:} A mixture of Gaussian and Laplacian densities taken from another dictionary $D_{out}$.\todos{attention a recuperer les derniers resultats}
+%append(multivariate_normal(0.1, 5*10**(-3)))
+%append(multivariate_normal(0.65, 10**(-3)))
+%append(multivariate_normal(0.9, 10**(-2)))
+%append(laplace(0.5, 0.08))
+%append(laplace(0.2, 0.07))
+%append(laplace(0.75, 0.05))
+
 \begin{equation}
     f_{ext}(x)=\sum_{k=1}^7 \frac{1}{7}f_{k}(x) \quad \text{with}\quad f_k\in D_{out}
 \end{equation}
 \end{enumerate}
 These target densities are plotted in \cref{fig:target_densities}.
-\begin{figure}
-\includegraphics[width=1.2\textwidth]{TeX_files/densities_f_star.png}
+\begin{figure}[h]
+\includegraphics[width=1.1\textwidth]{TeX_files/densities_f_star.png}
 \caption{Five target densities considered.}
 \label{fig:target_densities}
 \end{figure}
 
-\subsection{Results}
-The results are ploted in \cref{fig:full_res}. The dictionary used for the Adaptive Dantzig and the Maximum Likelihood estimator is $D$. At first glance, the performance of the MLE seems good in Kullback-Leibler loss and $L_2$. The method showing the worst performance in all scenarios is the Adaptive Dantzig. Note that it is interesting to compare the MLE to A.D as both methods relies on a dictionary. the MLE present a relative small variance, lesser than the Kernel density estimator with the Sheather-Jones bandwidth selector which is the best KDE method studied regarding the loss. Another interesting observation is the small impact of the size of sample for the MLE. We will cover each scenarios. Unsurprisingly the MLE does not perform as well as kernel based methods on the uniform case as the dictionary given could not provide a good mixture density that approach well this target density. This goes as well for the rectangular density $f_{rect}$ which shows the worst performance for the MLE. It should be possible to increase the performance of the MLE by adding uniform on different segments of $[0,1]$.
-\begin{figure}
+\subsection{Discussion of the results}
+The results are plotted in \cref{fig:full_res}. The dictionary used for the Adaptive Dantzig and the Maximum likelihood density estimator is $D_{GL}$. Note that it is interesting to compare the MLE to A.D as both methods relies on a dictionary. We also benchmarked our method with the Gaussian kernel density estimator. KDE refers to the kernel density estimate with Scott's rule as chosen by default in the Python library Scipy and KDE-SJ refers to the KDE with the Sheather-Jones bandwidth selector. For each scenario of target density, $f_{unif}$, $f_{rect}$, $f_{gauss}$, $f_{gauss-lapl}$, $f_{ext}$ and for each sample size $N$  with $N\in\{100, 500, 1000\}$, we ran 200 simulations. \\
+At first glance, the performance of the MLE seems good in Kullback-Leibler loss and $L_2$. The method showing the worst performance in all scenarios is the Adaptive Dantzig. The MLE present a relative small variance, smaller than KDE-SJ which is the best KDE method studied regarding the loss. Another interesting observation is the small impact of the size of sample for the MLE.\\
+We will cover each scenarios. Surprisingly the MLE performance is as good as kernel based methods on the uniform case since the dictionary given could not provide a good mixture density that approach well this target density. However, this is not the case for the rectangular density $f_{rect}$ which shows the worst performance for the MLE. It should be possible to increase the performance of the MLE by adding uniform densities on different segments of $[0,1]$ in the dictionary. The performance of the MLE is better in the next three scenarios. When the target density is the mixture of Gaussians $f_{gauss}$, the MLE presents the best result, with a small variance, both in $L_2$ and KL loss. The second best is KDE-SJ. Note that the default KDE in Scipy with Scott's rule presents the worse result in this scenario which should have reasonably performed well considering the use of Gaussian kernels. This observation should come to mind of the practitioner when applying kernel density estimators with default package setting. The fourth scenario, $f_{gauss-lapl}$ is a more complex density made from elements of the dictionary $D_{GL}$ and the MLE is the best method. Surprisingly the $L_2$ and KL loss of KDE are not similar. Finally, in the last scenario, we wanted to measure the performance of the dictionary based methods against a target density which is not a mixture of elements of the dictionary, $f_{ext}$. MLE has a good performance in KL loss but performs badly compared to Kernel methods in $L_2$ loss. The adaptive Dantzig shows better results in this scenario.\\
+To conclude, the performance of the MLE method in these simulations is promising to achieve a good mixture density estimate. We would like to mention the computational efficiency of the MLE method as it is a convex problem, the whole procedure to construct the estimator is simple and its dimension is the size of the dictionary considered. During our simulations, the MLE method showed a huge difference in time computation compared to the Adaptive Dantzig. At the light of the results in the uniform and rectangular case, the choice of the dictionary is a cornerstone in constructing a good mixture density, this is a classical problem of dictionary-based methods. In the next section, we will test the MLE method with real datasets.
+
+\begin{figure}[h]
     \hspace{-2cm}
     \includegraphics[width=1.2\textwidth]{./TeX_files/full_results.png}
     \caption{Results of Adaptive Dantzig, Kernel density estimator with Scott Rule (KDE), Kernel density estimator with the Sheather-Jones bandwidth selector (KDE SJ) and Maximum likelihood estimator. Left column, KL loss, right, $L_2$. From top to bottom the target density is $f_{unif}$, $f_{rect}$, $f_{gauss}$, $f_{gauss-lapl}$, $f_{ext}$. With 200 simulations.  }
