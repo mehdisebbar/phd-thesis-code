@@ -3,6 +3,11 @@
 \chapter{Introduction}
 
 The broad goal of this thesis is to tackle a clustering problem in the scope of mixtures model framework. More precisely, we will study the clustering of points drawn from high-dimensional Gaussian mixtures distributions. Thus, in the first part of this section we present the Gaussian mixture model and the second part we describe the well know  Expectation-Maximization algorithm (EM). We will also present the limitations of this algorithm in high-dimensional setting.
+\section{Clustering}
+\begin{enumerate}
+  \item Will approach this problem from a probabilistic point a view
+  \item CS point of view
+\end{enumerate}
 
 \section{The Gaussian mixture model}
 
@@ -202,7 +207,7 @@ has explicit solutions given by
 \label{em-sols}
 \hat\pi_k     &= \frac1n\sum_{i=1}^n \tau_{i,k},\qquad\hat\bmu_k = \frac1{n\hat\pi_k}\sum_{i=1}^n \tau_{i,k}\bx_i ,\qquad \forall k\in[K],\\
 \hat\bSigma_k &= \frac1{n\hat\pi_k}\sum_{i=1}^n \tau_{i,k}(\bx_i-\hat\bmu_k)(\bx_i-\hat\bmu_k)^\top,\qquad\forall k\in[K],\\
-\hat\tau_{i,k}&= \frac{\pi_k\varphi_{\bmu_k,\bSigma_k}(\bx_i)}{\sum_{k'\in[K]}\pi_{k'}\varphi_{\bmu_{k'},\bSigma_{k'}}(\bx_i)},\qquad\forall k\in[K],\ \forall i\in[n].
+\hat\tau_{i,k}&= \frac{\pi_k\varphi_{\bmu_k,\bSigma_k}(\bx_i)}{\sum_{k'\in[K]}\pi_{k'}\varphi_{\bmu_{k'},\bSigma_{k'}}(\bx_i)},\qquad\forall k\in[K],\ \forall i\in[n] \label{tau_ik_em}.
 \end{align}
 \end{lem}
 
@@ -227,3 +232,17 @@ when $p$ is large, the quadratic dependence on $p$ may result in prohibitively
 large running times. However, the computation of the elements of the covariance
 matrices $\bSigma^t_k$ and the mean vectors $\bmu^t_k$ can be parallelized which
 may lead to considerable savings in the running time.
+
+\section{The curse of dimensionality}
+
+\todos{reecrire cette partie en commencant par le pb de la HD en stats en general, se baser sur les points de Giraud, puis une deuxieme sous section avec le cas du clustering et les pistes de resolution connues, ex: penalization, subspace clustering...}
+\todos{Ajouter un tableau des differents types de modeles et le nombre de parametres}
+
+The expression "Curse of dimensionality" introduced by R.Bellman \todos{citer} referes to the problems linked with high dimension. One can see that evaluating a function on the segment $(0,1)$ with a step size of $0.1$ is straightforward. However, evaluating the function in a grid of dimension 10 requires $10^{10}$ computations which can be intractable even today within a reasonable time. This is an important issue in the clustering context. In the Gaussian mixture model of $K$ components in dimension $p$, the number of parameters to estimate is:
+\begin{equation}
+   \nu = \underbrace{(K-1)}_\text{Weights}+ \underbrace{Kp}_\text{Means} + \underbrace{Kp(p-1)^2}_\text{Covariances Matrices}
+ \end{equation}
+ Moreover, the evaluation of $\hat\tau_{i,k}$ in \cref{tau_ik_em} needs to evaluate the inverse of the covariance matrix $\hat\bSigma_k$ which is called the precision matrix. If $n<<\nu$ the matrices $\hat\bSigma_k\, k=1,\dots,K$ are ill conditioned and the precision matrices are prone to large numerical errors or more often singular and the problem can not be solved. In \cref{chapgraphlasso}, we tackle this challenge by studying some nice structural properties of precision matrices.
+However,  an interesting phenomenon occurs in high dimension, Scoot and Thomson \todos{cite} showed that high-dimensional spaces are mostly empty, Huber \todos{cite}\todos{attention de pas copier Bouveyron\cite{bouveyron:hal-00750909}} showed that the realizations of a $p$-dimensional random vector with a uniform probability distribution on the unit hypershpere lies with high probability close to the boundary of this hypershere. Therefore, the data belong mostly in a $p-1$ dimensional subspace. Therefore, in the clustering problem, different clusters may live on different subspaces \todos{subspace clustering}
+\subsection{Bibliographic notes}
+The reader can find a more thorough study of high dimensional statistics in \cite{giraud2014introduction}.  The reader can refer to \citep{bouveyron:hal-00750909} to have an overview of the different Gaussian mixture models for clustering in high dimension.

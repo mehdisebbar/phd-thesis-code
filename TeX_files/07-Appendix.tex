@@ -1,0 +1,14 @@
+%!TEX root = ../main.tex
+\chapter{Appendix and notes}\label{appendix_notes}
+
+\section{Notes on "Model-Based Clustering of High- Dimensional Data: A review"}
+From \cite{bouveyron:hal-00750909}\\
+\begin{displayquote}
+FA-based models choose the latent subspace(s) maximizing the projected variance whereas the Discriminative latent mixture (DLM) model chooses the latent subspace which maximizes the separation between the groups.
+\end{displayquote}
+The DLM model assumes that $Y$ is linked to a latent variable $X\in\EE$ where $\EE\subset\RR^p$ through a linear relationship
+\begin{equation}
+	Y = UX + \varepsilon
+\end{equation}
+$\EE$ is the most dicriminative subspace of dimension $d\leq K-1$
+

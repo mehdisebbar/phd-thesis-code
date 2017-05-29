@@ -1,10 +1,220 @@
 %!TEX root = ../main.tex
 
-\chapter{Graphical Lasso for Gaussian mixtures}
+\chapter{Graphical Lasso for Gaussian mixtures}\label{chapgraphlasso}
 
-The EM algorithm experiences severe performance degradation in high-dimensional setting. A technique to avoid this degradation is by regularizing the parameters of the model. The following algorithm is inspired by the Graphical lasso \citep{glasso07} \citep{banerjee} which penalizes the components of the precision matrix of a Gaussian graphical model.\
+As we saw in the introduction chapter, the number of free parameters in a full GMM with $K$ components in dimension $p$ are $(K-1)+Kp+Kp(p+1)/2$ which means that for $K=5$ and $p=100$ we have $125704$ parameters to estimate. In this high dimensional setting, the EM algorithm experiences severe performance degradation. In particular, the inversion of the covariance matrices are challenged. One way to tackle these problems is to use regularization. We will make the assumption on some structure on the inverse of the covariance matrix of a component called the precision or concentration matrix. The work presented in this chapter is inspired by \citep{glasso07}, \citep{banerjee}, \citep{yuanLin_graph} and \citep{meinshausen2006} in which they penalize the components of the precision matrix of a Gaussian graphical model. We generalize this work to the Gaussian mixture model.
 
-We consider $\bx_1,\bx_2,\dots,\bx_n$ a sample of $n$ points drawn from a $p$-dimensional Gaussian mixture distribution. In this problem, we will consider the estimation of $\btheta=(\theta_1,\dots,\theta_K)$ with $\theta_k=(\pi_k, \bmu_k, \bOmega_k)$ where $\bOmega_k$ is the precision matrix regarding the $k$ component of the mixture. We denote $\varphi_{(\bmu_{k},\bOmega_{k})}$ the gaussian density of mean $\bmu_k$ and precision matrix $\bOmega_k$. The penalized log-likelihood is
+\section{Introduction}
+We consider $\bX=(\bX^{(1)},\dots,\bX^{(p)})$ a random vector admitting a $p$-dimensional normal distribution $\mathcal N(\bmu, \bSigma)$ with $\bSigma$ non-singular. One can construct an undirected graph $G=(V,E)$ with $p$ vertices corresponding to each coordinates and, $E=(e_{i,j})_{1\leq i < j \leq p}$, the edges between the vertices describing the conditional independence relationship among $\bX^{(1)},\dots,\bX^{(p)}$. 
+If in this graph, $e_{i,j}$ is absent in $E$ if and only if $X^{(i)}$ and $X^{(j)}$ 
+are independent conditionally to the other variables $\{X^{(l)}\}$ with $l\neq i,j$ (noted $X^{(i)} \ci X^{(j)}|X^{(l)}\, l\neq i,j$), then $G$ is called the Gaussian concentration graph model for the Gaussian random vector $\bX$. 
+This property is particularly interesting in the study of the inverse of the covariance matrix. Let us denote $\bSigma^{-1}=\bOmega=(\omega_{i,j})$ the precision matrix. The components of this matrix verify $\omega_{i,j}=0$ if and only if $X^{(i)} \ci X^{(j)}$ conditionally to the other variables. We recall in the following lemma this well known result
+
+\begin{lemma}[Conditional independence in Gaussian concentration graph model]
+Consider $\bX=(\bX^{(1)},\dots,\bX^{(p)})$ a p-dimensional random vector with a multivariate normal distribution $\mathcal N(\bmu, \bSigma)$, note $\bSigma^{-1}=\bOmega=(\omega_{i,j})$, then $X^{(i)} \ci X^{(j)}|X^{(l)} \iff \omega_{i,j}=0$ with $l\neq i,j$ 
+\end{lemma}
+\begin{proof}
+This result can be found in \citep{edwards2000introduction}, consider the density of $\bX$
+\begin{equation}
+	\varphi_{\bmu,\bSigma}(\bx)=\frac{1}{(2\pi)^{p/2}|\bSigma|^{1/2}} \exp\Big(-\frac{1}{2}(\bx-\bmu)^\top\bSigma^{-1}(\bx-\bmu)\Big),
+\end{equation}
+it can be rewritten as
+\begin{equation}
+	\varphi_{\bmu,\bSigma}(\bx) = \exp(\alpha + \beta^T\bx-\frac{1}{2}\bx^T\bOmega\bx),
+\end{equation}
+with $\beta=\bOmega\bmu$ and $\alpha=\frac{1}{2}\log(|\bOmega|)-\frac{1}{2}\bmu^T\bOmega\bmu-\frac{p}{2}\log(2\pi)$. Then, the previous equation can be rewritten as 
+\begin{equation}
+\label{exp_fam_cond_ind}
+	\exp\big(\alpha + \sum_{j=1}^p\beta_j\bx^{(j)}-\frac{1}{2}\sum_{j=1}^p\sum_{(i=1)}^p\omega_{i,j}\bx^{(j)}\bx^{(i)}\big).
+\end{equation}
+Now, for $X,Y,Z$ three random variables, we have $X \ci Y|Z$ iff the joint density can be factorized into two factors $f_{X,Y,Z}(x,y,z)=h(x,z)g(y,z)$ with $h$ anf $g$ two functions. Then, at the light of  \cref{exp_fam_cond_ind}, we have $X^{(i)}\ci X^{(j)}|X^{(l)} \iff \omega_{i,j}=0$.
+\end{proof}
+The literature on this subject focused on a first hand on the estimation of the graph structure, \citep{dempster1972cov_select} developed a greedy forward or backward search method to estimate the set of non-zero components in the concentration matrix. The forward method relies on initializing an empty set and select iteratively an edge with an MLE fit for $\mathcal{O}(p^2)$ different parameters. The procedure stops according to a suitable selection criterion. The backward method performs in the same manner by starting with all edges and performing deletions. It is obvious that such methods are computationally intractable in high dimension. In \citep{meinshausen2006}, the authors studied a neighborhood selection procedure with lasso. The goal is to estimate the neighborhood $ne_{X^{(i)}}$ of a node $X^{(i)}$ which is the smallest subset of $G\setminus\{X^{(i)}\}$ such that $X^{(i)} \ci \big\{X^{(j)}: X^{(j)}\in G\setminus\{ne_{X^{(i)}}\}\big\} | X_{ne_{X^{(i)}}}$. The estimation of the neighborhood is cast as a regression problem with a lasso penalization. The authors showed that this procedure is consistent for sparse high dimensional graphs and computationally efficient. More precisely, let $\theta^{(i)} \in \RR ^p$ be the vector of coefficient of the optimal prediction,\todos{banerjee p488, consistency lies on choice of penalty}
+\begin{equation}
+	\theta^{(i)} = \argmin_{\theta:\theta_i=0}\EE\Big[ X^{(i)}-\sum_{k=1}^p\theta_k X^{(k)}\Big],
+\end{equation}
+then the components of $\theta^{(i)}$ are determined by the precision matrix, $\theta^{(i)}_j=-\omega_{i,j}/\omega_{i,i}$. Therefore, the set of neighbors of $X^{(i)}\in G$ is given by
+\begin{equation}
+	ne_{X^{(i)}}= \{X^{(j)}, j\in[p]: \omega_{i,j} \neq 0 \}.
+\end{equation}
+Now, let $\XX$ be the $n\times p$-dimensional matrix such that the column $\XX^{(i)}$ is the $n$ observations vector of $X^{(i)}$, given a regularization parameter $\lambda \geq 0$ carefully chosen, the Lasso estimate $\hat\theta^{i,\lambda}$ of $\theta^{(i)}$ is given by
+\begin{equation}
+	\hat\theta^{i,\lambda} = \argmin_{\theta:\theta_i=0}\Big(\frac{1}{n}\|\XX^{(i)}-\XX\theta \|_2^2 + \lambda\|\theta\|_1 \Big).
+\end{equation}
+The authors proved under several assumptions that 
+\begin{equation}
+	P(\hat{ne}_{X^{(i)}}^{\lambda}=ne_{X^{(i)}})\rightarrow 1 \quad \text{for}\, n\rightarrow \infty,
+\end{equation}
+and for some $\epsilon > 0$,
+\begin{equation}
+	P(\hat E^{\lambda}=E)=1-\mathcal{O}(\exp(-cn^{\epsilon}))\quad \text{for}\, n\rightarrow \infty.
+\end{equation}
+Therefore, this method recovers the conditional independence structure of sparse high-dimensional Gaussian concentration graph \todos{ajouter un mot sur la complexité} at exponential rates. However, this method performs model selection but does not estimate the parameters of the model. One  could estimate the parameters of a model which has been selected by this method. Such procedure often leads to instability of the estimator since small changes on the data would change the model selected \citep{yuanLin_graph}, \citep{breiman1996}. One major difficulty of a method that would perform both tasks is to ensure that the estimator of the precision matrix is positive definite. \citep{yuanLin_graph} proposed a penalized-likelihood method that performs model selection and parameter estimation simultaneously as well as ensuring the positive definiteness of the precision matrix. Their approach is similar to \citep{meinshausen2006} as they use the $\ell_1$ penalty but with the likelihood and the addition of a positive definite constraint. The log-likelihood for $\bOmega$ based on a  centered random sample $\bX_1,\dots,\bX_n$ of $\bX$ is
+\begin{equation}
+	\frac{n}{2}\log(|\bOmega|) - \frac{1}{2}\sum_{i=1}^n\bX_i^T\bOmega\bX_i
+\end{equation}
+and the constrained minimization problem over the set of positive definite matrices is
+\begin{equation}
+\label{prec_matrix_gauss_min_pb}
+	\text{min}\Big\{-\log(|\bOmega|) + \frac{1}{n}\sum_{i=1}^n\bX_i^T\bOmega\bX_i\Big\} \quad \text{subject to}\quad \sum_{i\neq j} |\omega_{i,j}|\leq t,
+\end{equation}
+with $t\geq 0$ a tuning parameter. Note that $\hat\bmu=\bar\bX$. Consider the empirical covariance matrix $\bS=1/n\sum_{i=1}^n\bX_i^T\bX_i$, the \cref{prec_matrix_gauss_min_pb} can be rewritten as 
+\begin{equation}
+	\text{min}\Big\{-\log(|\bOmega|) + \text{tr}(\bS\bOmega)\Big\} \quad \text{subject to}\quad \sum_{i\neq j} |\omega_{i,j}|\leq t.
+\end{equation}
+Since the whole problem is convex, the Lagrangian form is given by
+\begin{equation}
+\label{yuan_lkhood_pb}
+	\mathcal L (\lambda, \bOmega) = -\log(|\bOmega|) + \text{tr}(\bS\bOmega) + \lambda\sum_{i\neq j} |\omega_{i,j}|,
+\end{equation}
+with $\lambda$ the tuning parameter. A non-negative garrote-type estimator is provided in \citep{yuanLin_graph} but can be only applied when a good estimator of $\bOmega$ is available\todos{regarder de plus pres}. Therefore, we will continue our study of the Lasso-type estimator, the authors provided an asymptotic result
+\begin{theorem}[Theorem 1 from \citep{yuanLin_graph}]
+If $\sqrt{n}\lambda \rightarrow \lambda_0\geq0$  as $n\rightarrow\infty$, the lasso-type estimator is such that 
+\begin{equation*}
+	\sqrt{n}(\hat\bOmega-\bOmega)\rightarrow\argmin_{\bU=\bU^T}(V),
+\end{equation*}
+in distribution where
+\begin{equation*}
+	V(\bU)=\textnormal{tr}(\bU \bSigma \bU \bSigma)+\textnormal{tr}(\bU \bW)+\lambda_0\sum_{i\neq j}\big\{ u_{i,j}\textnormal{sign}(\omega_{i,j})I(\omega_{i,j}\neq 0)+|u_{i,j}|I(\omega_{i,j} =0) \big\}
+\end{equation*}
+in which $\bW$ is a random symmetric $p\times p$ matrix such that $\textnormal{vec}(\bW) \sim \mathcal N (0, \Lambda)$, and  $\Lambda$ is such that
+\begin{equation*}
+	\textnormal{cov}(w_{i,j},w_{i',j'}) = \textnormal{cov}(X^{(i)}X^{(j)},X^{(i')}X^{(j')}).
+\end{equation*}
+\end{theorem}\todos{mettre un commentaire sur ce resultat et aspect algorithmique}
+Unfortunately, the computational complexity of interior point methods for maximizing \cref{yuan_lkhood_pb} is $\mathcal O (p^6)$ and at each steps, we have to compute and store a Hessian matrix of size $\mathcal O (p^2)$. These prohibitive complexities led the research on more specialized methods. \citep{banerjee} worked on the same approach, solving a maximum likelihood problem with an $\ell_1$ penalty and focusing on the computation complexity by proposing an iterative block coordinate descent algorithm. The problem to maximize is similar to \cref{yuan_lkhood_pb}
+\begin{equation}
+\label{max_lkhood_gauss_graph}
+	\hat\bOmega = \argmax_{\bOmega \succ 0}\{\log(|\bOmega|)-\textnormal{tr}(\bS\bOmega)-\lambda\|\bOmega \|_1\}.
+\end{equation}
+Note that the $\ell_1$ norm of a matrix $\bOmega$ can be expressed as
+\begin{equation}
+	\|\bOmega \|_1 = \max_{\| \bU\|_{\infty}\leq 1}\textnormal{tr}(\bOmega\bU),
+\end{equation}
+injecting this in \cref{max_lkhood_gauss_graph} gives
+\begin{equation}
+	\max_{\bOmega \succ 0} \min_{\|\bU\|_{\infty}\leq \lambda} \big\{\log(|\bOmega|)-\textnormal{tr}(\bOmega(\bS+\bU))\big\}.
+\end{equation}
+After exchanging the min and the max, we solve the problem for $\bOmega$ by setting the gradient to $0$ which gives $(\bOmega^{-1})^T-(\bS+\bU)^T=0$ then $\bOmega = (\bS+\bU)^{-1}$. The dual problem is then
+\begin{equation}
+	\min_{\|\bU \|_{\infty}}\{-\log(|\bS+\bU|) -p\},
+\end{equation}
+or by setting $\bW = \bS+\bU$,
+\begin{equation}
+\label{banerjee_min_pb}
+	\hat\bSigma = \hat{\bOmega^{-1}}= \argmax \log(|\bW|) \quad \textnormal{s.t}\quad \|\bW-\bS \|_{\infty} \leq \lambda.
+\end{equation}
+We observe the presence of a log-barrier adding the implicit constraint $(\bS+\bU) \succ 0$. Furthermore, the dual problem estimates the covariance matrix.\todos{pourquoi $\Sigma_{kk}=S_{kk}+\lambda ?$, p488}.\todos{citer les theoremes et choix du param}. To solve this maximization problem, the authors proposed a Block Coordinate Descent Algorithm described in \cref{fig:banerjee_block_algo}. For any symmetric matrix $\bA$, let $\bA_{\setminus k \setminus j}$ be the matrix produced by removing column $k$ and row $j$ to $\bA$. Let $\bA_j$ the $j^{th}$ column of $\bA$ with the element $\bA_{jj}$ removed.
+\begin{figure}
+\begin{center}
+\mybox{
+\begin{minipage}{1.1\linewidth}
+\begin{algorithmic}[1]%\SetAlgoLined\tt\SetLine
+\small
+\STATE {\bfseries Input:} Matrix $\bS$, parameter $\lambda$ and threshold $\varepsilon$
+\STATE {\bfseries Output:} Estimate of $\bW$
+\STATE {{\bf Initialize} $\bW^{(0)} := \bS+\lambda I$}
+\REPEAT
+\FOR{$j=1,\dots,p$}
+\STATE {(a) Let $\bW^{(j-1)}$ denote the current iterate. Solve the quadratic program}
+\begin{equation*}
+\label{banerjee_algo_min_pb}
+	\hat \by := \argmin_{\by}\{\by^T(\bW_{\setminus j \setminus j}^{(j-1)})^{-1}\by:\|\by-\bS_j\|_{\infty}\leq \lambda\}.
+\end{equation*}
+\STATE {(b) Update the rule: $\bW^{(j)}$ is $\bW^{(j-1)}$ with column/row $\bW_j$ replaced by $\hat\by$.}
+\ENDFOR
+\STATE{Let $\hat\bW^{(0)}:=\bW^{(p)}$.}
+\UNTIL{convergence occurs when
+\begin{equation*}
+	\textnormal{tr}\big((\hat\bW^{(0)})^{-1}\bS\big) -p +\lambda\big\|(\hat\bW^{(0)})^{-1} \big\|_1\leq \varepsilon.
+\end{equation*}
+}
+\end{algorithmic}
+\end{minipage}}
+   \caption{Block Coordinate Descent Algorithm}
+   \label{fig:banerjee_block_algo}
+
+\end{center}
+\end{figure}
+They proved that the Block Coordinate Descent algorithm converges, achieving an $\varepsilon$-suboptimal solution to \cref{banerjee_min_pb} and each iterates produce a strictly positive definite matrix. For a fixed number of sweeps $K$, the complexity of this algorithm is $\mathcal O (Kp^4)$. They provide also another algorithm using Nesterov's first order method which has a $\mathcal O(p^{4.5}/\epsilon)$ complexity for $\varepsilon > 0$ the desired accuracy. It is interesting to note that the dual problem of \cref{banerjee_algo_min_pb} in \cref{fig:banerjee_block_algo} is 
+\begin{equation}
+	\min_{\bx} \bx^T\bW_{\setminus j \setminus j}^{(j-1)}\bx - \bS_j^T\bx + \lambda\|\bx\|_1,
+\end{equation}
+and strong duality holds, it can best casted as
+\begin{equation}
+\label{banerjee_dual_lasso}
+	\min_{\bx} \|\bQ\bx - \bbb\|_2^2 + \lambda\|\bx\|_1,
+\end{equation}
+with $\bQ = (\bW_{\setminus j \setminus j}^{(j-1)})^{1/2}$ and $\bbb:=\frac{1}{2}\bQ^{-1}\bS_j$. Therefore, we recover the Lasso problem, more precisely, the algorithm can be interpreted as a sequence of iterative Lasso problems. This approach is similar to another paper that we would like to mention \citep{glasso07}. The authors proposed a faster algorithm based on the Block Coordinate Descent algorithm from \citep{banerjee} called Graphical Lasso. They estimate the matrix $\bW=\bOmega^{-1}$ by performing iterative permutations of the columns of this matrix to make the target column the last for a coupled Lasso problem. The matrices $\bW$ and $\bS$ will be presented as following 
+\begin{equation}
+\bW =  \begin{bmatrix}
+    \bW_{11} & \bw_{12} \\
+    \bw_{21} & w_{22}
+  \end{bmatrix}, 
+  \quad
+ \bS =  \begin{bmatrix}
+    \bS_{11} & \bs_{12} \\
+    \bs_{21} & s_{22}
+  \end{bmatrix}, 
+\end{equation}
+and the Graphical Lasso algorithm is described in \cref{fig:friedman_graph_lasso}. The Lasso problem can be solved via a coordinate descent, the reader can refer to \citep{glasso07} for the procedure. In this problem, the algorithm estimates $\hat\bSigma$ and returns also $\bB = (\bbb^{(1)},\dots,\bbb^{(p)})$, the matrix where each column is the solution of the Lasso problem in \cref{banerjee_dual_lasso} for each column of $\bW$. It is easy to recover $\bOmega$ since 
+\begin{equation}
+\bW =  \begin{bmatrix}
+    \bW_{11} & \bw_{12} \\
+    \bw_{21} & w_{22}
+  \end{bmatrix}.
+  \begin{bmatrix}
+    \bOmega_{11} & \bomega_{12} \\
+    \bomega_{21} & \omega_{22}
+  \end{bmatrix}=
+   \begin{bmatrix}
+    I_{p-1} & 0 \\
+    0 & 1
+  \end{bmatrix},
+\end{equation}
+and
+\begin{align*}
+	\bomega_{12} &= -\bW_{11}^{-1}\bw_{12}\omega_{22}\\
+	\omega_{22} &= 1/(w_{22}-\bw_{12}^T \bW_{11}^{-1}\bw_{12}).
+\end{align*}
+Therefore, for $j=1,\dots,p$, the permuted target components of $\bOmega$ are
+\begin{align*}
+	\bomega_{12} &= -\bbb^{(j)}\hat\omega_{22}\\
+	\omega_{22} &= 1/(w_{22}-\bw_{12}^T \bbb^{(j)}).
+\end{align*}
+\begin{figure}
+\begin{center}
+\mybox{
+\begin{minipage}{1.1\linewidth}
+\begin{algorithmic}[1]%\SetAlgoLined\tt\SetLine
+\small
+\STATE {\bfseries Input:} Matrix $\bS$, parameter $\lambda$ and threshold $\varepsilon$
+\STATE {\bfseries Output:} Estimate of $\bW$ and $\bB$ a matrix of parameters.
+\STATE {{\bf Initialize} $\bW^{(0)} := \bS+\lambda I$ and $\bB=0_{p\times p}$. The diagonal of $\bW$ remained unchanged in what follows.}
+\REPEAT
+\FOR{$j=1,\dots,p$}
+\STATE {(a) Let $\bW^{(j-1)}$ denote the current iterate. Solve the Lasso problem in \cref{banerjee_dual_lasso}
+\begin{equation}
+ 	\hat\bx^{(j-1)} = \argmin_{\bx} \frac{1}{2}\|(\bW_{11}^{(j-1)})^{1/2}\bx - \bbb\|_2^2 + \lambda\|\bx\|_1,
+ \end{equation}
+ with $\bbb:=(\bW_{11}^{(j-1)})^{-1/2}\bs_{12}$.}
+\STATE {(b) Update: $\bW^{(j)}$ is $\bW^{(j-1)}$ with $\bw_{12}=\bW_{11}^{(j-1)}\hat\bx^{(j-1)}$. }
+\STATE {(c) Save the parameter $\bx^{(j-1)}$ in the $j^{th}$ column of $\bB$.} 
+\STATE{(d) Permute the columns and rows of $\bW^{(j-1)}$ such that the $j^{th}$ column is $\bw_{12}$, the next target.}
+\ENDFOR
+\STATE{Let $\hat\bW^{(0)}:=\bW^{(p)}$.}
+\UNTIL{convergence occurs.}
+\end{algorithmic}
+\end{minipage}}
+   \caption{Graphical Lasso}
+   \label{fig:friedman_graph_lasso}
+
+\end{center}
+\end{figure}
+In what follows, we will adapt these methods on a Gaussian mixture models, more precisely we will assume that each clusters present a sparse Gaussian concentration graph. We will rely on the Graphical Lasso for estimating the precision matrix and derive a EM algorithm.
+\section{Graphical Lasso on Gaussian mixtures}
+
+ In this problem, we will consider the estimation of $\btheta=(\theta_1,\dots,\theta_K)$ with $\theta_k=(\pi_k, \bmu_k, \bOmega_k)$ where $\bOmega_k$ is the precision matrix regarding the $k$ component of the mixture. We denote $\varphi_{(\bmu_{k},\bOmega_{k})}$ the gaussian density of mean $\bmu_k$ and precision matrix $\bOmega_k$. The penalized log-likelihood is
 \begin{equation}\label{pen-log-likelihood}
 \ell_n^{pen}(\btheta)=\sum_{i=1}^{n}\log p_{\btheta}(\bx_i)-pen(\btheta)= \sum_{i=1}^{n}\log \bigg\{ \sum_{k=1}^K\pi_k\varphi_{(\bmu_{k},\bOmega_{k})}(\bx_i)\bigg\} -pen(\btheta).
 \end{equation}

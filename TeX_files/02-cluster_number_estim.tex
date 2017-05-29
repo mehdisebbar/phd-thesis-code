@@ -2,6 +2,26 @@
 
 \chapter{Estimating the number of clusters}
 
+In this chapter, we will focus on the open problem of estimating the number of clusters. Most of current clustering methods such that K-Means, Expectation-Maximisation with Gaussian mixture model or hierarchical clustering need a this parameter in input. Different methods are being used to perform a selection of the best model according to a criterion, unfortunately with a computational cost. In this work, we will try to tackle this challenge.
+
+\section{Introduction and related work}
+In previous models, we knew the number of components $K$ in the Gaussian mixture. In reality this parameter is unknown. 
+Several methods exists to select the number of clusters
+
+\subsection{Bayesian Information Criterion (BIC)}
+A common method to select the number of clusters is to use the Bayesian Information Criterion given by:
+\begin{equation}
+  BIC(K) = -\log\ell_n(\hat\btheta^K)+K.\log(n)
+\end{equation}
+And select the model which minimizes the BIC. This can be done by running EM algorithm over a large number of models which is computationally expensive.
+\subsection{Silhouette method}
+
+\subsection{Elbow method}
+
+\subsection{Gap Statistic}
+
+\section{Our First method}
+
 The idea is to add a regularization term on the estimation of the $n\times K$ matrix $\bTau$, the estimate of the number of clusters K will be the number of non-empty columns of $\bTau$.\
 
 We consider a maximum number of clusters $M$, we note the convex set $A=\{\tau \in \RR^M : \sum_{k=1}^M\tau_k=1, \tau_k\geq 0 \quad \forall k \in [M] \}$ and the "indicator" function $\chi_A(.)$ defined by:
@@ -125,11 +145,7 @@ We use the algorithm of last chapter with the new estimation procedure of $\bTau
 
 \section{Sparse Weights Vector Estimation}
 
-In previous models, we knew the number of components $K$ in the Gaussian mixture. In reality this parameter is unknown. A common method to select the number of clusters is to use the Bayesian Information Criterion given by:
-\begin{equation}
-  BIC(K) = -\log\ell_n(\hat\btheta^K)+K.\log(n)
-\end{equation}
-And select the model which minimizes the BIC. This can be done by running EM algorithm over a large number of models which is computationally expensive. We fit a model with an arbitrarily large number of components $K$ and penalyze the weights vector $\bpi$. The penalized negative log-likelihood is:
+ We fit a model with an arbitrarily large number of components $K$ and penalyze the weights vector $\bpi$. The penalized negative log-likelihood is:
 \begin{equation}
   \ell_n(\btheta)=
 -\frac{1}{n}\sum_{i=1}^{n}\log\bigg\{{\sum_{j=1}^K\pi_k\varphi_{(\bmu_{j},\bSigma_{j})}(\bx_i)}\bigg\}+\lambda\sum_{j=1}^{K-1}\pi_j^{1/\gamma}\quad \gamma\geq1

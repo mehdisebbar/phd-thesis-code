@@ -1,5 +1,7 @@
 \documentclass[a4paper,12pt]{book}
 \usepackage[utf8]{inputenc}
+%line space
+\renewcommand{\baselinestretch}{1.5} 
 
 % Custom colors
 \usepackage[dvipsnames]{xcolor}
@@ -33,6 +35,9 @@
 %citations
 \usepackage{natbib}
 \bibliographystyle{unsrtnat}
+
+%quotes
+\usepackage{csquotes}
 
 %hyperlinks
 \usepackage{url}
@@ -81,7 +86,8 @@ showstringspaces=false
 
 %commentaires
 \usepackage[colorinlistoftodos,prependcaption,textsize=small]{todonotes}
-\newcommand{\todos}[1]{\todo[linecolor=RedOrange,backgroundcolor=RedOrange!80!white!25,bordercolor=RedOrange!40!white]{#1}}
+\newcommand{\todos}[2][]
+{\todo[caption={Note},linecolor=RedOrange,backgroundcolor=RedOrange!80!white!25,bordercolor=RedOrange!40!white, size=\small]{\renewcommand{\baselinestretch}{0.5}\selectfont#2\par}}
 
 %box definition
 \usepackage{tcolorbox}
@@ -99,7 +105,7 @@ showstringspaces=false
   \def\PP{{\bb P}}\def\II{{\bb I}}\def\WW{{\bb W}}\def\XX{{\bb X}}
   \def\VV{{\bb V}}\def\SS{{\bb S}}\def\BB{{\bb B}}\def\NN{{\bb N}}
   \def\RR{{\bb R}}\def\ZZ{{\bb Z}}\def\FF{{\bb F}}\def\DD{{\bb D}}
-  \def\OO{{\bb O}}\def\JJ{{\bb J}}\def\UU{{\bb U}}
+  \def\OO{{\bb O}}\def\JJ{{\bb J}}\def\UU{{\bb U}}\def\EE{{\bb E}}
 
 \def\Ex{\mathbf E}
 \def\calA{\mathcal A}
@@ -135,11 +141,18 @@ showstringspaces=false
 \def\bA{\boldsymbol A}
 \def\bF{\boldsymbol F}
 \def\bx{\boldsymbol x}
+\def\bbb{\boldsymbol b}
 \def\bu{\boldsymbol u}
+\def\bU{\boldsymbol U}
 \def\bv{\boldsymbol v}
 \def\bS{\boldsymbol S}
+\def\bs{\boldsymbol s}
+\def\bw{\boldsymbol w}
+\def\bQ{\boldsymbol Q}
+\def\bB{\boldsymbol B}
 \def\bbeta{\boldsymbol \beta}
 \def\bY{\boldsymbol Y}
+\def\bW{\boldsymbol W}
 \def\bxi{\boldsymbol \xi}
 \def\bpi{\boldsymbol \pi}
 \def\bomega{\boldsymbol \omega}
@@ -148,11 +161,16 @@ showstringspaces=false
 \def\11{\mathds 1}
 \def\b1{\mathbf 1}
 \def\Pb{\mathbf P}
+\def\by{\mathbf y}
 \def\var{{\bf Var}}
 \def\KL{{\rm KL}}
 \def\bfZ{\mathbf Z}
 \def\bfI{\mathbf I}
 \def\balpha{\boldsymbol \alpha}
+
+%prob. independance symbol
+\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
 
 
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -182,14 +200,16 @@ showstringspaces=false
 \maketitle
 \tableofcontents
 \listoftodos
-\mainmatter 
-\include{./TeX_files/00-introduction}
-\include{./TeX_files/01-graph_lassos}
-\include{./TeX_files/02-cluster_number_estim}
+\mainmatter
+\include{TeX_files/000-Notations}
+\include{TeX_files/00-introduction}
+\include{TeX_files/01-graph_lasso}
+\include{TeX_files/02-cluster_number_estim}
 \include{TeX_files/03-algorithm2}
 \include{TeX_files/04-column_wise_lasso}
 \include{TeX_files/05-KL_aggreg_MLE}
 \include{TeX_files/06-KL_aggreg_MLE_simulations}
+\include{TeX_files/07-Appendix}
 
 \backmatter
 % bibliography, glossary and index would go here.
