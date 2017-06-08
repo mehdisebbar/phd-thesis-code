@@ -4,50 +4,108 @@
 
 In this section we describe the implementation of the algorithm. We also compare its performance with different alternative methods.
 
-\section{Implementation details}
-
-In this section we describe the implementation of the algorithm described in the previous chapter. But before anything else, we remind the reader the problem setting and the estimator considered. 
-\subsection{Problem considered}
-We observe $n$ independent random vectors $\bX_1,\ldots,\bX_n\in\calX$ drawn from a probability distribution $P^*$ that admits a density function $f^*$. Given a family of mixture components $f_1,\ldots,f_K$, we assumed that this unknown density is well approximated by a convex combination $f_{\bpi}$ of these components
+\section{Introduction}
+Before anything else, we remind the reader the problem setting and the estimator considered. We observe $n$ independent random vectors $\bX_1,\ldots,\bX_n\in\calX$ drawn from a probability distribution $P^*$ that admits a density function $f^*$. Given a family of mixture components $f_1,\ldots,f_K$, we assumed that this unknown density is well approximated by a convex combination $f_{\bpi}$ of these components
 \begin{equation}
 f_{\bpi}(\bx)=\sum_{j=1}^K\pi_j f_j(\bx), \quad \bpi \in \BB_+^K=\Big\{\bpi\in [0,1]^K: \sum_{j=1}^K\pi_j=1\Big\}.
 \end{equation}
-The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previous experiments or expert knowledge. The problem of construction of this family is an open problem that we try to address in section ?. Our objective is to estimate the weight vector $\bpi$ from the simplex $\BB_+^K$ under the sparsity scenario and investigate the statistical properties of the Maximum Likelihood Estimator (MLE), defined by
+The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previous experiments or expert knowledge. The problem of construction of this family is an open problem that we try to address in section ?. The objective of this chapter is to expose the algorithm implemented for the Maximum Likelihood Estimator (MLE), defined by
 \begin{equation}
 \label{MLE_2}
-\hat\bpi \in \argmin_{\bpi\in \Pi}\big\{-\frac{1}{n}\sum_{i=1}^n\log f_{\bpi}(\bX_i)\big\},
+\hat\bpi \in \argmin_{\bpi\in \BB_+^K}\big\{-\frac{1}{n}\sum_{i=1}^n\log f_{\bpi}(\bX_i)\big\}.
 \end{equation}
-where the minimum is computed over a suitably chosen subset $\Pi$ of $\BB_+^K$. 
-\subsection{Implementation}
-The computation of \cref{MLE_2} is fairly simple as the objective function and the set $\Pi$ are convex and can be easily solved by convex programming. We wrote the algorithm in Python and used the modeling language CVXPY\cite{cvxpy}.\\
-\todos{We give a dictionary of densities in input.\\
-Give pseudo code}
-\begin{python}
-from sklearn.base import BaseEstimator
-import numpy as np
-from cvxpy import *
+One can note that this problem is convex as the composition of $-\log$ and a linear function is convex. Furthermore, the feasible space is also convex. This problem can be solved via a Primal-Dual interior point method. But we will present a simpler approach based on an accelerated proximal gradient descent method.
+\section{Implementation}
+We can see that \cref{MLE_2} is equivalent to
+\begin{equation}
+\argmin_{\bpi\in\RR^K}\big\{-\frac{1}{n}\sum_{i=1}^n\log(f_{\bpi}(\bX_i))+\chi_{\BB_+^K}(\bpi))\big\},
+\end{equation}
+where $\chi_{\BB_+^K}$ is the indicator function
+\begin{equation*}
+    \chi_{\BB_+^K}(\bpi) =
+    \begin{cases}
+      0 & \text{if } \bpi\in \BB_+^K,\\
+      \infty & \text{otherwise} .
+    \end{cases}
+\end{equation*}
+This problem can be decomposed into 
+\begin{equation}
+\label{general_min_pb_fista}
+    \min_{\bpi}\big\{f(\bpi)+g(\bpi)\big\},
+\end{equation}
+where $f(\bpi) =-\frac{1}{n}\sum_{i=1}^n\log(f_{\bpi}(\bX_i)$ and $g(\bpi)=\chi_{\BB_+^K}(\bpi)$. One can note that this problem is convex but not smooth since $f$ is differentiable but $g$ is not. One way to tackle this minimization is to consider the proximal operator
+\begin{equation}
+    \textnormal{prox}_{\lambda g}(\bpi) = \argmin_{u}\big\{g(u)+\frac{1}{2\lambda}\|u-\bpi\|^2_2\big\},
+\end{equation}
+where $\lambda > 0$ is a scale parameter for the function $g$. One can interpret $\textnormal{prox}_{\lambda f}(\bpi)$ as a point that compromises between minimizing $g$ and being near to $\bpi$. Note that in our context, $g(.)=\chi_{\BB_+^K}(.)$, therefore
+\begin{align*}
+    \textnormal{prox}_{\lambda g}(\bpi) &= \argmin_{u}\big\{\chi_{\BB_+^K}(u)+\frac{1}{2\lambda}\|u-\bpi\|^2_2\big\},\\
+    &= \argmin_{u\in \BB_+^K}\big\{\|u-\bpi\|^2_2\big\},\\
+    &= \bPi_{\BB_+^K}(\bpi)
+\end{align*}
+where $\bPi_{\BB_+^K}(\bpi)$ is the Euclidean projection of $\bpi$ into the set probability simplex. The reader can find in \citep{Parikh:2014:PA:2693612.2693613} a detailed study of proximal algorithms. A particularly interesting procedure for our problem is the proximal gradient method that solves \cref{general_min_pb_fista}. This method is iterative and the $(k+1)^{th}$ step is
+\begin{equation}
+    \bpi^{k+1} := \textnormal{prox}_{\lambda^k g}(\bpi^k-\lambda^k\nabla f(\bpi^k)),
+\end{equation}
+where $\lambda^k > 0$ is a step size. This step size can be found via a linesearch method \citep{Parikh:2014:PA:2693612.2693613}. However, if $\nabla f$ is $L$-Lipschitz, we can chose a fixed $\lambda^k\in (0,1/L)$. On this setting, on can show that this method converges with a rate of $\mathcal O(1/k)$. This rate is know to be sub-optimal.\todos{ref autre que fista} To circumvent this slow rate, accelerated versions of the proximal gradient method has been developed \citep{RePEc:cor:louvco:2007076}\citep{Beck:2009:FIS:1658360.1658364} that achieve optimal $\mathcal O(1/k^2)$ rate under the $L$-Lipshitz condition on $\nabla f$. These optimization methods relies on the proximal operator and Nesterov's Accelerated gradient method \citep{Nesterov:1983wy}. A version of this accelerated method is
+\begin{equation*}
+    \begin{cases}
+    \xi^k &:= \bpi^k + \omega^k(\bpi^k-\bpi^{k-1}),\\
+    \bpi^{k+1} &:= \textnormal{prox}_{\lambda^k g}(\xi^k-\lambda^k\nabla f(\xi^k)),
+    \end{cases}
+\end{equation*}
+where $\omega^k$ is defined by
+\begin{equation*}
+    \begin{cases}
+    \omega^1 &:= 1,   \\
+    \omega^k &:= 2\frac{\omega^{k-1}-1}{1+\sqrt{1+(\omega^{k-1})^2}}.
+    \end{cases}
+\end{equation*}
+This method is called Fast Iterative Shrinkage-Thresholding Algorithm (FISTA) from \citep{Beck:2009:FIS:1658360.1658364}. Our procedure is a special case of this algorithm that can be called 'Accelerated projected gradient descent' \todos{en italique} since the proximal is the projection into $\BB_+^K$. A procedure for the projection into the probability simplex can be found in \citep{Duchi:2008:EPL:1390156.1390191} and a simple proof in \citep{Wang13projectiononto}. The procedure for this projector is given in \cref{algo:proj_simplex.}. Finally, the complete procedure for our algorithm is given in \cref{fig:pi_fista}.\\ 
+A nice property of this method is that it provides a sparse solution of this minimization problem which fits with our goal of selecting elements of the dictionary. General Primal-Dual interior points methods do not offer this feature.
 
+\begin{figure}
+\begin{center}
+\mybox{
+\begin{minipage}{0.85\linewidth}
+\begin{algorithmic}%\SetAlgoLined\tt\SetLine
+\small
+\STATE {\bfseries Input: $\bpi\in\RR^p$.} 
+\STATE {\bfseries Output:} The projection $\bpi^{proj}$ of $\bpi$ onto the probability simplex.
+\STATE {\tt 1: Sort $\bpi$ into $\bu:\,u_1\geq u_2 \geq\dots\geq u_p$.}
+\STATE {\tt 2: Find $\rho=\max \{1\leq j\leq p:\, u_j+\frac{1}{j}(1-\sum_{i=1}^j u_i) > 0\}$.}
+\STATE {\tt 3: Define $\lambda = \frac{1}{\rho}(1-\sum_{i=1}^{\rho} u_i) > 0$.}
+\STATE {\tt 4: Construct $\bpi^{proj}\,\textnormal{s.t.}\, \bpi^{proj}_i=\max\{\pi_i+\lambda,0\},\,i=1,\dots,p$.}
+\end{algorithmic}
+\end{minipage}}
+   \caption{ Projection procedure onto the probability simplex}
+   \label{algo:proj_simplex.}
+\end{center}
+\end{figure}
 
-class WeightEstimator(BaseEstimator):
-
-    def __init__(self, densities_dict, select_threshold=10e-3):
-        self.densities_dict  = densities_dict
-        self.K = len(self.densities_dict)
-        self.select_threshold = select_threshold
-
-    def fit(self, X):
-        self.F = np.array([self.densities_dict[i].pdf(X) for i in range(self.K)]).T
-        F = np.array([self.densities_dict[i].pdf(X) for i in range(self.K)]).T
-        self.pi = Variable(self.K)
-        constraints = [sum_entries(self.pi) == 1, self.pi >= 0, self.pi <= 1]
-        objective = Minimize(-sum_entries(log(F * self.pi)))
-        prob = Problem(objective, constraints)
-        prob.solve()
-\end{python}
+\begin{figure}
+\begin{center}
+\mybox{
+\begin{minipage}{0.85\linewidth}
+\begin{algorithmic}[1]%\SetAlgoLined\tt\SetLine
+\small
+\STATE {\bfseries Input:} A gradient step $\lambda$.
+\STATE {\bfseries Output:} parameter estimate $\hat\bpi$.
+\STATE {\tt 1: Initialize $t_0=1$ and $\bpi_0=(1/K,\dots,1/K)$,}
+\FOR{$k\geq 0,$ until convergence occurs, }
+\STATE {(a) $\bpi_k = \bPi_{\BB_+^K}\big( \xi_k - \lambda \nabla f_{\xi_k}(\xi_k)\big)$,}
+\STATE {(b) $t_{k+1}= \frac{1+\sqrt{1+4t_k^2}}{2}$,}
+\STATE {(c) $\xi_{k+1} = \bpi_k + \big(\frac{t_k-1}{t_{k+1}}\big)(\bpi_k-\bpi_{k-1})$.}
+\ENDFOR.
+\end{algorithmic}
+\end{minipage}}
+   \caption{Estimation of $\bpi$.}
+   \label{fig:pi_fista}
+\end{center}
+\end{figure}
 
 \section{Alternative methods considered}
-\subsection{SPADES}\todos{not working}
-From \cite{SPADES}
+
 \subsection{Adaptive Dantzig density estimation}
 
 We will compare our method with the Adaptive Dantzig estimator in the density model which has been introduced in \cite{Bertin}. This method is similar to ours as it construct an estimator of the unknown density from a linear mixtures of functions taken from a dictionary. The key idea of this paper is to minimize the $\ell_1$-norm of the weight vector of the linear combination under an adaptive Dantzig constraint. This constraint comes from sharp concentration inequalities. We recall here some material about the Dantzig selector. It has been introduced by \cite{candes2007} in the linear regression model
@@ -215,17 +273,41 @@ These target densities are plotted in \cref{fig:target_densities}.
 \end{figure}
 
 \subsection{Discussion of the results}
-The results are plotted in \cref{fig:full_res}. The dictionary used for the Adaptive Dantzig and the Maximum likelihood density estimator is $D_{GL}$. Note that it is interesting to compare the MLE to A.D as both methods relies on a dictionary. We also benchmarked our method with the Gaussian kernel density estimator. KDE refers to the kernel density estimate with Scott's rule as chosen by default in the Python library Scipy and KDE-SJ refers to the KDE with the Sheather-Jones bandwidth selector. For each scenario of target density, $f_{unif}$, $f_{rect}$, $f_{gauss}$, $f_{gauss-lapl}$, $f_{ext}$ and for each sample size $N$  with $N\in\{100, 500, 1000\}$, we ran 200 simulations. \\
+The dictionary used for the Adaptive Dantzig and the Maximum likelihood density estimator is $D_{GL}$. Note that it is interesting to compare the MLE to A.D as both methods relies on a dictionary. We also benchmarked our method with the Gaussian kernel density estimator. KDE refers to the kernel density estimate with Scott's rule as chosen by default in the Python library Scipy and KDE-SJ refers to the KDE with the Sheather-Jones bandwidth selector. For each scenario of target density, $f_{unif}$, $f_{rect}$, $f_{gauss}$, $f_{gauss-lapl}$, $f_{ext}$ and for each sample size $N$  with $N\in\{100, 500, 1000\}$, we ran 200 simulations. \\
 At first glance, the performance of the MLE seems good in Kullback-Leibler loss and $L_2$. The method showing the worst performance in all scenarios is the Adaptive Dantzig. The MLE present a relative small variance, smaller than KDE-SJ which is the best KDE method studied regarding the loss. Another interesting observation is the small impact of the size of sample for the MLE.\\
-We will cover each scenarios. Surprisingly the MLE performance is as good as kernel based methods on the uniform case since the dictionary given could not provide a good mixture density that approach well this target density. However, this is not the case for the rectangular density $f_{rect}$ which shows the worst performance for the MLE. It should be possible to increase the performance of the MLE by adding uniform densities on different segments of $[0,1]$ in the dictionary. The performance of the MLE is better in the next three scenarios. When the target density is the mixture of Gaussians $f_{gauss}$, the MLE presents the best result, with a small variance, both in $L_2$ and KL loss. The second best is KDE-SJ. Note that the default KDE in Scipy with Scott's rule presents the worse result in this scenario which should have reasonably performed well considering the use of Gaussian kernels. This observation should come to mind of the practitioner when applying kernel density estimators with default package setting. The fourth scenario, $f_{gauss-lapl}$ is a more complex density made from elements of the dictionary $D_{GL}$ and the MLE is the best method. Surprisingly the $L_2$ and KL loss of KDE are not similar. Finally, in the last scenario, we wanted to measure the performance of the dictionary based methods against a target density which is not a mixture of elements of the dictionary, $f_{ext}$. MLE has a good performance in KL loss but performs badly compared to Kernel methods in $L_2$ loss. The adaptive Dantzig shows better results in this scenario.\\
+We will cover each scenarios. Surprisingly the MLE performance is as good as kernel based methods on the uniform case since the dictionary given could not provide a good mixture density that approach well this target density. However, this is not the case for the rectangular density $f_{rect}$ in \cref{fig:res_rect_weight_estim} which shows the worst performance for the MLE. It should be possible to increase the performance of the MLE by adding uniform densities on different segments of $[0,1]$ in the dictionary. The performance of the MLE is better in the next three scenarios in \cref{fig:res_gauss_weight_estim}, \cref{fig:res_lapl_gauss_weight_estim} and \cref{fig:res_lapl_gauss_not_dict_weight_estim}. When the target density is the mixture of Gaussians $f_{gauss}$, the MLE presents the best result, both in $L_2$ and KL loss. The second best is KDE-SJ. Note that the default KDE in Scipy with Scott's rule presents the worse result in this scenario which should have reasonably performed well considering the use of Gaussian kernels. This observation should come to mind of the practitioner when applying kernel density estimators with default package setting. The fourth scenario, $f_{gauss-lapl}$ is a more complex density made from elements of the dictionary $D_{GL}$ and the MLE is the best method. Surprisingly the $L_2$ and KL loss of KDE are not similar. Finally, in the last scenario, we wanted to measure the performance of the dictionary based methods against a target density which is not a mixture of elements of the dictionary, $f_{ext}$. MLE has a good performance in KL loss but performs badly compared to Kernel methods in $L_2$ loss. The adaptive Dantzig shows better results in this scenario.\\
 To conclude, the performance of the MLE method in these simulations is promising to achieve a good mixture density estimate. We would like to mention the computational efficiency of the MLE method as it is a convex problem, the whole procedure to construct the estimator is simple and its dimension is the size of the dictionary considered. During our simulations, the MLE method showed a huge difference in time computation compared to the Adaptive Dantzig. At the light of the results in the uniform and rectangular case, the choice of the dictionary is a cornerstone in constructing a good mixture density, this is a classical problem of dictionary-based methods. In the next section, we will test the MLE method with real datasets.
 
-\begin{figure}[h]
-    \hspace{-2cm}
-    \includegraphics[width=1.2\textwidth]{./TeX_files/full_results.png}
-    \caption{Results of Adaptive Dantzig, Kernel density estimator with Scott Rule (KDE), Kernel density estimator with the Sheather-Jones bandwidth selector (KDE SJ) and Maximum likelihood estimator. Left column, KL loss, right, $L_2$. From top to bottom the target density is $f_{unif}$, $f_{rect}$, $f_{gauss}$, $f_{gauss-lapl}$, $f_{ext}$. With 200 simulations.  }
-    \label{fig:full_res}
+\begin{figure}
+    \includegraphics[width=\textwidth]{./TeX_files/full_results_uniform.png}
+    \caption{Results of Adaptive Dantzig, Kernel density estimator with Scott Rule (KDE), Kernel density estimator with the Sheather-Jones bandwidth selector (KDE SJ) and Maximum likelihood estimator. Left column, KL loss, right, $L_2$. From top to bottom the target density is $f_{unif}$. With 200 simulations.}
+    \label{fig:res_uniform_weight_estim}
 \end{figure}
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{./TeX_files/full_results_rect.png}
+    \caption{Results for the target density $f_{rect}$.}
+    \label{fig:res_rect_weight_estim}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{./TeX_files/full_results_gauss.png}
+    \caption{Results for the target density $f_{gauss}$.}
+    \label{fig:res_gauss_weight_estim}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{./TeX_files/full_results_lapl_gauss.png}
+    \caption{Results for the target density $f_{gauss-lapl}$.}
+    \label{fig:res_lapl_gauss_weight_estim}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{./TeX_files/full_results_lapl_gauss_not_dict.png}
+    \caption{Results for the target density $f_{ext}$.}
+    \label{fig:res_lapl_gauss_not_dict_weight_estim}
+\end{figure}
+
 \section{Real use case}
 
 The code is available on github

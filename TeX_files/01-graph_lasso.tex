@@ -212,38 +212,37 @@ Therefore, for $j=1,\dots,p$, the permuted target components of $\bOmega$ are
 \end{center}
 \end{figure}
 In what follows, we will adapt these methods on a Gaussian mixture models, more precisely we will assume that each clusters present a sparse Gaussian concentration graph. We will rely on the Graphical Lasso for estimating the precision matrix and derive a EM algorithm.
+
 \section{Graphical Lasso on Gaussian mixtures}
 
- In this problem, we will consider the estimation of $\btheta=(\theta_1,\dots,\theta_K)$ with $\theta_k=(\pi_k, \bmu_k, \bOmega_k)$ where $\bOmega_k$ is the precision matrix regarding the $k$ component of the mixture. We denote $\varphi_{(\bmu_{k},\bOmega_{k})}$ the gaussian density of mean $\bmu_k$ and precision matrix $\bOmega_k$. The penalized log-likelihood is
-\begin{equation}\label{pen-log-likelihood}
+In this section, we present our contribution. We consider a Gaussian mixture model of $K$ components and our task is to estimate the parameters $\btheta=(\theta_1,\dots,\theta_K)$ with $\theta_k=(\pi_k, \bmu_k, \bOmega_k)$ where $\bOmega_k$ is the precision matrix regarding the $k^{th}$ component of the mixture. We denote $\varphi_{(\bmu_{k},\bOmega_{k})}$ the Gaussian density of mean $\bmu_k$ and precision matrix $\bOmega_k$. The penalized log-likelihood is
+
+\begin{equation}
+\label{pen-log-likelihood}
 \ell_n^{pen}(\btheta)=\sum_{i=1}^{n}\log p_{\btheta}(\bx_i)-pen(\btheta)= \sum_{i=1}^{n}\log \bigg\{ \sum_{k=1}^K\pi_k\varphi_{(\bmu_{k},\bOmega_{k})}(\bx_i)\bigg\} -pen(\btheta).
 \end{equation}
-In this problem, we suppose that within a cluster $k$, most pairs of features $(X^i,X^j)$ are independent given the other features $X^l \text{ with } i,j,l\in[p], l\notin\{i,j \}$. This property entails the sparsity of $\bOmega_k$. 
-Therefore, we consider an $l_1$ regularization $pen(\theta_k)=\lambda_k||\bOmega_k||_{1,1}$ with $\lambda_k>0$.\
-
-The penalization of the log-likelihood concerns only the precision matrices $\bOmega_k$. Regarding the other parameters $(\pi_k, \bmu_k)$, our algorithm is the same as EM and we can use the same iteration technique as in lemma \ref{lemma1} to maximize the following cost function
+We suppose that each component of the mixture has a sparse Gaussian concentration graph. Therefore, in the scope of \citep{banerjee} and \citep{glasso07}, we consider an $\ell_1$ regularization $pen(\theta_k)=\sum_{k=1}^K\lambda_k||\bOmega_k||_{1,1}$ with $\lambda_k >0$. The penalization of the log-likelihood concerns only the precision matrices $\bOmega_k$. Regarding the other parameters $(\pi_k, \bmu_k)$, our algorithm is the same as EM and we can use the same iteration technique as in \cref{lemma1} to maximize the following cost function
 \begin{equation}
 \label{cost_fun_pen}
 F^{pen}(\btheta,\bTau)  = \sum_{k=1}^K \bigg(\sum_{i=1}^{n} \Big\{\tau_{i,k}\log\varphi_{\bmu_{k},\bOmega_{k}}(\bx_i)+\tau_{i,k}
-    \log(\pi_k/\tau_{i,k})\Big\}-\lambda_k||\bOmega_k||_{1,1}\bigg)
+    \log(\pi_k/\tau_{i,k})\Big\}-\lambda_k||\bOmega_k||_{1,1}\bigg).
 \end{equation}
 
-Then, we have the two following optimization problems
+The maximization of this function over $\btheta$ and $\bTau$ leads to the two following optimization problems\todos{ajouter les domaines}
 \begin{align}
 \label{optim-problems}
-\hat\btheta(\bTau)&\in \arg\max_{\btheta} F^{pen}(\btheta,\bTau),\qquad \hat\bTau(\btheta)\in \arg\max_{\bTau} F^{pen}(\btheta,\bTau)
+\hat\btheta(\bTau)&\in \arg\max_{\btheta} F^{pen}(\btheta,\bTau),\qquad \hat\bTau(\btheta)\in \arg\max_{\bTau} F^{pen}(\btheta,\bTau).
 \end{align}
-which has explicit solutions. For a $\hat\bTau$ given, estimates of $(\pi,\bmu)$ obtained by the first optimization problem in \ref{optim-problems} are
+For a given $\hat\bTau$, estimates of $(\pi_1,\dots,\pi_K$ and $\bmu_1,\dots,\bmu_K)$ obtained by the first optimization problem in \cref{optim-problems} are the same as in the EM algorithm
 \begin{align}
 \label{em-sols}
-\hat\pi_k     &= \frac1n\sum_{i=1}^n \hat\tau_{i,k},\qquad\hat\bmu_k = \frac1{n\hat\pi_k}\sum_{i=1}^n \hat\tau_{i,k}\bx_i ,\qquad \forall k\in[K]
+\hat\pi_k     &= \frac1n\sum_{i=1}^n \hat\tau_{i,k},\quad\text{and}\quad\hat\bmu_k = \frac1{n\hat\pi_k}\sum_{i=1}^n \hat\tau_{i,k}\bx_i ,\qquad \forall k\in[K]
 \end{align}
-And for a $\hat\btheta$ given, an estimate of $\bTau$ obtained by the second optimization problem is
-\begin{align}
+And for a given $\hat\btheta$, the estimate of $\bTau$ obtained by the second optimization problem is
+\begin{equation}
 \label{em-sols-tau}
-\hat\tau_{i,k}&= \frac{\hat\pi_k\varphi_{\hat\bmu_k,\hat\bOmega_k}(\bx_i)}{\sum_{k'\in[K]}\hat\pi_{k'}\varphi_{\hat\bmu_{k'},\hat\bOmega_{k'}}(\bx_i)},\qquad\forall k\in[K],\ \forall i\in[n].
-\end{align}
-
+\hat\tau_{i,k} = \frac{\hat\pi_k\varphi_{\hat\bmu_k,\hat\bOmega_k}(\bx_i)}{\sum_{k'\in[K]}\hat\pi_{k'}\varphi_{\hat\bmu_{k'},\hat\bOmega_{k'}}(\bx_i)}=p_{\btheta}(Z=k|\bX=\bx_i),\qquad\forall k\in[K],\ \forall i\in[n].
+\end{equation}
 However, due to the penality $\lambda_k||\bOmega_k||_{1,1}$, the estimation of $\bOmega_k$ is not straightforward.
 
 We introduce the weighted empirical covariance matrix
