@@ -220,26 +220,24 @@ In the experimental evaluation, we had to construct a set of target densities wi
 \includegraphics[width=1\textwidth]{TeX_files/lapl_gauss_dict.png}
 \caption{$D_{GL}$, union of Gaussians and Laplacians densities.}
 \end{figure}
-\item Haar wavelet basis ?\todos{not positive}
-\item Daubechies wavelet ?\todos{not positive}
 %\item Union of Fourier and Haar aud Gaussians ?
 \end{enumerate}
 
 \subsection{Densities considered}
 We considered 5 target densities corresponding to 5 different scenarios. The $1^{st}$ and $2^{nd}$ will asses the performance of our method on uniform based densities, the $3^{rd}$ and $4^th$ on dictionary based density. The last one is a complex density made from elements which are not in the dictionary that we will consider.
 \begin{enumerate}
-\item{$f_{unif}$:} A uniform density on $[0,1]$.
-\item{$f_{rect}$:} A mixture of uniform densities on subintervals. This density is called "Rectangular"
+\item{$f_{\textnormal{unif}}$:} A uniform density on $[0,1]$.
+\item{$f_{\textnormal{rect}}$:} A mixture of uniform densities on subintervals. This density is called "Rectangular"
 \begin{equation}
-    f_{rect}(x)=\frac{10}{7}\b1_{[0,1/5]}+\frac{5}{7}\b1_{[1/5,2/5]}+
+    f_{\textnormal{rect}}(x)=\frac{10}{7}\b1_{[0,1/5]}+\frac{5}{7}\b1_{[1/5,2/5]}+
     \frac{10}{7}\b1_{[2/5,3/5]}+\frac{10}{7}\b1_{[4/5,1]}
 \end{equation}
-\item{$f_{gauss}$:} A mixture of 5 Gaussian densities taken from the dictionary $D_{GL}$ equally centered in $[0,1]$ with same variance.
+\item{$f_{\textnormal{gauss}}$:} A mixture of 5 Gaussian densities taken from the dictionary $D_{GL}$ equally centered in $[0,1]$ with same variance.
 \begin{equation}
-    f_{gauss}(x)=\sum_{k=1}^5 0.2f_{k}(x) \quad \text{with}\quad f_k=\varphi_{(k/5,0.001)}
+    f_{\textnormal{gauss}}(x)=\sum_{k=1}^5 0.2f_{k}(x) \quad \text{with}\quad f_k=\varphi_{(k/5,0.001)}
 \end{equation}
 
-\item{$f_{gauss-lapl}$:} A mixture of 5 Gaussian and Laplacian densities taken from the dictionary $D_{GL}$ with different variances and scales.
+\item{$f_{\textnormal{gauss-lapl}}$:} A mixture of 5 Gaussian and Laplacian densities taken from the dictionary $D_{GL}$ with different variances and scales.
 %(multivariate_normal(0.2, 10**(-3)))
 %(multivariate_normal(0.6, 10**(-3)))
 %(multivariate_normal(0, 10**(-2)))
@@ -247,13 +245,13 @@ We considered 5 target densities corresponding to 5 different scenarios. The $1^
 %(laplace(0.8,0.1))
 \begin{equation}
 \begin{array}{ll}
-f_{gauss-lapl}(x)=0.2\big(&\varphi_{(0 ,10^{-2})} + \varphi_{(0.2,10^{-3})}+\varphi_{(0.6,10^{-3})}\\
+f_{\textnormal{gauss-lapl}}(x)=0.2\big(&\varphi_{(0 ,10^{-2})} + \varphi_{(0.2,10^{-3})}+\varphi_{(0.6,10^{-3})}\\
     &+\text{\small Lapl}_{(0.4,0.2)}+\text{\small Lapl}_{(0.8,0.1)} \big)
 \end{array}
 \end{equation}
 
 
-\item{$f_{ext}$:} A mixture of Gaussian and Laplacian densities taken from another dictionary $D_{out}$.\todos{attention a recuperer les derniers resultats}
+\item{$f_{\textnormal{ext}}$:} A mixture of Gaussian and Laplacian densities taken from another dictionary $D_{out}$.\todos{attention a recuperer les derniers resultats}
 %append(multivariate_normal(0.1, 5*10**(-3)))
 %append(multivariate_normal(0.65, 10**(-3)))
 %append(multivariate_normal(0.9, 10**(-2)))
@@ -262,7 +260,7 @@ f_{gauss-lapl}(x)=0.2\big(&\varphi_{(0 ,10^{-2})} + \varphi_{(0.2,10^{-3})}+\var
 %append(laplace(0.75, 0.05))
 
 \begin{equation}
-    f_{ext}(x)=\sum_{k=1}^7 \frac{1}{7}f_{k}(x) \quad \text{with}\quad f_k\in D_{out}
+    f_{\textnormal{ext}}(x)=\sum_{k=1}^7 \frac{1}{7}f_{k}(x) \quad \text{with}\quad f_k\in D_{out}
 \end{equation}
 \end{enumerate}
 These target densities are plotted in \cref{fig:target_densities}.
@@ -273,40 +271,79 @@ These target densities are plotted in \cref{fig:target_densities}.
 \end{figure}
 
 \subsection{Discussion of the results}
-The dictionary used for the Adaptive Dantzig and the Maximum likelihood density estimator is $D_{GL}$. Note that it is interesting to compare the MLE to A.D as both methods relies on a dictionary. We also benchmarked our method with the Gaussian kernel density estimator. KDE refers to the kernel density estimate with Scott's rule as chosen by default in the Python library Scipy and KDE-SJ refers to the KDE with the Sheather-Jones bandwidth selector. For each scenario of target density, $f_{unif}$, $f_{rect}$, $f_{gauss}$, $f_{gauss-lapl}$, $f_{ext}$ and for each sample size $N$  with $N\in\{100, 500, 1000\}$, we ran 200 simulations. \\
-At first glance, the performance of the MLE seems good in Kullback-Leibler loss and $L_2$. The method showing the worst performance in all scenarios is the Adaptive Dantzig. The MLE present a relative small variance, smaller than KDE-SJ which is the best KDE method studied regarding the loss. Another interesting observation is the small impact of the size of sample for the MLE.\\
-We will cover each scenarios. Surprisingly the MLE performance is as good as kernel based methods on the uniform case since the dictionary given could not provide a good mixture density that approach well this target density. However, this is not the case for the rectangular density $f_{rect}$ in \cref{fig:res_rect_weight_estim} which shows the worst performance for the MLE. It should be possible to increase the performance of the MLE by adding uniform densities on different segments of $[0,1]$ in the dictionary. The performance of the MLE is better in the next three scenarios in \cref{fig:res_gauss_weight_estim}, \cref{fig:res_lapl_gauss_weight_estim} and \cref{fig:res_lapl_gauss_not_dict_weight_estim}. When the target density is the mixture of Gaussians $f_{gauss}$, the MLE presents the best result, both in $L_2$ and KL loss. The second best is KDE-SJ. Note that the default KDE in Scipy with Scott's rule presents the worse result in this scenario which should have reasonably performed well considering the use of Gaussian kernels. This observation should come to mind of the practitioner when applying kernel density estimators with default package setting. The fourth scenario, $f_{gauss-lapl}$ is a more complex density made from elements of the dictionary $D_{GL}$ and the MLE is the best method. Surprisingly the $L_2$ and KL loss of KDE are not similar. Finally, in the last scenario, we wanted to measure the performance of the dictionary based methods against a target density which is not a mixture of elements of the dictionary, $f_{ext}$. MLE has a good performance in KL loss but performs badly compared to Kernel methods in $L_2$ loss. The adaptive Dantzig shows better results in this scenario.\\
+The dictionary used for the Adaptive Dantzig and the Maximum likelihood density estimator is $D_{GL}$. Note that it is interesting to compare the MLE to A.D as both methods relies on a dictionary. We also benchmarked our method with the Gaussian kernel density estimator and the EM algorithm on Gaussian mixtures model with a model selection by the BIC criterion. KDE refers to the kernel density estimate with Scott's rule as chosen by default in the Python library Scipy and KDE-SJ refers to the KDE with the Sheather-Jones bandwidth selector. For each scenario of target density, $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$, $f_{\textnormal{gauss}}$, $f_{\textnormal{gauss-lapl}}$, $f_{\textnormal{ext}}$ and for each sample size $N$  with $N\in\{100, 500, 1000\}$, we ran 200 simulations. At first glance, the performance of the MLE seems good in Kullback-Leibler loss and $L_2$. The method showing the worst performance in all scenarios is the Adaptive Dantzig.
+
+\subsubsection{Studying the bias of the estimator with the densities $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$ and $f_{\textnormal{ext}}$}
+
+The MLE present a relative small variance, smaller than KDE-SJ which is the best KDE method studied regarding the loss. Another interesting observation is the small impact of the size of sample for the MLE. Surprisingly the MLE performance is as good as kernel based methods on the uniform case (\cref{fig:res_uniform_KL}, \cref{fig:res_uniform_L2}) since the dictionary given could not provide a good mixture density that approach well this target density. However, this is not the case for the rectangular density $f_{\textnormal{rect}}$ which shows the worst performance for the MLE (\cref{fig:res_rect_KL}, \cref{fig:res_rect_L2}). It should be possible to increase the performance of the MLE by adding uniform densities on different segments of $[0,1]$ in the dictionary. The performance of the MLE is better in the third\todos{revoir les numeros des scenarios} scenario, we wanted to measure the performance of the dictionary based methods against a target density which is not a mixture of elements of the dictionary, $f_{\textnormal{ext}}$ (\cref{fig:res_ext_KL}, \cref{fig:res_ext_L2}). MLE has a good performance in KL loss but performs badly compared to Kernel methods in $L_2$ loss. The adaptive Dantzig shows better results in this scenario.
+%Uniform
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_uniform_L2.png}
+    \caption{Results with $f_{\textnormal{unif}}$ in $L2$ loss}
+    \label{fig:res_uniform_L2}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_uniform_KL.png}
+    \caption{Results with $f_{\textnormal{unif}}$ in KL loss}
+    \label{fig:res_uniform_KL}
+\end{figure}
+%rect
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_rect_L2.png}
+    \caption{Results with $f_{\textnormal{rect}}$ in $L2$ loss}
+    \label{fig:res_rect_L2}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_rect_KL.png}
+    \caption{Results with $f_{\textnormal{rect}}$ in KL loss}
+    \label{fig:res_rect_KL}
+\end{figure}   
+%ext
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_not_dict_L2.png}
+    \caption{Results with $f_{\textnormal{ext}}$ in $L2$ loss}
+    \label{fig:res_ext_L2}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_not_dict_KL.png}
+    \caption{Results with $f_{\textnormal{ext}}$ in KL loss}
+    \label{fig:res_ext_KL}
+\end{figure}
+\subsubsection{Studying the variance of the estimator with the densities $f_{\textnormal{gauss}}$ and $f_{gauss_lapl}$}
+
+When the target density is the mixture of Gaussians $f_{\textnormal{gauss}}$, the MLE presents the best result, both in $L_2$ and KL loss (\cref{fig:res_gauss_KL}, \cref{fig:res_gauss_L2}). The second best is EM-BIC. Note that the default KDE in Scipy with Scott's rule presents the worse result in this scenario which should have reasonably performed well considering the use of Gaussian kernels. This observation should come to mind of the practitioner when applying kernel density estimators with default package setting. The second scenario, $f_{\textnormal{gauss-lapl}}$ is a more complex density made from elements of the dictionary $D_{GL}$ and the MLE is the best method (\cref{fig:res_lapl_gauss_KL}, \cref{fig:res_lapl_gauss_L2}). \sout{Surprisingly the $L_2$ and KL loss of KDE are not similar.}
+%gauss
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_gauss_L2.png}
+    \caption{Results with $f_{\textnormal{gauss}}$ in $L2$ loss}
+    \label{fig:res_gauss_L2}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_gauss_KL.png}
+    \caption{Results with $f_{\textnormal{gauss}}$ in KL loss}
+    \label{fig:res_gauss_KL}
+\end{figure}   
+
+%lapl_gauss
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_L2.png}
+    \caption{Results with $f_{\textnormal{gauss-lapl}}$ in $L2$ loss}
+    \label{fig:res_lapl_gauss_L2}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_KL.png}
+    \caption{Results with $f_{\textnormal{gauss-lapl}}$ in KL loss}
+    \label{fig:res_lapl_gauss_KL}
+\end{figure}
 To conclude, the performance of the MLE method in these simulations is promising to achieve a good mixture density estimate. We would like to mention the computational efficiency of the MLE method as it is a convex problem, the whole procedure to construct the estimator is simple and its dimension is the size of the dictionary considered. During our simulations, the MLE method showed a huge difference in time computation compared to the Adaptive Dantzig. At the light of the results in the uniform and rectangular case, the choice of the dictionary is a cornerstone in constructing a good mixture density, this is a classical problem of dictionary-based methods. In the next section, we will test the MLE method with real datasets.
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{./TeX_files/full_results_uniform.png}
-    \caption{Results of Adaptive Dantzig, Kernel density estimator with Scott Rule (KDE), Kernel density estimator with the Sheather-Jones bandwidth selector (KDE SJ) and Maximum likelihood estimator. Left column, KL loss, right, $L_2$. From top to bottom the target density is $f_{unif}$. With 200 simulations.}
-    \label{fig:res_uniform_weight_estim}
-\end{figure}
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{./TeX_files/full_results_rect.png}
-    \caption{Results for the target density $f_{rect}$.}
-    \label{fig:res_rect_weight_estim}
-\end{figure}
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{./TeX_files/full_results_gauss.png}
-    \caption{Results for the target density $f_{gauss}$.}
-    \label{fig:res_gauss_weight_estim}
-\end{figure}
-
-\begin{figure}
-    \includegraphics[width=\textwidth]{./TeX_files/full_results_lapl_gauss.png}
-    \caption{Results for the target density $f_{gauss-lapl}$.}
-    \label{fig:res_lapl_gauss_weight_estim}
-\end{figure}
-
-\begin{figure}
-    \includegraphics[width=\textwidth]{./TeX_files/full_results_lapl_gauss_not_dict.png}
-    \caption{Results for the target density $f_{ext}$.}
-    \label{fig:res_lapl_gauss_not_dict_weight_estim}
-\end{figure}
 
 \section{Real use case}
 
