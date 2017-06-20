@@ -273,7 +273,7 @@ where $\hat\lambda$ is the sample interquartile range. We will not go into the d
     \hat S(a) = \frac{1}{n(n-1)}a^{-5}\sum_{i=1}^n\sum_{j=1}^n\Phi^{(4)}\Big(\frac{X_i-X_j}{a}\Big)
 \end{equation}
 \STATE Define the function $\hat\alpha_2(h) = 1.357\big(\hat S(a)/\hat T(b)\big)^{1/7}h^{5/7}$.
-\STATE Solve over h
+\STATE Solve over $h$
 \begin{equation}
 h-\bigg(\frac{R(K)}{\sigma_K^4 \hat S(\hat\alpha_2(h))}\bigg)^{1/5} = 0.
 \end{equation}
@@ -285,40 +285,41 @@ h-\bigg(\frac{R(K)}{\sigma_K^4 \hat S(\hat\alpha_2(h))}\bigg)^{1/5} = 0.
 \end{center}
 \end{figure}
 \subsubsection{Behavior of KDE in high dimension}
-It is well known that the Kernel density estimator performs badly in high dimension, \citep{stone1980} proved that the kernel density estimator of a $p$ times continuously differentiable density in dimension $d$ converges at most at the rate $n^{-p/(2p+d)}$. Therefore, for a given target error, the size of the sample must increase dramatically as the dimension increases. For a study of kernel density estimators in high dimension, see chapter 7 of \citep{scott_multivariate_2015}. 
+It is well known that the Kernel density estimator performs badly in the high dimensional setting, \citep{stone1980} proved that the kernel density estimator of a $p$ times continuously differentiable density in dimension $d$ converges at most at the rate $n^{-p/(2p+d)}$. Therefore, for a given target error, the size of the sample must increase exponentially as the dimension increases. For a study of kernel density estimators in the high dimensional setting, see chapter 7 of \citep{scott_multivariate_2015}. 
 
 \section{Experimental Evaluations}
 
-In the experimental evaluation, we had to construct a set of target densities with different shapes to evaluate the performances of the estimators. We also had to build different density dictionaries. Finally we assessed the performance through the Kullback-Leibler and $L_2$ distance. These simulations where set in the univariate case.
+In order to carry out an experimental evaluation, we constructed a set of target densities with different shapes and recorded the performances of the estimators. We considered different density dictionaries. Finally we assessed the performance through the Kullback-Leibler divergence and $L_2$ distance. All the experiments reported in this section were set in the univariate case.
 
 \subsection{Dictionaries considered}
+We did experiments with the following two dictionaries
 \begin{enumerate}
-\item A union of Gaussians and Laplacians densities called $D_{GL}$. The Gaussians has their means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their variances in $\{0.001, 0.01, 0.1, 1\}$. The Laplacians has their means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their scales in $\{0.05, 0.1, 0.5, 1\}$. Therefore, $D_{GL}$ has 48 elements.\todos{verifier les scales par rapport au code}
+\item A set of Gaussian and Laplace densitiy called $D_{GL}$. The Gaussian densities have their means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their variances in $\{0.001, 0.01, 0.1, 1\}$. The Laplace densities have their means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their scales in $\{0.05, 0.1, 0.5, 1\}$. Therefore, $D_{GL}$ has 48 elements.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\textwidth]{TeX_files/lapl_gauss_dict.png}
-\caption{$D_{GL}$, union of Gaussians and Laplacians densities.}
+\caption{$D_{GL}$, set of Gaussian and Laplace densities.}
 \end{figure}
 %\item Union of Fourier and Haar aud Gaussians ?
-\item The union of $D_{GL}$ with the set of $10$ uniform densities on $(i, i+0.1)\, i\in [0, 0.1,\dots,0.9]$, called $D_{GLU}$.
+\item The union of $D_{GL}$ with the set of $10$ uniform densities on $(i, i+0.1),\, i\in \{0, 0.1,\dots,0.9\}$, called $D_{GLU}$.
 \end{enumerate}
 
 \subsection{Densities considered}
-We considered 5 target densities corresponding to 5 different scenarios. The $1^{st}$ and $2^{nd}$ will asses the performance of our method on uniform based densities, the $3^{rd}$ and $4^th$ on dictionary based density. The last one is a complex density made from elements which are not in the dictionary that we will consider.
+We considered 5 target densities corresponding to 5 different scenarios. The $1^{st}$ and $2^{nd}$ will asses the performance of our method on uniform based densities, the $3^{rd}$ and $4^{th}$ on dictionary based density. The last one is a complex density made from elements which are not in the dictionary that we will consider.
 \begin{enumerate}
 \item{$f_{\textnormal{unif}}$:} A uniform density on $[0,1]$.
-\item{$f_{\textnormal{rect}}$:} A mixture of uniform densities on subintervals. This density is called "Rectangular"
+\item{$f_{\textnormal{rect}}$:} A mixture of uniform densities on subintervals. This density is called ``Rectangular'':
 \begin{equation}
-    f_{\textnormal{rect}}(x)=\frac{10}{7}\b1_{[0,1/5]}+\frac{5}{7}\b1_{[1/5,2/5]}+
-    \frac{10}{7}\b1_{[2/5,3/5]}+\frac{10}{7}\b1_{[4/5,1]}
+    f_{\textnormal{rect}}=\frac{10}{7}\b1_{[0,1/5]}+\frac{5}{7}\b1_{[1/5,2/5]}+
+    \frac{10}{7}\b1_{[2/5,3/5]}+\frac{10}{7}\b1_{[4/5,1]}.
 \end{equation}
-\item{$f_{\textnormal{gauss}}$:} A mixture of 5 Gaussian densities taken from the dictionary $D_{GL}$ equally centered in $[0,1]$ with same variance.
+\item{$f_{\textnormal{gauss}}$:} A mixture of 5 Gaussian densities taken from the dictionary $D_{GL}$ equally centered in $[0,1]$ with same variance:
 \begin{equation}
-    f_{\textnormal{gauss}}(x)=\sum_{k=1}^5 0.2f_{k}(x) \quad \text{with}\quad f_k=\varphi_{(k/5,0.001)}
+    f_{\textnormal{gauss}}=\sum_{k=1}^5 0.2f_{k} \quad \text{with}\quad f_k=\varphi_{(k/5,0.001)}.
 \end{equation}
 
-\item{$f_{\textnormal{gauss-lapl}}$:} A mixture of 5 Gaussian and Laplacian densities taken from the dictionary $D_{GL}$ with different variances and scales.
+\item{$f_{\textnormal{gauss-lapl}}$:} A mixture of 5 Gaussian and Laplace densities taken from the dictionary $D_{GL}$ with different variances and scales:
 %(multivariate_normal(0.2, 10**(-3)))
 %(multivariate_normal(0.6, 10**(-3)))
 %(multivariate_normal(0, 10**(-2)))
@@ -326,11 +327,11 @@ We considered 5 target densities corresponding to 5 different scenarios. The $1^
 %(laplace(0.8,0.1))
 \begin{equation}
 \begin{array}{ll}
-f_{\textnormal{gauss-lapl}}(x)=0.2\big(&\varphi_{(0 ,10^{-2})} + \varphi_{(0.2,10^{-3})}+\varphi_{(0.6,10^{-3})}\\
-    &+\text{\small Lapl}_{(0.4,0.2)}+\text{\small Lapl}_{(0.8,0.1)} \big)
+f_{\textnormal{gauss-lapl}}=0.2\big(&\varphi_{(0 ,10^{-2})} + \varphi_{(0.2,10^{-3})}+\varphi_{(0.6,10^{-3})}\\
+    &+\text{\small Lapl}_{(0.4,0.2)}+\text{\small Lapl}_{(0.8,0.1)} \big).
 \end{array}
 \end{equation}
-\item{$f_{\textnormal{ext}}$:} A mixture of Gaussian and Laplacian densities taken from another dictionary $D_{out}$.
+\item{$f_{\textnormal{ext}}$:} A mixture of Gaussian and Laplace densities taken from another dictionary $D_{out}$:
 %append(multivariate_normal(0.1, 5*10**(-3)))
 %append(multivariate_normal(0.65, 10**(-3)))
 %append(multivariate_normal(0.9, 10**(-2)))
@@ -339,10 +340,10 @@ f_{\textnormal{gauss-lapl}}(x)=0.2\big(&\varphi_{(0 ,10^{-2})} + \varphi_{(0.2,1
 %append(laplace(0.75, 0.05))
 
 \begin{equation}
-    f_{\textnormal{ext}}(x)=\sum_{k=1}^7 \frac{1}{7}f_{k}(x) \quad \text{with}\quad f_k\in D_{out}
+    f_{\textnormal{ext}}=\sum_{k=1}^7 \frac{1}{7}f_{k} \quad \text{with}\quad f_k\in D_{out}.
 \end{equation}
 \end{enumerate}
-These target densities are plotted in \cref{fig:target_densities}.
+These target densities are plotted in \Cref{fig:target_densities}.
 \begin{figure}[h]
 \center
 \includegraphics[width=1.1\textwidth]{TeX_files/densities_f_star.png}
@@ -351,7 +352,7 @@ These target densities are plotted in \cref{fig:target_densities}.
 \end{figure}
 
 \subsection{Discussion of the results}
-The dictionaries used for the Adaptive Dantzig and the Maximum likelihood density estimator are $D_{GL}$ and $D_{GLU}$. Note that it is interesting to compare the MLE to A.D as both methods relies on a dictionary. We also benchmarked our method with the Gaussian kernel density estimator, the EM algorithm on Gaussian mixtures model with a model selection by the BIC criterion and Kernel Density Estimators. KDE refers to the kernel density estimate with Scott's rule as chosen by default in the Python library Scipy, KDE-SJ refers to the KDE with the Sheather-Jones bandwidth selector and KDE CV refers to the KDE with bandwidth selected via cross-validation. For each scenario of target density, $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$, $f_{\textnormal{gauss}}$, $f_{\textnormal{gauss-lapl}}$, $f_{\textnormal{ext}}$ and for each sample size $N$  with $N\in\{100, 500, 1000\}$, we ran 200 simulations. At a first glance, the performance of the MLE seems good in Kullback-Leibler and $L_2$ loss. The method showing the worst performance in all scenarios is the Adaptive Dantzig.
+The dictionaries used for the Adaptive Dantzig and the Maximum likelihood density estimators are $D_{GL}$ and $D_{GLU}$. Note that it is interesting to compare the MLE to AD as both methods rely on a dictionary. We also benchmarked our method with the Gaussian kernel density estimator, the EM algorithm on Gaussian mixtures with a model selection by the BIC criterion, and Kernel Density Estimators. KDE refers to the kernel density estimate with Scott's rule as chosen by default in the Python library Scipy, KDE-SJ refers to the KDE with the Sheather-Jones bandwidth selector and KDE CV refers to the KDE with bandwidth selected via cross-validation. The two latter were implemented by ourselves. For each scenario of target density, $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$, $f_{\textnormal{gauss}}$, $f_{\textnormal{gauss-lapl}}$, $f_{\textnormal{ext}}$ and for each sample size $N$  with $N\in\{100, 500, 1000\}$, we ran 200 simulations. A rapid observation is that the performance of the MLE is good in Kullback-Leibler and $L_2$ losses. the least accurate method in all scenarios is the Adaptive Dantzig.
 
 \subsubsection{Studying the bias of the estimator with the densities $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$ and $f_{\textnormal{ext}}$ on $D_{GL}$}
 The densities $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$ and $f_{\textnormal{ext}}$ were not built with elements in the dictionary $D_{GL}$. Therefore, we can expect that the most dominant term in the error will be the bias term. An interesting observation is the small impact of the size of the sample for the MLE. If we look at $N=100$, the MLE performance is almost as good as KDE-SJ and KDE-CV on the uniform case (\cref{fig:res_uniform_KL_GL}, \cref{fig:res_uniform_L2_GL}). This is surprising since the dictionary given could not provide a good mixture density that approach well this target density. Note that the KDE performs better than KDE-SJ in this scenario only. However, the rectangular density scenario, $f_{\textnormal{rect}}$, shows the worst performance for the MLE (\cref{fig:res_rect_KL_GL}, \cref{fig:res_rect_L2_GL}). It is possible to increase its performance by adding uniform densities on different segments of $[0,1]$ in the dictionary as we will see in \cref{dict_dglu_sect}. Finally, MLE performs poorly in the $f_{\textnormal{ext}}$ scenario, we wanted to measure the performance of dictionary based methods against a complex target density which is not a mixture of elements of the dictionary, see (\cref{fig:res_ext_KL_GL}, \cref{fig:res_ext_L2_GL}). Increasing the size of the sample does not improve the error of the MLE, in this case the choice of the dictionary is clearly crucial. Note that EM-BIC is the best algorithm with $N=100$ but similarly to the MLE, it does not present a significant change as $N$ increase. In these three scenarios, the MLE presents a relative small variance.
