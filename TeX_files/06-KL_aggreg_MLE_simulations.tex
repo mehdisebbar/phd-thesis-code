@@ -1,8 +1,8 @@
 %!TEX root = ../main.tex
 
-\chapter{Experimental Results for the KL-aggregation}
+\chapter[Experiments for the KL-aggregation]{Experimental Results for the KL-aggregation}
 \minitoc
-In this section we propose an efficient algorithm for performing the KL-aggregation (see \cref{chap:kl_aggreg}) and describe the implementation. We also compare its performance with different alternative methods. For the sake of simplicity, the comparison with the other methods is done in the univariate case only. The implementation of our algorithm and its behavior are the same in the multivariate setting.
+In this section we propose an efficient algorithm for performing the KL-aggregation (see \Cref{chap:kl_aggreg}) and describe its implementation. We also compare its performance with different alternative methods. For the sake of simplicity, the comparison with the other methods is done in the univariate case only. The implementation of our algorithm and its behavior are the same in the multivariate setting.
 
 \section{Introduction}
 Before anything else, we remind the reader the problem setting and the estimator considered. We observe $n$ independent random vectors $\bX_1,\ldots,\bX_n\in\calX$ drawn from a probability distribution $P^*$ that admits a density function $f^*$ with respect to the Lebesgue measure. Given a family of mixture components $f_1,\ldots,f_K$, we assumed that this unknown density is well approximated by a convex combination $f_{\bpi}$ of these components:
@@ -39,8 +39,8 @@ where $\ell(\bpi) =-\frac{1}{n}\sum_{i=1}^n\log f_{\bpi}(\bX_i)$ and $g(\bpi)=\c
 \end{equation}
 where $\lambda > 0$ is a scale parameter for the function $g$. One can interpret $\textnormal{prox}_{\lambda g}(\bpi)$ as a point that compromises between minimizing $g$ and being near to $\bpi$. Note that in our context, $g(.)=\chi_{\BB_+^K}(.)$, therefore
 \begin{align*}
-    \textnormal{prox}_{\lambda g}(\bpi) &= \argmin_{u}\big\{\chi_{\BB_+^K}(u)+\frac{1}{2\lambda}\|u-\bpi\|^2_2\big\},\\
-    &= \argmin_{u\in \BB_+^K}\big\{\|u-\bpi\|^2_2\big\},\\
+    \textnormal{prox}_{\lambda g}(\bpi) &= \argmin_{\bu}\big\{\chi_{\BB_+^K}(\bu)+\frac{1}{2\lambda}\|\bu-\bpi\|^2_2\big\},\\
+    &= \argmin_{\bu\in \BB_+^K}\big\{\|\bu-\bpi\|^2_2\big\},\\
     &= \bPi_{\BB_+^K}(\bpi)
 \end{align*}
 where $\bPi_{\BB_+^K}(\bpi)$ is the Euclidean projection of $\bpi$ into the probability simplex. The reader can find in \citep{Parikh:2014:PA:2693612.2693613} a detailed study of proximal algorithms. A particularly interesting procedure for our problem is the proximal gradient method that solves \cref{general_min_pb_fista}. This method is iterative and the $(k+1)^{th}$ step is
@@ -102,9 +102,9 @@ A nice property of this method is that it provides a sparse solution of this min
 \end{figure}
 
 \section{Alternative methods considered}
-In this section we briefly describe several estimators of the density which our method is compared to.
+In this section we briefly describe several estimators of the density which are compared to our estimator. Note that although we used the algorithm EM in our experiments, we do not described it in this section since it is already done in \Cref{chap:intro}.
 \subsection{SPADES}
-\citep{SPADES} considered the density estimation problem with a slightly different setting as ours. They studied the linear combination of functions $\{f_1,\dots,f_M\}$ with $f_j\in L_2(\RR^d)\, j=1,\dots,M$ and the mixture
+A method combining the dictionary approach and the $\ell_1$-penalty (and, therefore, very close in spirit to our method) have been proposed by \citep{SPADES}. They studied the linear combinations (as opposed to convex combinations studied in the previous chapter) of functions $\{f_1,\dots,f_M\}$ with $f_j\in L_2(\RR^d)$, $j=1,\dots,M$:
 \begin{equation}
     f_{\lambda}(x)=\sum_{j=1}^M\lambda_j f_j(x), \quad \lambda = (\lambda_1,\dots,\lambda_M)\in \RR^M.
 \end{equation}
@@ -112,18 +112,18 @@ They suggested the following estimator $\hat \lambda$ called SPADES:
 \begin{equation}
     \hat\lambda = \argmin_{\lambda \in \RR^M}\Big\{-\frac{2}{n}\sum_{i=1}^n f_{\lambda}(\bX_i) +\|f_{\lambda}\|^2 +2\sum_{j=1}^M\omega_j|\lambda_j|\Big\}.
 \end{equation}
-During our experiments, it turned out that the computation of our implementation of this estimator was slow. In our research, we find out that the Adaptive Dantzig estimator from \citep{Bertin}, and described in \cref{ad_section}, provided nicer theoretical results under weaker assumptions on the dictionary. Therefore, we decided to spare the experiments with this estimator and rely on the theoretical guarantees given by \citep{Bertin} to compare SPADES with Adapative Dantzig and thus, our estimator.
+It could be interesting to include SPADES in our experimental evaluation, but we did not manage to find an easy-to-use implementation of it, and it turned out that our implementation was quite slow. Furthermore, the SPADES is conceptually close to the Adaptive Dantzig (AD) \citep{Bertin} procedure described in the next subsection. Therefore, we opted for excluding SPADES from our experiments but including AD.
 
 \subsection{Adaptive Dantzig density estimation\label{ad_section}}
 
-We will compare our method with the Adaptive Dantzig estimator in the density model which has been introduced in \citep{Bertin}. This method is similar to ours as it constructs an estimator of the unknown density from a linear mixture of functions taken from a dictionary. The key idea of this paper is to minimize the $\ell_1$-norm of the weight vector of the linear combination under an adaptive Dantzig constraint. This constraint comes from concentration inequalities. We recall here some material about the Dantzig selector. It has been introduced by \citep{candes2007} in the linear regression model
+The Adaptive Dantzig estimator of a density has been introduced in \citep{Bertin}. This method is similar to ours as it constructs an estimator of the unknown density from a linear mixture of functions taken from a dictionary. The key idea of this estimator is to minimize the $\ell_1$-norm of the weight vector of the linear combination under an adaptive Dantzig constraint. This constraint comes from concentration inequalities. We recall here some material about the Dantzig selector. It has been introduced by \citep{candes2007} in the linear regression model
 \begin{equation}
 \label{ad_mod1}
-	Y = A\lambda_0 + \epsilon
+	\bY = \bA \blambda_0 + \bepsilon
 \end{equation}
-where $Y\in \RR^n$, $A$ is a $n$ by $M$ matrix, $\epsilon \in \RR^n$ is the noise vector and $\lambda_0\in \RR^M$ the unknown regression parameter to estimate. The Dantzig estimator is then defined as the solution of the problem
+where $\bY\in \RR^n$, $\bA$ is a $n$ by $M$ matrix, $\bepsilon \in \RR^n$ is the noise vector and $\blambda_0 \in \RR^M$ the unknown regression parameter to estimate. The Dantzig estimator is then defined as the solution of the problem
 \begin{equation}
-	 \textnormal{minimize}\,  \|\lambda \|_1 \quad \text{subject to} \quad \| A^T(A\lambda-Y)\|_{\infty} \leq \eta,
+	 \textnormal{minimize}\,  \|\blambda \|_1 \quad \text{subject to} \quad \| \bA^T(\bA\blambda-\bY)\|_{\infty} \leq \eta,
 \end{equation}
 where $\eta$ is a regularization parameter. Statistical properties of this estimator were established in \citep{bickel2009}. They considered the non-parametric regression framework
 \begin{equation}
@@ -135,7 +135,7 @@ where $f$ is an unknown function, the design points $(x_i)_{i=1,\dots,n}$ are kn
 \label{linear_mix_density}
 	f_{\lambda} = \sum_{i=1}^M\lambda_{0, m}\varphi_m.
 \end{equation}
-This model \cref{ad_mod2} coincides with model \cref{ad_mod1} with $A = (\varphi_m(x_i))$. The goal of \citep{Bertin} was to estimate an unknown density $f_0$ with respect to a known measure $dx$ on $\RR$ by using the observation of $n$-sample $X_1,\dots,X_n$ and build a linear mixture density $f_{\lambda}$ of elements of the dictionary $D$ as in \cref{linear_mix_density}. It follows from the strong law of large numbers that $\hat\beta_m = \frac{1}{n}\sum_{i=1}^n\varphi_m(X_i)$ converges almost surely to the scalar product of $f_0$ and $\varphi_m$
+This model \cref{ad_mod2} coincides with model \cref{ad_mod1} with $\bA = (\varphi_m(x_i))$. The goal of \citep{Bertin} was to estimate an unknown density $f_0$ with respect to a known measure $dx$ on $\RR$ by using the observation of $n$-sample $X_1,\dots,X_n$ and build a linear mixture density $f_{\lambda}$ of elements of the dictionary $D$ as in \cref{linear_mix_density}. It follows from the strong law of large numbers that $\hat\beta_m = \frac{1}{n}\sum_{i=1}^n\varphi_m(X_i)$ converges almost surely to the scalar product of $f_0$ and $\varphi_m$
 \begin{equation}
       \int \varphi_m(x)f_0(x)dx=\beta_{0,m},
 \end{equation}
@@ -143,16 +143,16 @@ and the Gram matrix associated to the dictionary $D$
 \begin{equation}
     G_{m,m'}=\int\varphi_m(x)\varphi_{m'}(x)dx \quad \text{with}\quad 1\leq m,m' \leq M.
 \end{equation}
-The scalar product of $f_{\lambda}$ and $\varphi_m$ is therefore
+The scalar product of $f_{\blambda}$ and $\varphi_m$ is therefore
 \begin{equation}
-    \int\varphi_m(x)f_{\lambda}(x)dx = \sum_{m'=1}^M\lambda_{m'}\int\varphi_{m'}(x)\varphi_m(x)dx = (G\lambda)_m.
+    \int\varphi_m(x)f_{\blambda}(x)dx = \sum_{m'=1}^M\lambda_{m'}\int\varphi_{m'}(x)\varphi_m(x)dx = (\bG\blambda)_m.
 \end{equation}
-The Dantzig estimate $\hat\lambda^D$ is then obtained by solving the following constrained minimization problem
+The Dantzig estimate $\hat\blambda^D$ is then obtained by solving the following constrained minimization problem
 \begin{equation*}
     \left\{
     \begin{array}{ll}
-        \text{minimize}\, &\|\lambda\|_1 \\
-        \text{subject to}\, &|(G\lambda)_m-\hat\beta|\leq \eta_{\gamma,m} \quad m\in \{1,\dots,M\},
+        \text{minimize}\, &\|\blambda\|_1 \\
+        \text{subject to}\, &|(\bG\blambda)_m-\hat\beta|\leq \eta_{\gamma,m} \quad m\in \{1,\dots,M\},
     \end{array} \right.
 \end{equation*}
 where, for a constant $\gamma > 0$,
@@ -167,11 +167,11 @@ and
 \begin{equation}
     \hat\sigma^2_m = \frac{1}{n(n-1)}\sum_{i=2}^n\sum_{j=1}^{i-1}(\varphi_m(X_i)-\varphi_m(X_j)).
 \end{equation}
-Note that $\eta_{\gamma,m}$ depends on the data which explains the name \textit{Adaptive Dantzig}. \citep{Bertin} derived the form of $\eta_{\gamma,m}$ from sharp concentration inequalities (see Theorem 1 of \citep{Bertin}). More precisely, if we consider $\lambda_0=(\lambda_{0,m})_{m=1,\dots,M}$ such that the projection of $f_0$ on the space spanned by $D$ is
+Note that $\eta_{\gamma,m}$ depends on the data which explains the name \textit{Adaptive Dantzig}. \citep{Bertin} derived the form of $\eta_{\gamma,m}$ from sharp concentration inequalities (see Theorem 1 of \citep{Bertin}). More precisely, if we consider $\blambda_0=(\lambda_{0,m})_{m=1,\dots,M}$ such that the projection of $f_0$ on the space spanned by $D$ is
 \begin{equation}
     \textbf{P}_{D}f_0=\sum_{m=1}^M\lambda_{0,m}\varphi_m,
 \end{equation}
-then $(G\lambda_0)_m=\beta_{0,m}$ and the parameter $\eta_{\gamma,m}$ can be seen as the smallest quantity such that, for $\gamma > 1$, we have $|\beta_{0,m}-\hat\beta_m|\leq \eta_{\gamma,m}$ with high probability. Note that the assumption $\gamma > 1$ is an almost necessary condition to have a theoretical control on the quadratic error $\Ex\|\hat f^D-f_0 \|^2_2$. Therefore, we will follow the choice of $\gamma=1.01$ made by the authors in our experiments. The pseudo code of the procedure is given in \Cref{algo:ad_algo}. In what follows, the Adaptive Dantzig density estimator is noted $\hat f ^{AD}$ and the abbreviation AD is used in the plots.
+then $(\bG\blambda_0)_m=\beta_{0,m}$ and the parameter $\eta_{\gamma,m}$ can be seen as the smallest quantity such that, for $\gamma > 1$, we have $|\beta_{0,m}-\hat\beta_m|\leq \eta_{\gamma,m}$ with high probability. Note that the assumption $\gamma > 1$ is an almost necessary condition to have a theoretical control on the quadratic error $\Ex\|\hat f^D-f_0 \|^2_2$. Therefore, we will follow the choice of $\gamma=1.01$ made by the authors in our experiments. The pseudo code of the procedure is given in \Cref{algo:ad_algo}. In what follows, the Adaptive Dantzig density estimator is noted $\hat f ^{AD}$ and the abbreviation AD is used in the plots.
 
 \begin{figure}[H]
 \begin{center}
@@ -180,10 +180,10 @@ then $(G\lambda_0)_m=\beta_{0,m}$ and the parameter $\eta_{\gamma,m}$ can be see
 \begin{algorithmic}[1]
 \small
 \STATE {\bfseries Input:} A sample $\bX_1,\ldots,\bX_n\in\RR^p$ and the dictionary $D=(\varphi_m)_{m=1,\dots,M}$.
-\STATE {\bfseries Output:} Dantzig density estimate $\hat f^{AD}=f_{\hat \lambda^D}$.
+\STATE {\bfseries Output:} Dantzig density estimate $\hat f^{AD}=f_{\hat \blambda^{D}}$.
 \STATE {\bfseries Init:} Set $\gamma=1.01$.
-\STATE Compute $\hat\beta_m = \frac{1}{n}\sum_{i=1}^N\varphi_m(X_i)$.
-\STATE Compute $\hat\sigma^2_m = \frac{1}{n(n-1)}\sum_{i=2}^n\sum_{j=1}^{i-1}(\varphi_m(X_i)-\varphi_m(X_j))^2$.
+\STATE Compute $\hat\beta_m = \frac{1}{n}\sum_{i=1}^N\varphi_m(\bX_i)$.
+\STATE Compute $\hat\sigma^2_m = \frac{1}{n(n-1)}\sum_{i=2}^n\sum_{j=1}^{i-1}(\varphi_m(\bX_i)-\varphi_m(\bX_j))^2$.
 \STATE Compute $\tilde\sigma_m^2$.
 \begin{equation}
     \tilde\sigma_m^2 = \hat\sigma_m^2+2\|\varphi_m\|_{\infty}\sqrt{\frac{2\hat\sigma_m^2\gamma\log{M}}{n}}+ \frac{8\|\varphi_m\|_{\infty}^2\gamma\log{M}}{n}.
@@ -192,11 +192,11 @@ then $(G\lambda_0)_m=\beta_{0,m}$ and the parameter $\eta_{\gamma,m}$ can be see
 \begin{equation*}
     \eta_{\gamma,m} = \sqrt{\frac{2\tilde\sigma_m^2\gamma\log{M}}{n}}+ \frac{2\|\varphi_m\|_{\infty}\gamma\log{M}}{3n}.
 \end{equation*}
-\STATE Compute the coefficients $\hat\lambda^{D,\gamma}$ of the Dantzig estimate, $\hat\lambda^{D,\gamma}=\argmin_{\lambda\in\RR^M}\|\lambda \|_1$ such that $\lambda$ satisfies the Dantzig constraint
+\STATE Compute the coefficients $\hat\blambda^{D,\gamma}$ of the Dantzig estimate, $\hat\blambda^{D,\gamma}=\argmin_{\blambda\in\RR^M}\|\blambda \|_1$ such that $\blambda$ satisfies the Dantzig constraint
 \begin{equation}
-    \forall m \in \{1,\dots,m\}, \quad |(G\lambda)_m-\hat\beta_m|\leq \eta_{\gamma,m}.
+    \forall m \in \{1,\dots,m\}, \quad |(\bG\blambda)_m-\hat\beta_m|\leq \eta_{\gamma,m}.
 \end{equation}
-\STATE Compute the mixture density $f_{\hat\lambda^D}=\sum_{m=1}^M\hat\lambda_m^D \varphi_m$.
+\STATE Compute the mixture density $f_{\hat\blambda^D}=\sum_{m=1}^M\hat\lambda_m^D \varphi_m$.
 \end{algorithmic}
 \end{minipage}
 }
@@ -261,7 +261,7 @@ where $\hat\lambda$ is the sample interquartile range. We will not go into the d
 \begin{minipage}{0.85\linewidth}
 \begin{algorithmic}[1]
 \small
-\STATE {\bfseries Input:} A sample $\bX_1,\ldots,\bX_n\in\RR^p$.
+\STATE {\bfseries Input:} A sample $\bX_1,\ldots,\bX_n\in\RR$.
 \STATE {\bfseries Output:} A bandwidth estimator $\hat h$.
 \STATE {\bfseries Init:} Set $a = 0.920\hat\lambda n^{-1/7}$ and $b= 0.912\hat\lambda n^{-1/9}$.
 \STATE Compute 
