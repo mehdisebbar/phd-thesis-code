@@ -55,7 +55,7 @@ the Kullback-Leibler divergence
 \text{if } P^*\big(f^*(\bX)/f_{\hat\bpi}(\bX)=0 \big)=0, \\
 +\infty, & \text{otherwise},
 \end{cases}
-\end{equation}\todos{modif: $P^*(f^*(\bX) = 0 \text{ and } f_{\hat\bpi}(\bX)>0)$}
+\end{equation}
 which has the advantage of bypassing identifiability
 issues. One can also consider the (well-specified) setting where $f^*=f_{\bbeta^*}$ for some $\bbeta^*\in\BB^K_+$
 and measure the quality of estimation through a distance between the vectors $\hat\bpi$ and $\bpi^*$ (such as
@@ -144,7 +144,7 @@ as a sparsity inducing penalty.
 
 \subsection{Additional notation}
 
-In what follows, for any $i\in [n]$, we denote by $\bZ_i$ the $K$-dimensional \todos{modif: ajout de K-dimensional}vector $[f_1(\bX_i),\ldots,f_K(\bX_i)]^\top$ and
+In what follows, for any $i\in [n]$, we denote by $\bZ_i$ the $K$-dimensional vector $[f_1(\bX_i),\ldots,f_K(\bX_i)]^\top$ and
 by $\bfZ$ the $n\times K$ matrix  $[\bZ^\top_1,\ldots,\bZ^\top_n]^\top$. We also define $\ell(u) = -\log u$,
 $u\in(0,+\infty)$,
 so that the MLE $\hat\bpi$ is the minimizer of the function
@@ -180,8 +180,7 @@ $\bfA = \bSigma$ with
 \end{equation}
 The general entries of these matrices are $(\hat\bSigma_n)_{k,l} =
 \nicefrac1n\sum_{i=1}^n \bar f_k(\bX_i)\bar f_l(\bX_i)$ and $(\bSigma)_{k,l} = 
-\Ex[\bar f_k(\bX_1)\bar f_l(\bX_1)]$, respectively.\todos{modif: deplacement respectively} 
-
+\Ex[\bar f_k(\bX_1)\bar f_l(\bX_1)]$, respectively.
 We assume that there exist positive constants $m$ and $M$ such that for all densities 
 $f_k$ with $k \in [K]$, we have
 \begin{equation}
@@ -232,7 +231,7 @@ we assume the parameter $\mu$ in \eqref{Pi} to be equal to $0$.
 	\bigg\} \label{boundDevTwo}
 	\end{align}
 	with probability at least $1-\delta$.
-\end{theorem}%\todos{je ne suis pas convaincu par cette modif, small ne change rien}
+\end{theorem}
 
 The proof of this and the subsequent results stated in this section are postponed to \Cref{sec:proofs}.
 Comparing the two inequalities of the above theorem, one can notice two differences. First, the term
@@ -284,7 +283,7 @@ the population Gram matrix, as stated in the next result.
 	\bigg\{ \KL(f^*|| f_{\bpi}) +
 	\frac{c_6|J|\log(K/\delta)}{n\bar\kappa_{\bSigma}(J,1)} \bigg\}\label{boundDevFour}
 	\end{align}
-	with probability at least $1-2\delta$.\todos{faut il le changer ?}
+	with probability at least $1-2\delta$.
 \end{theorem}
 
 The main advantage of the upper bounds provided by \Cref{maintheo2} as compared with those of
@@ -699,7 +698,7 @@ Therefore, $\|\hat\bSigma_n^{\nicefrac12}(\hat\bpi-\bpi)\|_2^2\ge $ we have with
 &\leq 2\zeta_n\| (\hat\bpi-\bpi)_J\|_1-\frac{1}{2M^2}\|\hat\bSigma_n^{\nicefrac12}(\hat\bpi-\bpi)\|_2^2\nonumber\\
 &\leq 2\zeta_n\| (\bpi-\hat\bpi)_J\|_1 - \frac{\bar\kappa_{\hat\bSigma_n}(J,1)\| (\bpi-\hat\bpi)_J\|_1^2}{2M^2|J|}\nonumber\\
 &\leq \frac{2\zeta_n^2M^2|J|}{\bar\kappa_{\hat\bSigma_n}(J,1)}.\label{ineqa}
-\end{align}\todos{modif: supression des numeros intermediaires}
+\end{align}
 Replacing the right hand term in \eqref{midIneqRes} and taking the infimum, we get
 the claim of the corollary. Since, in view of \Cref{boundEmpProcess} below, with probability
 larger than $1-\delta$, $\zeta_n$ is bounded from above by
@@ -895,7 +894,7 @@ for every $\bpi\in\Pi^*(\mu)$. Let us define $\bar \varphi(\bpi,\bx) = \bar\ell(
 &+ \frac1n\sum_{i=1}^n \big(\varphi(\bpi,\bX_i)-\varphi(\hat\bpi,\bX_i)\big)\label{tempOraclIneqb}\\
 &\leq \int \bar\ell(f_{\bpi})\,f^*d\nu-\frac{1}{2M^2n}\|\bar\bfZ(\hat\bpi-\bpi)\|_2^2\nonumber\\
 &+\underbrace{\sup_{\bpi\in \Pi_n(0)}\|\nabla\bar\Phi_n(\bpi)\|_\infty}_{:=\xi_n} \|\hat\bpi-\bpi \|_1.
-\end{align}\todos{modif: alignement}
+\end{align}
 Notice that $\bpi\in\Pi^*(\mu)$ implies that $\bar\ell(f_{\bpi}) = \log\mu-\log f_{\bpi}$
 and that $\bar\ell(f_{\hat\bpi}) \ge  \log \mu-\log f_{\hat\bpi} -(\log\mu-\log f_{\hat\bpi})_+ $.
 Therefore, along the lines of the proof of \eqref{boundDevTwo} (see, namely, \eqref{ineqa}),
@@ -906,7 +905,7 @@ we get
 &\leq \KL(f^*||f_{\bpi}) + \frac{2\xi_n^2M^2|J|}{\bar\kappa_{\hat\bSigma_n}(J,1)}
 +\int_{\calX}(\log\mu-\log f_{\hat\bpi})_+f^*d\nu.
 \end{align}
-We can repeat now the arguments of \Cref{boundEmpProcess} with some minor modifications. First of all\todos{modif: changement de We first par first of all, cela permet un bon decalage}, we
+We can repeat now the arguments of \Cref{boundEmpProcess} with some minor modifications. First of all, we
 rewrite $\xi_n$ as $\xi_n = \max_{l=1,\ldots,K} \xi_{l,n}$ with $\xi_{l,n} = \sup_{\bpi\in\Pi_n(0)}
 |\partial_l \bar\Phi_n(\bpi)|$. One checks that the bounded difference inequality and the Efron-Stein
 inequality can be applied with an additional factor 2, since for $F_l(\bfX) = \sup_{\bpi\in\Pi_n(0)}
@@ -929,7 +928,7 @@ bound $\Ex[\xi_{l,n}]$, we use the symmetrization argument:
 2M\Ex\bigg[\sup_{\bpi\in\Pi_n(0)} \bigg|\frac1n\sum_{i=1}^n \epsilon_i
 [\bar\ell'(f_{\bpi}(\bX_i))-\bar\ell'(0)]\bigg|\bigg],
 \end{align}
-where the second inequality comes from \citep[Th.\ 11.5]{boucheron2013concentration}. \todos{deplacement de la citation en dehors de l'equation} Note that the function $\bar\ell'$, the derivative of $\bar\ell$ defined in \eqref{elBar},
+where the second inequality comes from \citep[Th.\ 11.5]{boucheron2013concentration}. Note that the function $\bar\ell'$, the derivative of $\bar\ell$ defined in \eqref{elBar},
 is by construction Lipschitz with constant $1/\mu^2$. Therefore, in view of the contraction
 principle,
 \begin{align}
@@ -1073,7 +1072,7 @@ The core of our results lies in the following proposition which bound the deviat
 		\sum_{i=1}^n \epsilon_i \bX_{i,(\bpi,l)} \bigg]\nonumber\\
 		&= 2V^2 \Ex_{\epsilon}\bigg[ \sup_{(\bpi,l)\in\Pi_n\times[K]}\frac{1}{n}\sum_{i=1}^n \epsilon_i
 		\bigg(\frac{f_{\bpi}(\bX_i)}{f_l(\bX_i)} -1\bigg) \bigg].
-		\end{align}\todos{modif:supression des numero intermed.}
+		\end{align}
 		Expanding $f_{\bpi}(\bX_i)$ we obtain
 		\begin{align}
 		\Ex_{\epsilon}\bigg[ \sup_{(\bpi,l)}\frac{1}{n}\sum_{i=1}^n \epsilon_i \bigg(\frac{f_{\bpi}(\bX_i)}{f_l(\bX_i)}
@@ -1082,7 +1081,7 @@ The core of our results lies in the following proposition which bound the deviat
 		\bigg(\frac{f_{k}(\bX_i)}{f_l(\bX_i)} -1\bigg)  \bigg]\nonumber\\
 		&=\Ex_{\epsilon}\bigg[ \max_{k,l\in[K]} \frac{1}{n}\sum_{i=1}^n \epsilon_i
 		\bigg(\frac{f_{k}(\bX_i)}{f_l(\bX_i)} -1\bigg) \bigg].
-		\end{align}\todos{modif:supression des numero intermed.}
+		\end{align}
 		We apply now \Cref{Hoeffding1} with $s= (k,l)$, $N = K^2$, $a=-V$, $b= V$ and $Y_{i,s} = \epsilon_i
 		\big(\frac{f_{k}(\bX_i)}{f_l(\bX_i)} -1\big)$. This yields
 		\begin{align}
@@ -1138,7 +1137,7 @@ corresponding to the following two subsets of $\calH_\calF(\gamma,D)$
 \text{ with } \|\bpi_{J^c}\|_1 = 0 \text{ and } |J|\le D\big\}, \\
 \calH_\calF(\gamma,1) &= \big\{f_{\bpi} : \bpi\in\BB^K_+ \text{ s.t. } \pi_1 = 1-\gamma \text{ and } \sum_{j=2}^K\pi_j = \gamma \big\}.
 \end{array}
-\end{equation}\todos{modif: such that en s.t.}
+\end{equation}
 We will show that over $\calH_\calF(0,D)$, we have a lower bound of order $\log(1+K/D)/n$ while over 
 $\calH_\calF(\gamma,1)$, a lower bound of order 
 $\big[\frac{\gamma^2}{n}\log\big(1+K/(\gamma\sqrt{n})\big)\big]^{\nicefrac12}$ holds true. Therefore, 
@@ -1197,7 +1196,7 @@ to the Euclidean distance between the weight vectors $\bpi$ and $\bpi'$.
 
 \subsection{Lower bound on $\calH_\calF(0,D)$} % (fold)
 
-\todos{mdif: suppression de here} We show that the lower bound ${(\nicefrac{D}n)\log(1+\nicefrac{e K}D)}
+We show that the lower bound ${(\nicefrac{D}n)\log(1+\nicefrac{e K}D)}
 \wedge\big((\nicefrac1n){\log(1+\nicefrac{K}{\sqrt{n}})}\big)^{\nicefrac12}$ holds 
 when we consider the worst case  error for $f^*$ belonging to the set $\calH_\calF(0,D)$. 
 \begin{proposition}
@@ -1213,7 +1212,7 @@ when we consider the worst case  error for $f^*$ belonging to the set $\calH_\ca
 	\inf_{\hat f}\sup_{f \in \calH_\calF(0,D)}\Pb\!_{f}\Bigg(\KL(f||\hat f)\geq
 	C_2\,\frac{D\log(1+\frac{K}{D})}{n}\bigwedge\bigg(\frac{\log\big(1+\frac{K}{\sqrt{n}}\big)}{n}\bigg)^{\nicefrac12}\Bigg)
 	\geq 0.17.
-	\end{equation}\todos{modif: passé à frac et small}
+	\end{equation}
 \end{proposition}
 
 \begin{proof}
@@ -1252,7 +1251,7 @@ when we consider the worst case  error for $f^*$ belonging to the set $\calH_\ca
 	\begin{equation}
 	\KL(f_{\bpi^{(\ell)}}||f_{\bpi^{(\ell')}}) \geq 2 C_2\,\frac{d\log(1+e  K/d)}{n}.
 	\end{equation}
-	This inequality \todos{modif: ajout inequality} shows that condition (i) of \Cref{tsy_main_theo_nonparam_est} is satisfied with
+	This inequality shows that condition (i) of \Cref{tsy_main_theo_nonparam_est} is satisfied with
 	$s= C_2\,(\nicefrac{d}{n})\log(1+e  K/d)$.  For the second condition of the same theorem, 
 	we have
 	\begin{align}
@@ -1414,7 +1413,7 @@ we will use the inequality
 	r(n,K,\gamma,D) = \bigg[\frac{\gamma^2}{n}
 	\log\bigg(1+\frac{K}{\gamma\sqrt{n}}\bigg)\bigg]^{\nicefrac12}
 	+ \frac{D\log(1+K/D)}{n}\bigwedge \Big(\frac{\log(1+K/\sqrt{n})}{n}\Big)^{\nicefrac12}.
-	\end{equation}\todos{modif: transformé en small}
+	\end{equation}
 	We first consider the case where the dominating term is the first one, that is 
 	\begin{equation}\label{eqFvSxZO}
 	\bigg[\frac{\gamma^2}{n} \log\bigg(1+\frac{K}{\gamma\sqrt{n}}\bigg)\bigg]^{\nicefrac12}
@@ -1458,7 +1457,7 @@ we will use the inequality
 	\inf_{\hat f}\sup_{f \in \calH_\calF(\gamma,D)}\Pb\!_{f}\Bigg(\KL(f||\hat f)\geq
 	C_2\,\frac{D\log(1+\frac{K}{D})}{n}\bigwedge\bigg(\frac{\log\big(1+\frac{K}{\sqrt{n}}\big)}{n}\bigg)^{\nicefrac12}\Bigg)
 	\geq 0.17.
-	\end{equation}\todos{modif: passé à frac et small}
+	\end{equation}
 	In view of \eqref{eqFvSxZFv}, we get
 	\begin{equation}\label{eqFvSxZSx}
 	\inf_{\hat f}\sup_{f \in \calH_\calF(\gamma,D)}\Pb\!_{f}\bigg(\KL(f||\hat f)\geq
@@ -1468,7 +1467,7 @@ we will use the inequality
 	\begin{equation}
 		\inf_{\hat f}\sup_{f \in \calH_\calF(\gamma,D)}\Pb\!_{f}\big(\KL(f||\hat f)\geq
 	C_4\,r(n,K,\gamma,D)\big)\geq 0.17,
-	\end{equation}\todos{modif: transformé en equation}
+	\end{equation}
 	for some constant $C_4>0$, whatever the relation
 	between $\gamma$ and $D$. The desired lower bound follows now from the Tchebychev 
 	inequality
@@ -1490,7 +1489,7 @@ of the paper.
 	\begin{align}
 	\Ex\Big[\max_{s\in[N]} \frac1n\sum_{i=1}^n Y_{i,s}\Big]&\le (b-a)\Big(\frac{\log N}{2n}\Big)^{\nicefrac12},\\
 	\Ex\Big[\max_{s\in[N]}\Big| \frac1n\sum_{i=1}^n Y_{i,s}\Big|\Big]&\le (b-a)\Big(\frac{\log(2N)}{2n}\Big)^{\nicefrac12}.
-	\end{align}\todos{modif: tranformé en align}
+	\end{align}
 \end{theorem}
 \begin{proof}
 	We denote $Z_s = \frac1n\sum_{i=1}^n Y_{i,s}$ for $s=1,\ldots, N$ and $Z_s = -\frac1n\sum_{i=1}^n Y_{i,s}$
