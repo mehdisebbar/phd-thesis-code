@@ -5,6 +5,8 @@
 In this section we propose an efficient algorithm for performing the KL-aggregation (see \Cref{chap:kl_aggreg}) and describe its implementation. We also compare its performance with different alternative methods. For the sake of simplicity, the comparison with the other methods is done in the univariate case only. The implementation of our algorithm and its behavior are the same in the multivariate setting.
 
 \section{Introduction}
+
+
 Before anything else, we remind the reader the problem setting and the estimator considered. We observe $n$ independent random vectors $\bX_1,\ldots,\bX_n\in\calX$ drawn from a probability distribution $P^*$ that admits a density function $f^*$ with respect to the Lebesgue measure. Given a family of mixture components $f_1,\ldots,f_K$, we assumed that this unknown density is well approximated by a convex combination $f_{\bpi}$ of these components:
 \begin{equation}
 f_{\bpi}(\bx)=\sum_{j=1}^K\pi_j f_j(\bx), \quad \bpi \in \BB_+^K=\Big\{\bpi\in [0,1]^K: \sum_{j=1}^K\pi_j=1\Big\}.
@@ -15,7 +17,32 @@ The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previ
 \hat\bpi \in \argmin_{\bpi\in \BB_+^K}\Big\{-\frac{1}{n}\sum_{i=1}^n\log f_{\bpi}(\bX_i)\Big\}.
 \end{equation}
 One can note that this problem is convex as the composition of $-\log$ and a linear function is convex. Furthermore, the feasible space is also convex. This problem can be solved via a Primal-Dual interior point method. But we opted for an approach based on the accelerated proximal gradient descent method because of its suitability to the problems in high-dimensions with sparsity assumption \citep{Beck:2009:FIS:1658360.1658364}.
+
+
+
 \section{Implementation}
+
+
+\begin{figure}[ht]
+\begin{center}
+\mybox{
+\begin{minipage}{0.85\linewidth}
+\begin{algorithmic}%\SetAlgoLined\tt\SetLine
+\small
+\STATE {\bfseries Input: $\bpi\in\RR^p$.} 
+\STATE {\bfseries Output:} The projection $\bpi^{proj}$ of $\bpi$ onto the probability simplex.
+\STATE {\tt 1: Sort $\bpi$ into $\bu:\,u_1\geq u_2 \geq\dots\geq u_p$.}
+\STATE {\tt 2: Find $\rho=\max \{1\leq j\leq p:\, u_j+\frac{1}{j}(1-\sum_{i=1}^j u_i) > 0\}$.}
+\STATE {\tt 3: Define $\lambda = \frac{1}{\rho}(1-\sum_{i=1}^{\rho} u_i)$.}
+\STATE {\tt 4: Construct $\bpi^{proj}\,\textnormal{s.t.}\, \bpi^{proj}_i=\max\{\pi_i+\lambda,0\},\,i=1,\dots,p$.}
+\end{algorithmic}
+\end{minipage}}
+   \caption{ Projection procedure onto the probability simplex}
+   \label{algo:proj_simplex.}
+\end{center}
+\end{figure}
+
+
 We can see that \cref{MLE_2} is equivalent to
 \begin{equation}
 \argmin_{\bpi\in\RR^K}\big\{-\frac{1}{n}\sum_{i=1}^n\log f_{\bpi}(\bX_i)+\chi_{\BB_+^K}(\bpi)\big\},
@@ -24,8 +51,8 @@ where $\chi_{\BB_+^K}$ is the indicator function
 \begin{equation*}
     \chi_{\BB_+^K}(\bpi) =
     \begin{cases}
-      0 & \text{if } \bpi\in \BB_+^K,\\
-      +\infty & \text{otherwise} .
+      0, & \text{if } \bpi\in \BB_+^K,\\
+      +\infty, & \text{otherwise} .
     \end{cases}
 \end{equation*}
 This problem can be decomposed into 
@@ -56,31 +83,11 @@ where $\lambda^k > 0$ is a step size. This step size can be found via a line-sea
 \end{equation*}
 where $\omega^k$ is defined by $\omega^1 := 1$ and
 \begin{equation*}
-    \omega^k := 2\frac{\omega^{k-1}-1}{1+\sqrt{1+(\omega^{k-1})^2}}.
+    \omega^k := \frac{2(\omega^{k-1}-1)}{1+\sqrt{1+(\omega^{k-1})^2}}.
 \end{equation*}
-This method has been coined Fast Iterative Shrinkage-Thresholding Algorithm (FISTA) in \citep{Beck:2009:FIS:1658360.1658364}. Our procedure is a special case of this algorithm that can be called ``Accelerated projected gradient descent'' since the proximal is the projection into $\BB_+^K$. A procedure for the projection onto the probability simplex can be found in \citep{Duchi:2008:EPL:1390156.1390191} and a simple proof in \citep{Wang13projectiononto}. The procedure for this projector is given in \Cref{algo:proj_simplex.}. Finally, the complete procedure for our algorithm is given in \Cref{fig:pi_fista}.\\ 
-A nice property of this method is that it provides a sparse solution of this minimization problem which fits with our goal of selecting elements of the dictionary. General Primal-Dual interior points methods do not offer this feature.
+This method has been coined Fast Iterative Shrinkage-Thresholding Algorithm (FISTA) in \citep{Beck:2009:FIS:1658360.1658364}. Our procedure is a special case of this algorithm that can be called ``Accelerated projected gradient descent'' since the proximal is the projection into $\BB_+^K$. A procedure for the projection onto the probability simplex can be found in \citep{Duchi:2008:EPL:1390156.1390191} and a simple proof in \citep{Wang13projectiononto}. The procedure for this projector is given in \Cref{algo:proj_simplex.}. Finally, the complete procedure for our algorithm is given in \Cref{fig:pi_fista}.
 
-\begin{figure}
-\begin{center}
-\mybox{
-\begin{minipage}{0.85\linewidth}
-\begin{algorithmic}%\SetAlgoLined\tt\SetLine
-\small
-\STATE {\bfseries Input: $\bpi\in\RR^p$.} 
-\STATE {\bfseries Output:} The projection $\bpi^{proj}$ of $\bpi$ onto the probability simplex.
-\STATE {\tt 1: Sort $\bpi$ into $\bu:\,u_1\geq u_2 \geq\dots\geq u_p$.}
-\STATE {\tt 2: Find $\rho=\max \{1\leq j\leq p:\, u_j+\frac{1}{j}(1-\sum_{i=1}^j u_i) > 0\}$.}
-\STATE {\tt 3: Define $\lambda = \frac{1}{\rho}(1-\sum_{i=1}^{\rho} u_i) > 0$.}
-\STATE {\tt 4: Construct $\bpi^{proj}\,\textnormal{s.t.}\, \bpi^{proj}_i=\max\{\pi_i+\lambda,0\},\,i=1,\dots,p$.}
-\end{algorithmic}
-\end{minipage}}
-   \caption{ Projection procedure onto the probability simplex}
-   \label{algo:proj_simplex.}
-\end{center}
-\end{figure}
-
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 \mybox{
 \begin{minipage}{0.85\linewidth}
@@ -100,8 +107,13 @@ A nice property of this method is that it provides a sparse solution of this min
    \label{fig:pi_fista}
 \end{center}
 \end{figure}
+A nice property of this method is that it provides a sparse solution of this minimization problem 
+which fits with our goal of selecting elements of the dictionary. General Primal-Dual interior 
+points methods do not offer this feature.
+
 
 \section{Alternative methods considered}
+
 In this section we briefly describe several estimators of the density which are compared to our estimator. Note that although we used the algorithm EM in our experiments, we do not described it in this section since it is already done in \Cref{chap:intro}.
 \subsection{SPADES}
 A method combining the dictionary approach and the $\ell_1$-penalty (and, therefore, very close in spirit to our method) have been proposed by \citep{SPADES}. They studied the linear combinations (as opposed to convex combinations studied in the previous chapter) of functions $\{f_1,\dots,f_M\}$ with $f_j\in L_2(\RR^d)$, $j=1,\dots,M$:
@@ -119,23 +131,30 @@ It could be interesting to include SPADES in our experimental evaluation, but we
 The Adaptive Dantzig estimator of a density has been introduced in \citep{Bertin}. This method is similar to ours as it constructs an estimator of the unknown density from a linear mixture of functions taken from a dictionary. The key idea of this estimator is to minimize the $\ell_1$-norm of the weight vector of the linear combination under an adaptive Dantzig constraint. This constraint comes from concentration inequalities. We recall here some material about the Dantzig selector. It has been introduced by \citep{candes2007} in the linear regression model
 \begin{equation}
 \label{ad_mod1}
-	\bY = \bA \blambda_0 + \bepsilon
+  \bY = \bA \blambda_0 + \bepsilon
 \end{equation}
 where $\bY\in \RR^n$, $\bA$ is a $n$ by $M$ matrix, $\bepsilon \in \RR^n$ is the noise vector and $\blambda_0 \in \RR^M$ the unknown regression parameter to estimate. The Dantzig estimator is then defined as the solution of the problem
 \begin{equation}
-	 \textnormal{minimize}\,  \|\blambda \|_1 \quad \text{subject to} \quad \| \bA^T(\bA\blambda-\bY)\|_{\infty} \leq \eta,
+   \textnormal{minimize}\,  \|\blambda \|_1 \quad \text{subject to} \quad \| \bA^T(\bA\blambda-\bY)\|_{\infty} \leq \eta,
 \end{equation}
 where $\eta$ is a regularization parameter. Statistical properties of this estimator were established in \citep{bickel2009}. They considered the non-parametric regression framework
 \begin{equation}
 \label{ad_mod2}
-		Y_i = f_0(x_i) + \epsilon_i, \quad i=1,\dots,n
+    Y_i = f_0(x_i) + \epsilon_i, \quad i=1,\dots,n
 \end{equation}
-where $f$ is an unknown function, the design points $(x_i)_{i=1,\dots,n}$ are known and $(\epsilon_i)_{i=1,\dots,n}$ is a noise vector. One can estimate $f_0$ as a weighted sum $f_{\lambda_0}$ of elements of a dictionary $D=(\varphi_m)_{m=1,\dots,M}$
+where $f$ is an unknown function, the design points $(x_i)_{i=1,\dots,n}$ are known and $(\epsilon_i)_{i=1,\dots,n}$ is a noise vector. One can estimate $f_0$ as a weighted sum $f_{\blambda_0}$ of elements of a dictionary $D=(\varphi_m)_{m=1,\dots,M}$
 \begin{equation}
 \label{linear_mix_density}
-	f_{\lambda} = \sum_{i=1}^M\lambda_{0, m}\varphi_m.
+  f_{\blambda_0} = \sum_{i=1}^M\lambda_{0, m}\varphi_m.
 \end{equation}
-This model \cref{ad_mod2} coincides with model \cref{ad_mod1} with $\bA = (\varphi_m(x_i))$. The goal of \citep{Bertin} was to estimate an unknown density $f_0$ with respect to a known measure $dx$ on $\RR$ by using the observation of $n$-sample $X_1,\dots,X_n$ and build a linear mixture density $f_{\lambda}$ of elements of the dictionary $D$ as in \cref{linear_mix_density}. It follows from the strong law of large numbers that $\hat\beta_m = \frac{1}{n}\sum_{i=1}^n\varphi_m(X_i)$ converges almost surely to the scalar product of $f_0$ and $\varphi_m$
+One easily checks that the model in \ref{ad_mod2} coincides with model in \cref{ad_mod1} if we choose as design matrix 
+$\bA = (\varphi_m(x_i))$. The goal of \citep{Bertin} was to estimate an unknown density $f_0$ with respect to a known 
+measure $dx$ on $\RR$ by using the observation of $n$-sample $X_1,\dots,X_n$ and to build a linear combination $f_{\lambda}$ 
+of elements of the dictionary $D$ as in \cref{linear_mix_density}. It follows from the strong law of large numbers that 
+$$
+\hat\beta_m = \frac{1}{n}\sum_{i=1}^n\varphi_m(X_i)
+$$ 
+converges almost surely to the scalar product of $f_0$ and $\varphi_m$:
 \begin{equation}
       \int \varphi_m(x)f_0(x)dx=\beta_{0,m},
 \end{equation}
@@ -211,7 +230,7 @@ then $(\bG\blambda_0)_m=\beta_{0,m}$ and the parameter $\eta_{\gamma,m}$ can be 
 The kernel density estimator (KDE) is a well established non-parametric way of estimating the probability density function of a random variable. We will recall in this section some material about KDE.\\
 Let $X_1,\dots,X_n$ be i.i.d. random variables drawn from an unknown probability density $f$ with respect to the Lebesgue measure on $\RR$. The kernel density estimator $\hat f_h $ is given by
 \begin{equation}
-	\hat f_h(x) \triangleq \frac{1}{nh}\sum_{i=1}^nK\Big(\frac{X_i-x}{h}\Big)
+  \hat f_h(x) \triangleq \frac{1}{nh}\sum_{i=1}^nK\Big(\frac{X_i-x}{h}\Big)
 \end{equation}
 where $K:\RR \rightarrow \RR$ and $\int K(u)du = 1$ is called a kernel and $h$ is the bandwidth. We used Gaussian kernel and three methods to select the bandwidth: Cross Validation, Scott's rule of thumb which is the default method in Scipy \citep{scipy} and the Sheather and Jones bandwidth selection procedure \citep{sheather_bdwth}.
 \subsubsection{Methods based on minimizing the AMISE}
@@ -220,17 +239,24 @@ The most natural way to derive an estimator of the bandwidth would be to minimiz
     \label{mise}
     \textnormal{MISE}(h) := \EE\Big[\int(\hat f_h(x)-f(x))^2dx \Big].
 \end{equation}
-Unfortunately, we can not rely on this quantity since $f$ is unavailable. However, we can derive the first two terms of the asymptotic expansion of the MISE (AMISE). When $n\rightarrow\infty$ and $h=h(n)\rightarrow 0$ and under regularity assumptions on $f$ and $K$, we have
+Unfortunately, we can not rely on this quantity since $f$ is unavailable. However, we can derive the first two terms of the asymptotic expansion of the MISE (AMISE). When $n\rightarrow\infty$ and $h=h(n)\rightarrow 0$, and under regularity assumptions on $f$ and $K$, we have
 \begin{equation}
 \label{amise}
     \textnormal{AMISE}(h) = \frac{1}{nh}R(K) +\frac{h^4\sigma^4_K}{4}R(f''),
 \end{equation}
-where for an appropriate function $g$, $R(g)=\int g^2(x) dx$ and $\sigma_g^2=\int x^2g(x) dx$. The reader can refer to the appendix of \citep{tsybakov2009Nonparametric} for a proof of this expansion. Setting the derivative of \cref{amise} to $0$, a suitable estimate of the bandwidth would be the solution of
+where for an appropriate function $g$, 
+$$
+R(g)=\int g^2(x) dx\qquad\text{ and }\qquad\sigma_g^2=\int x^2g(x) dx.
+$$ 
+The reader can refer to the appendix of \citep{tsybakov2009Nonparametric} for a proof of this expansion. 
+Setting the derivative w.r.t.\ $h$ of the right hand side of \cref{amise} to $0$, we see that a suitable estimate 
+of the bandwidth would be the solution of
 \begin{equation}
 \label{amise_diff_sol}
-    h = \bigg(\frac{R(K)}{\sigma_K^4R(f'')}\bigg)^{1/5}n^{-1/5},
+    h = \bigg(\frac{R(K)}{\sigma_K^4R(f'')}\bigg)^{1/5}n^{-1/5}.
 \end{equation}
-but we do not know $R(f'')$.  In the special case where we consider that the kernels are Gaussian and the target density to be estimated is also a Gaussian with density $\phi_{(0,\sigma^2)}$, we have $R(\phi_{(0,\sigma^2)}''(x)) = 3/(8\sqrt{\pi}\sigma^5)$ and we can derive the Scott's rule of thumb in univariate case \citep{scott_multivariate_2015}
+However, this cannot be done directly since we do not know $R(f'')$.  In the special case where we consider that 
+the kernels are Gaussian and the target density to be estimated is also a Gaussian with density $\phi_{(0,\sigma^2)}$, we have $R(\phi_{(0,\sigma^2)}''(x)) = 3/(8\sqrt{\pi}\sigma^5)$ and we can derive the Scott's rule of thumb in univariate case \citep{scott_multivariate_2015}
 \begin{equation}
     \hat h = (4/3)^{1/5}\sigma n^{-1/5} \approx 1.06\hat\sigma n^{-1/5}.
 \end{equation}
@@ -285,24 +311,33 @@ h-\bigg(\frac{R(K)}{\sigma_K^4 \hat S(\hat\alpha_2(h))}\bigg)^{1/5} = 0.
 \end{center}
 \end{figure}
 \subsubsection{Behavior of KDE in high dimension}
-It is well known that the Kernel density estimator performs badly in the high dimensional setting, \citep{stone1980} proved that the kernel density estimator of a $p$ times continuously differentiable density in dimension $d$ converges at most at the rate $n^{-p/(2p+d)}$. Therefore, for a given target error, the size of the sample must increase exponentially as the dimension increases. For a study of kernel density estimators in the high dimensional setting, see chapter 7 of \citep{scott_multivariate_2015}. 
+It is well known that the kernel density estimator performs badly in the high dimensional setting, \citep{stone1980} proved that the kernel density estimator of a $p$ times continuously differentiable density in dimension $d$ converges at most at the rate $n^{-p/(2p+d)}$. Therefore, for a given target error, the size of the sample must increase exponentially as the dimension increases. For a study of kernel density estimators in the high dimensional setting, see Chapter 7 of \citep{scott_multivariate_2015}. 
 
-\section{Experimental Evaluations}
+\section{Experimental Evaluation}
 
-In order to carry out an experimental evaluation, we constructed a set of target densities with different shapes and recorded the performances of the estimators. We considered different density dictionaries. Finally we assessed the performance through the Kullback-Leibler divergence and $L_2$ distance. All the experiments reported in this section were set in the univariate case.
+In order to carry out an experimental evaluation, we constructed a set of target densities with different shapes and recorded the performances of the estimators. We considered different density dictionaries. Finally we assessed the performance through the Kullback-Leibler divergence and the $L_2$ distance. All the experiments reported in this section were conducted in the univariate case.
 
 \subsection{Dictionaries considered}
-We did experiments with the following two dictionaries
+
+We did experiments with the following two dictionaries containing various types of densities.
 \begin{enumerate}
-\item A set of Gaussian and Laplace densitiy called $D_{GL}$. The Gaussian densities have their means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their variances in $\{0.001, 0.01, 0.1, 1\}$. The Laplace densities have their means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their scales in $\{0.05, 0.1, 0.5, 1\}$. Therefore, $D_{GL}$ has 48 elements.
+\item The first dictionary, denoted by $D_{GL}$, is composed of Gaussian and Laplace densities. 
+The Gaussian densities have their means in the set 
+$\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their variances in $\{0.001, 0.01, 0.1, 1\}$. The Laplace densities have their 
+means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their scales in $\{0.05, 0.1, 0.5, 1\}$. Therefore, 
+the dictionary $D_{GL}$ has 48 elements. The plots of these
+functions are depicted in \Cref{fig:dict}.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\textwidth]{TeX_files/lapl_gauss_dict.png}
 \caption{$D_{GL}$, set of Gaussian and Laplace densities.}
+\label{fig:dict}
 \end{figure}
 %\item Union of Fourier and Haar aud Gaussians ?
-\item The union of $D_{GL}$ with the set of $10$ uniform densities on $(i, i+0.1),\, i\in \{0, 0.1,\dots,0.9\}$, called $D_{GLU}$.
+\item The second dictionary, denoted by $D_{GLU}$, is obtained by enriching
+the first dictionary $D_{GL}$ by the set of $10$ uniform densities on the intervals 
+$(i, i+0.1)$, $i\in \{0, 0.1,\dots,0.9\}$. This dictionary $D_{GLU}$ has 48 elements.
 \end{enumerate}
 
 \subsection{Densities considered}
@@ -352,144 +387,179 @@ These target densities are plotted in \Cref{fig:target_densities}.
 \end{figure}
 
 \subsection{Discussion of the results}
-The dictionaries used for the Adaptive Dantzig and the Maximum likelihood density estimators are $D_{GL}$ and $D_{GLU}$. Note that it is interesting to compare the MLE to AD as both methods rely on a dictionary. We also benchmarked our method with the Gaussian kernel density estimator, the EM algorithm on Gaussian mixtures with a model selection by the BIC criterion, and Kernel Density Estimators. KDE refers to the kernel density estimate with Scott's rule as chosen by default in the Python library Scipy, KDE-SJ refers to the KDE with the Sheather-Jones bandwidth selector and KDE CV refers to the KDE with bandwidth selected via cross-validation. The two latter were implemented by ourselves. For each scenario of target density, $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$, $f_{\textnormal{gauss}}$, $f_{\textnormal{gauss-lapl}}$, $f_{\textnormal{ext}}$ and for each sample size $N$  with $N\in\{100, 500, 1000\}$, we ran 200 simulations. A rapid observation is that the performance of the MLE is good in Kullback-Leibler and $L_2$ losses. the least accurate method in all scenarios is the Adaptive Dantzig.
 
-\subsubsection{Studying the bias of the estimator with the densities $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$ and $f_{\textnormal{ext}}$ on $D_{GL}$}
-The densities $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$ and $f_{\textnormal{ext}}$ were not built with elements in the dictionary $D_{GL}$. Therefore, we can expect that the most dominant term in the error will be the bias term. An interesting observation is the small impact of the size of the sample for the MLE. If we look at $N=100$, the MLE performance is almost as good as KDE-SJ and KDE-CV on the uniform case (\cref{fig:res_uniform_KL_GL}, \cref{fig:res_uniform_L2_GL}). This is surprising since the dictionary given could not provide a good mixture density that approach well this target density. Note that the KDE performs better than KDE-SJ in this scenario only. However, the rectangular density scenario, $f_{\textnormal{rect}}$, shows the worst performance for the MLE (\cref{fig:res_rect_KL_GL}, \cref{fig:res_rect_L2_GL}). It is possible to increase its performance by adding uniform densities on different segments of $[0,1]$ in the dictionary as we will see in \cref{dict_dglu_sect}. Finally, MLE performs poorly in the $f_{\textnormal{ext}}$ scenario, we wanted to measure the performance of dictionary based methods against a complex target density which is not a mixture of elements of the dictionary, see (\cref{fig:res_ext_KL_GL}, \cref{fig:res_ext_L2_GL}). Increasing the size of the sample does not improve the error of the MLE, in this case the choice of the dictionary is clearly crucial. Note that EM-BIC is the best algorithm with $N=100$ but similarly to the MLE, it does not present a significant change as $N$ increase. In these three scenarios, the MLE presents a relative small variance.
-%Uniform
+In the numerical experiments reported in this section, the dictionaries used for the Adaptive Dantzig 
+and the Maximum likelihood density estimators are $D_{GL}$ and $D_{GLU}$. Note that the AD is the direct 
+competitor of the MLE as both methods rely on a dictionary. However, in order to get a broader insight of
+what is going on, we also compared these dictionary based methods with other commonly used density 
+estimators such as the EM algorithm on Gaussian mixtures with a model selection performed by the BIC 
+criterion and Kernel Density Estimators (KDE). In the plots, KDE refers to the kernel density estimate 
+with Scott's rule as chosen by default in the Python library Scipy, KDE-SJ refers to the KDE with the 
+Sheather-Jones bandwidth selector and KDE CV refers to the KDE with bandwidth selected via cross-validation. 
+The two latter were implemented by ourselves. 
+
+For each scenario of the target density, $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$, 
+$f_{\textnormal{gauss}}$, $f_{\textnormal{gauss-lapl}}$, $f_{\textnormal{ext}}$ and for each sample size $N$  
+with $N\in\{100, 500, 1000\}$, we ran 200 simulations. The boxplots of the errors are plotted in 
+\Cref{fig:res_ext_L2_GL}-\Cref{fig:res_ext_KL_GLU}. The running times of different arguments are 
+depicted in \Cref{fig:res_times}. A rapid observation is that the performance of the MLE is good both 
+in Kullback-Leibler and $L_2$ losses, and it outperforms in all considered scenarios the 
+AD estimator. This is true both in terms of statistical accuracy and computational complexity. 
+The comparison with the other estimation methods is more subtle, and requires a closer look
+to the results.
+
+\subsubsection{Mis-specification bias}
+
+Obviously, the densities $f_{\textnormal{unif}}$, $f_{\textnormal{rect}}$ and $f_{\textnormal{ext}}$ 
+were not built with elements in the dictionary $D_{GL}$. In other terms, they do not lie in the convex hull
+of the dictionary $D_{GL}$. Furthermore, they can be hardly approximated by convex combinations of functions
+from $D_{GL}$. Therefore, it is clear that whatever the dictionary based approach we use, it will have a 
+significant bias due to the ``model mis-specification''. 
+
+
+%Uniform, rect, ext
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_uniform_L2_GL.png}
-    \caption{Results with $f_{\textnormal{unif}}$ in $L2$ loss with $D_{GL}$}
-    \label{fig:res_uniform_L2_GL}
-\end{figure}
-
-%rect
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_rect_L2_GL.png}
-    \caption{Results with $f_{\textnormal{rect}}$ in $L2$ loss with $D_{GL}$}
-    \label{fig:res_rect_L2_GL}
-\end{figure}
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_not_dict_L2_GL.png}
-    \caption{Results with $f_{\textnormal{ext}}$ in $L2$ loss with $D_{GL}$}
+    \caption{Results with $f_{\textnormal{unif}}$ (upper panel), $f_{\textnormal{rect}}$ 
+    (middle panel) and $f_{\textnormal{ext}}$ (lower panel) in $L2$ loss with $D_{GL}$.}
     \label{fig:res_ext_L2_GL}
 \end{figure}
+
+Since the cardinality of the dictionary is chosen
+independently of the sample size $n$, this bias term is constant across different values of $n$. This is 
+exactly what we observe in \Cref{fig:res_ext_L2_GL}. Such methods as the EM-BIC or various versions of KDE
+have an $L_2$ error that decreases significantly when the sample size increases, whereas the AD and, especially, 
+the MLE show only a slight improvement of the error. This is a strong indication of the fact that
+the bias of the methods AD and MLE substantially dominates the bias, when the true density is chosen from 
+the set $\{f_{\textnormal{unif}},\,f_{\textnormal{rect}},\,f_{\textnormal{ext}}\}$. Thus, the apparently
+poor behavior of the MLE as compared to the EM-BIC and the KDE is not a surprise and, more importantly,
+it is not caused by the method of estimation itself but rather by the inappropriate choice of the
+dictionary.
+
+Note that in all the experiments, the conclusions drawn from the error bars corresponding to the 
+$L_2$-error can be drawn from the error bars corresponding to the KL-error. 
+
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_uniform_KL_GL.png}
-    \caption{Results with $f_{\textnormal{unif}}$ in KL loss with $D_{GL}$}
-    \label{fig:res_uniform_KL_GL}
-\end{figure}
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_rect_KL_GL.png}
-    \caption{Results with $f_{\textnormal{rect}}$ in KL loss with $D_{GL}$}
-    \label{fig:res_rect_KL_GL}
-\end{figure}   
-%ext
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_not_dict_KL_GL.png}
-    \caption{Results with $f_{\textnormal{ext}}$ in KL loss with $D_{GL}$}
+    \caption{Results with $f_{\textnormal{unif}}$ (upper panel), $f_{\textnormal{rect}}$ 
+    (middle panel) and $f_{\textnormal{ext}}$ (lower panel) in KL loss with $D_{GL}$.}
     \label{fig:res_ext_KL_GL}
 \end{figure}
-\subsubsection{Studying the variance of the estimator with the densities $f_{\textnormal{gauss}}$ and $f_{gauss-lapl}$}
-When the target density is the mixture of Gaussians $f_{\textnormal{gauss}}$, the MLE presents the best result, both in $L_2$ and KL loss (\cref{fig:res_gauss_KL_GL}, \cref{fig:res_gauss_L2_GL}). The second best is EM-BIC. Note that the default KDE in Scipy\citep{scipy} with Scott's rule presents the worse result in this scenario which should have reasonably performed well considering the use of Gaussian kernels. This observation should come to mind of the practitioner when applying kernel density estimators with default package setting. The second scenario, $f_{\textnormal{gauss-lapl}}$ is a more complex density made from elements of the dictionary $D_{GL}$ and the MLE is the best method (\cref{fig:res_lapl_gauss_KL_GL}, \cref{fig:res_lapl_gauss_L2_GL}). \sout{Surprisingly the $L_2$ and KL loss of KDE are not similar.}
+
+\subsubsection{Assessing estimation error}
+
+While for the three densities discussed in the foregoing paragraph the bias was largely dominating 
+the variance, the situation is reversed for the densities $f_{\textnormal{gauss}}$ and 
+$f_{\textnormal{gauss-lapl}}$. Both of them belong to the convex hull of the dictionary 
+$D_{GL}$, which implies that the mis-specification bias vanishes. Therefore, the error
+is mostly dominated by the estimation variance. This explains why for these two densities
+the MLE has the smallest error, both in $L_2$ and KL loss (see \Cref{fig:res_lapl_gauss_L2_GL} 
+and \Cref{fig:res_lapl_gauss_KL_GL}). Interestingly, the second best is EM-BIC, which performs 
+better than the AD. Note that the default KDE in Scipy \citep{scipy} with Scott's rule 
+presents poor results in these scenarios. This observation should come to mind of the 
+practitioner when applying kernel density estimators with default package setting. 
+
+One can also remark that the error of the MLE when estimating $f_{\textnormal{gauss}}$
+is smaller than the one of estimating $f_{\textnormal{gauss-lapl}}$. This is perfectly
+in line with the theory developed in previous chapter, telling that the variance term
+is proportional to the sparsity index. In these examples, the sparsity index of 
+$f_{\textnormal{gauss-lapl}}$ is larger than that of $f_{\textnormal{gauss}}$.
+
 %gauss
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_gauss_L2_GL.png}
-    \caption{Results with $f_{\textnormal{gauss}}$ in $L2$ loss with $D_{GL}$}
-    \label{fig:res_gauss_L2_GL}
-\end{figure}
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_L2_GL.png}
-    \caption{Results with $f_{\textnormal{gauss-lapl}}$ in $L2$ loss with $D_{GL}$}
+    \caption{Results with $f_{\textnormal{gauss}}$ (upper panel) and $f_{\textnormal{gauss-lapl}}$ 
+    (lower panel) in $L_2$ loss with $D_{GL}$.}
     \label{fig:res_lapl_gauss_L2_GL}
 \end{figure}
+
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_gauss_KL_GL.png}
-    \caption{Results with $f_{\textnormal{gauss}}$ in KL loss with $D_{GL}$}
-    \label{fig:res_gauss_KL_GL}
-\end{figure}   
-%lapl_gauss
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_KL_GL.png}
-    \caption{Results with $f_{\textnormal{gauss-lapl}}$ in KL loss with $D_{GL}$}
+    \caption{Results with $f_{\textnormal{gauss}}$ (upper panel) and $f_{\textnormal{gauss-lapl}}$ 
+    (lower panel) in KL loss with $D_{GL}$.}
     \label{fig:res_lapl_gauss_KL_GL}
 \end{figure}
-\subsubsection{The importance of the choice of the dictionary, using $D_{GLU}$. \label{dict_dglu_sect}}
-At the sight of the poor performance of the MLE in the uniform and rectangular case, we wanted to add $10$ uniform densities on $(0,0.1),\dots,(0.9,1)$ to the dictionary $D_{GL}$ and study the behavior of our algorithm with this extended dictionary. The results in uniform case are plotted in \cref{fig:res_uniform_L2_GLU} and \cref{fig:res_uniform_KL_GLU}. In rectangular case in \cref{fig:res_rect_KL_GLU} and \cref{fig:res_rect_L2_GLU}. We can see a better performance of the MLE as the size increases. When the size is greater than $500$, our algorithm presents the best performance which in the case of $D_{GLU}$ is not surprising since the MLE possess uniform densities in its dictionary. However, surprisingly the Adaptive Dantzig still presents the worse result. The performance improvement is more visible in the rectangular case. In the case of $f_{\textnormal{gauss}}$ plotted in \cref{fig:res_gauss_L2_GLU} and \cref{fig:res_gauss_KL_GLU}, $f_{gauss-lapl}$ plotted in \cref{fig:res_lapl_gauss_L2_GLU} and \cref{fig:res_lapl_gauss_KL_GLU} and $f_{\textnormal{rect}}$ plotted in \cref{fig:res_ext_L2_GLU} and \cref{fig:res_ext_KL_GLU}, we have no sensible change compared to the dictionary $D_{GL}$.
-\begin{figure}
+
+
+\subsubsection{Impact of the choice of the dictionary \label{dict_dglu_sect}}
+
+The discussion of the foregoing paragraphs demonstrates the importance of the choice of the dictionary.
+The purpose of the additional experiments conducted with the same target densities but with a larger dictionary, $D_{GLU}$,
+is to further illustrate this importance and to show that the size of the dictionary does not significantly impact 
+the quality of estimation\footnote{It certainly does impact the running time}.
+
+The inclusion of  $10$ uniform densities on $(0,0.1),\dots,(0.9,1)$ to the dictionary $D_{GL}$ removes the mis-specification
+bias in the case of a uniform and rectangular densities, and reduces it in the case of $f_{\textnormal{ext}}$.
+The results are plotted in \Cref{fig:res_gauss_L2_GLU} and \Cref{fig:res_gauss_KL_GLU}. 
+We can see that the MLE becomes generally the best estimator when the density is uniform or rectangular. 
+It is still slightly worse than the KDE with data-driven bandwidths for estimating $f_{\textnormal{ext}}$.
+ \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_uniform_L2_GLU.png}
-    \caption{Results with $f_{\textnormal{unif}}$ in $L2$ loss with $D_{GLU}$}
-    \label{fig:res_uniform_L2_GLU}
-\end{figure}
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_rect_L2_GLU.png}
-    \caption{Results with $f_{\textnormal{rect}}$ in $L2$ loss with $D_{GLU}$}
-    \label{fig:res_rect_L2_GLU}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_not_dict_L2_GLU.png}
+    \caption{Results with $f_{\textnormal{unif}}$ (upper panel), $f_{\textnormal{rect}}$ 
+    (middle panel) and $f_{\textnormal{ext}}$ (lower panel) in $L_2$ loss with $D_{GLU}$.}
+    \label{fig:res_gauss_L2_GLU}
 \end{figure}
+Finally, the results for the densities $f_{\textnormal{gauss}}$ and $f_{\textnormal{gauss-lapl}}$
+plotted on \Cref{fig:res_ext_L2_GLU} and \Cref{fig:res_ext_KL_GLU} confirm that
+adding new elements to the dictionary (even if they are ``useless'') do not deteriorate
+the quality of estimation. The $\ell_1$-constraint allow us to avoid the overfitting. 
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_gauss_L2_GLU.png}
-    \caption{Results with $f_{\textnormal{gauss}}$ in $L2$ loss with $D_{GLU}$}
-    \label{fig:res_gauss_L2_GLU}
-\end{figure}
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_L2_GLU.png}
-    \caption{Results with $f_{\textnormal{gauss-lapl}}$ in $L2$ loss with $D_{GLU}$}
-    \label{fig:res_lapl_gauss_L2_GLU}
-\end{figure}
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_not_dict_L2_GLU.png}
-    \caption{Results with $f_{\textnormal{ext}}$ in $L2$ loss with $D_{GLU}$}
+    \caption{Results with $f_{\textnormal{gauss}}$ (upper panel) and $f_{\textnormal{gauss-lapl}}$ 
+    (lower panel) in $L2$ loss with $D_{GLU}$.}
     \label{fig:res_ext_L2_GLU}
 \end{figure}
+
+\subsubsection{Concluding remarks} 
+
+To conclude, the performance of the MLE method in these simulations is promising to achieve a 
+good mixture density estimate. In addition, the computational efficiency of the MLE displayed in 
+\Cref{fig:res_times} makes it highly attractive for performing density estimation. Our algorithm 
+was coded in Python with some elements accelerated with the Just-In-Time (JIT) compiler Numba \citep{numba}. 
+Compared to compiled optimized versions of KDE and EM from Scipy and Scikit-Learn\citep{scikit-learn}, 
+we are confident that the computation time of our algorithm can be further decreased. Another important 
+point is in the case of high dimensional data, KDE and EM+BIC methods are known to present poor 
+performance. Our method needs the computation of the matrix $(f_j(X_i))_{(i,j)\in [N]\times [K]}$ 
+which might consume a lot of memory. Some techniques such as a Mini-batch approach can help. 
+Furthermore, at the light of the results in the uniform and rectangular case, the choice of the 
+dictionary is a cornerstone in density estimation. The size of the dictionary should be chosen 
+by considering both statistical arguments and computational limitations.
+
+
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_uniform_KL_GLU.png}
-    \caption{Results with $f_{\textnormal{unif}}$ in KL loss with $D_{GLU}$}
-    \label{fig:res_uniform_KL_GLU}
-\end{figure}
-%rect
-\begin{figure}
-\center
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_rect_KL_GLU.png}
-    \caption{Results with $f_{\textnormal{rect}}$ in KL loss with $D_{GLU}$}
-    \label{fig:res_rect_KL_GLU}
-\end{figure}
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/res_gauss_KL_GLU.png}
-    \caption{Results with $f_{\textnormal{gauss}}$ in KL loss with $D_{GLU}$}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_not_dict_KL_GLU.png}
+    \caption{Results with $f_{\textnormal{unif}}$ (upper panel), $f_{\textnormal{rect}}$ 
+    (middle panel) and $f_{\textnormal{ext}}$ (lower panel) in KL loss with $D_{GLU}$.}
     \label{fig:res_gauss_KL_GLU}
 \end{figure}   
 %lapl_gauss
 \begin{figure}
 \center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/res_gauss_KL_GLU.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_KL_GLU.png}
-    \caption{Results with $f_{\textnormal{gauss-lapl}}$ in KL loss with $D_{GLU}$}
-    \label{fig:res_lapl_gauss_KL_GLU}
-\end{figure}  
-%ext
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/res_lapl_gauss_not_dict_KL_GLU.png}
-    \caption{Results with $f_{\textnormal{ext}}$ in KL loss with $D_{GLU}$}
+    \caption{Results with $f_{\textnormal{gauss}}$ (upper panel) and $f_{\textnormal{gauss-lapl}}$ 
+    (lower panel) in KL loss with $D_{GLU}$.}
     \label{fig:res_ext_KL_GLU}
 \end{figure} 
-To conclude, the performance of the MLE method in these simulations is promising to achieve a good mixture density estimate. We would like to mention the computational efficiency of the MLE method as it is a convex problem, the whole procedure to construct the estimator is simple and its dimension is the size of the dictionary considered. During our simulations, the MLE method showed interesting time of computation. Our algorithm was coded in Python with some elements accelerated with the Just-In-Time (JIT) compiler Numba \citep{numba}. Compared to compiled optimized versions of KDE and EM from Scipy and Scikit-Learn\citep{scikit-learn}, we are confident that the computation time of our algorithm can be significantly decreased. Another important point is in the case of high dimensional data, KDE and EM+BIC methods are known to present poor performance in this setting. Our method need the computation of the matrix $(f_j(X_i))_{(i,j)\in [N]\times [K]}$ which might consume a lot of memory. Some techniques such as a Mini-batch approach can help. Furthermore, at the light of the results in the uniform and rectangular case, the choice of the dictionary is a cornerstone in constructing a good mixture density. It can not be too large due to memory limitations. This is a classical problem of dictionary-based methods.
+
 
 \begin{figure}
 \center
