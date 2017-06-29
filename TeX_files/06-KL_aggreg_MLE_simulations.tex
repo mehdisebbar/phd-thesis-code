@@ -528,13 +528,13 @@ the quality of estimation. The $\ell_1$-constraint allow us to avoid the overfit
 
 \subsubsection{Comparison of weights estimated by AD and MLE}
 
-A closer look on the estimated weights by AD and MLE is necessary to observe the sparse estimation and the reasons of the poor performance of AD observed. We plotted the estimators of the weights when the target density is
-$f_{\textnormal{gauss}}$ and $f_{\textnormal{gauss-lapl}}$. The dictionary used for this study is $D_{GLU}$. We started by $f_{\textnormal{gauss}}$, the estimated weights of the components of this density are plotted in \Cref{fig:weights_gauss_real_indexes}. We invite the reader to check on the table at \Cref{table:densities_DGLU} to see the components corresponding to the indexes. We observe that MLE provides accurate estimations of the weights of each components of the mixture, we recall that they are set to 0.2 in $f_{\textnormal{gauss}}$. The estimations given by AD are less accurate. It turns out that AD is more influenced by the uniform densities that are overlapping the components of the mixture as shown in \Cref{fig:weights_gauss_unif_indexes}. The sparse estimation of the weights can be observed by looking at components not used in the mixture $f_{\textnormal{gauss}}$, we can see in \Cref{fig:weights_gauss_other_indexes} that both AD and MLE provide sparse solution as expected. 
+A closer look on the estimated weights by AD and MLE is necessary to observe the sparse estimation and the reasons of the poor performance of AD observed. We plotted the estimations of the weights when the target density is
+$f_{\textnormal{gauss}}$ and $f_{\textnormal{gauss-lapl}}$. The dictionary used for this study is $D_{GLU}$. Consider the density $f_{\textnormal{gauss}}$, the estimated weights of the components of this density are plotted in \Cref{fig:weights_gauss_real_indexes}. We invite the reader to check on the table at \Cref{table:densities_DGLU} to see the components corresponding to the indexes. We observe that MLE provides accurate estimations of the weights of each components of the mixture, we recall that they are set to 0.2 in $f_{\textnormal{gauss}}$. The estimations given by AD are less accurate. It turns out that AD is more influenced by the uniform densities that are overlapping the components of the mixture as shown in \Cref{fig:weights_gauss_unif_indexes}. The sparse estimation of the weights can be observed by looking at components not used in the mixture $f_{\textnormal{gauss}}$, we can see in \Cref{fig:weights_gauss_other_indexes} that both AD and MLE provide sparse solution as expected. 
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_real_comp_N_500.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_real_comp_N_1000.png}
-    \caption{Estimated weights of the Gaussian components of $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
+    \caption{Estimated weights of Gaussian components of $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
     (lower panel).}
     \label{fig:weights_gauss_real_indexes}
 \end{figure}
@@ -601,14 +601,14 @@ As a matter of fact, the estimated weight vector by AD is more sparse that MLE, 
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around3_comp_N_500.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around3_comp_N_1000.png}
-    \caption{Estimated weights of components at the same mean ($0.4$) of the $4^{th}$ component $Laplace(0.4, 0.2)$ of $f_{\textnormal{gauss-lapl}}$ at index $36$ in $D_{GLU}$, with $N=500$ (upper panel) and $N=1000$
+    \caption{Estimated weights of components at the same mean ($0.4$) of the $4^{th}$ component Laplace$(0.4, 0.2)$ of $f_{\textnormal{gauss-lapl}}$ at index $36$ in $D_{GLU}$, with $N=500$ (upper panel) and $N=1000$
     (lower panel).}
     \label{fig:weights_gauss_laplace_around3_indexes}
 \end{figure}
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/laplaceVSgauss_uniform.png}
-    \caption{Comparison of mixture of $\varphi(0.5, 10^{-3})$ and Uniform on $[-1,2]$ with $Laplace(0.5, 0.2)$ }
+    \caption{Comparison of mixture of $\varphi(0.5, 10^{-3})$ and Uniform on $[-1,2]$ with Laplace$(0.5, 0.2)$ }
     \label{fig:laplaceVSgauss_uniform}
 \end{figure}
 \begin{figure}
@@ -638,7 +638,7 @@ As a matter of fact, the estimated weight vector by AD is more sparse that MLE, 
 20 & Normal( 1 , 1 ) &42 & Laplace( 0.6 , 0.5 )& &   \\ \hline
 21 & Normal( 1 , 0.1 ) &43 & Laplace( 0.6 , 1 )& &   \\ \hline
 \end{tabular}
-\caption{Indices and components of the dictionary $D_{GL}$ and $D_{GLU}$ }
+\caption{Indexes of components of the dictionary $D_{GL}$ and $D_{GLU}$ }
 \label{table:densities_DGLU}
 \end{figure}
 
