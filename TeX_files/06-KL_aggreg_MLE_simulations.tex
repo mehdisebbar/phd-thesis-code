@@ -324,8 +324,8 @@ We did experiments with the following two dictionaries containing various types 
 \item The first dictionary, denoted by $D_{GL}$, is composed of Gaussian and Laplace densities. 
 The Gaussian densities have their means in the set 
 $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their variances in $\{0.001, 0.01, 0.1, 1\}$. The Laplace densities have their 
-means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their scales in $\{0.05, 0.1, 0.5, 1\}$. Therefore, 
-the dictionary $D_{GL}$ has 48 elements. The plots of these
+means in $\{0, 0.2, 0.4, 0.6, 0.8, 1\}$ and their scales in $\{0.05, 0.1, 0.2, 0.5, 1\}$. Therefore, 
+the dictionary $D_{GL}$ has 54 elements. The plots of these
 functions are depicted in \Cref{fig:dict}.
 
 \begin{figure}[h]
@@ -337,8 +337,9 @@ functions are depicted in \Cref{fig:dict}.
 %\item Union of Fourier and Haar aud Gaussians ?
 \item The second dictionary, denoted by $D_{GLU}$, is obtained by enriching
 the first dictionary $D_{GL}$ by the set of $10$ uniform densities on the intervals 
-$(i, i+0.1)$, $i\in \{0, 0.1,\dots,0.9\}$. This dictionary $D_{GLU}$ has 48 elements.
+$(i, i+0.1)$, $i\in \{0, 0.1,\dots,0.9\}$. This dictionary $D_{GLU}$ has 64 elements.
 \end{enumerate}
+A table of the dictionary $D_{GL}$ (and $D_{GLU}$ with the uniform densities) can be found in \Cref{table:densities_DGLU}.
 
 \subsection{Densities considered}
 We considered 5 target densities corresponding to 5 different scenarios. The $1^{st}$ and $2^{nd}$ will asses the performance of our method on uniform based densities, the $3^{rd}$ and $4^{th}$ on dictionary based density. The last one is a complex density made from elements which are not in the dictionary that we will consider.
@@ -523,6 +524,122 @@ the quality of estimation. The $\ell_1$-constraint allow us to avoid the overfit
     \caption{Results with $f_{\textnormal{gauss}}$ (upper panel) and $f_{\textnormal{gauss-lapl}}$ 
     (lower panel) in $L2$ loss with $D_{GLU}$.}
     \label{fig:res_ext_L2_GLU}
+\end{figure}
+
+\subsubsection{Comparison of weights estimated by AD and MLE}
+
+A closer look on the estimated weights by AD and MLE is necessary to observe the sparse estimation and the reasons of the poor performance of AD observed. We plotted the estimators of the weights when the target density is
+$f_{\textnormal{gauss}}$ and $f_{\textnormal{gauss-lapl}}$. The dictionary used for this study is $D_{GLU}$. We started by $f_{\textnormal{gauss}}$, the estimated weights of the components of this density are plotted in \Cref{fig:weights_gauss_real_indexes}. We invite the reader to check on the table at \Cref{table:densities_DGLU} to see the components corresponding to the indexes. We observe that MLE provides accurate estimations of the weights of each components of the mixture, we recall that they are set to 0.2 in $f_{\textnormal{gauss}}$. The estimations given by AD are less accurate. It turns out that AD is more influenced by the uniform densities that are overlapping the components of the mixture as shown in \Cref{fig:weights_gauss_unif_indexes}. The sparse estimation of the weights can be observed by looking at components not used in the mixture $f_{\textnormal{gauss}}$, we can see in \Cref{fig:weights_gauss_other_indexes} that both AD and MLE provide sparse solution as expected. 
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_real_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_real_comp_N_1000.png}
+    \caption{Estimated weights of the Gaussian components of $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}
+    \label{fig:weights_gauss_real_indexes}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_unif_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_unif_comp_N_1000.png}
+    \caption{Estimated weights of uniform components of the dictionary for $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}{}
+    \label{fig:weights_gauss_unif_indexes}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_other_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_other_comp_N_1000.png}
+    \caption{Estimated weights of non-used components of the dictionary for $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}
+    \label{fig:weights_gauss_other_indexes}
+\end{figure}
+The same plots for the density $f_{\textnormal{gauss-lapl}}$ are given in \Cref{fig:weights_gauss_laplace_real_indexes,fig:weights_gauss_laplace_unif_indexes,fig:weights_gauss_laplace_other_indexes}. 
+When we look at the estimated weights of components of the density $f_{\textnormal{gauss-lapl}}$, AD estimated only 2 non zero components. A deeper look at the estimated weights of densities that have the same mean as the first component $\varphi(0, 10^{-2})$ of $f_{\textnormal{gauss-lapl}}$ reveals (see \Cref{fig:weights_gauss_laplace_around2_indexes}) that AD selected the uniform density (index 54) only. 
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_real_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_real_comp_N_1000.png}
+    \caption{Estimated weights of the components of $f_{\textnormal{gauss-lapl}}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}
+    \label{fig:weights_gauss_laplace_real_indexes}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_unif_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_unif_comp_N_1000.png}
+    \caption{Estimated weights of uniform components of the dictionary for $f_{\textnormal{gauss-lapl}}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}
+    \label{fig:weights_gauss_laplace_unif_indexes}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_other_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_other_comp_N_1000.png}
+    \caption{Estimated weights of non-used components of the dictionary for $f_{\textnormal{gauss-lapl}}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}
+    \label{fig:weights_gauss_laplace_other_indexes}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around2_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around2_comp_N_1000.png}
+    \caption{Estimated weights of components at the same mean ($0$) of the $1^{st}$ component $\varphi(0, 10^{-2})$ of $f_{\textnormal{gauss-lapl}}$ at index $2$ in $D_{GLU}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}
+    \label{fig:weights_gauss_laplace_around2_indexes}
+\end{figure}
+As a matter of fact, the estimated weight vector by AD is more sparse that MLE, but AD is more prone to be influenced by overlapping densities.\todos{verifier cette explication}. We performed a similar study for a better weighted density by AD at index 15 corresponding to $\varphi(0.6, 10^{-3})$ (see \Cref{fig:weights_gauss_laplace_around_indexes}). Again, the solution of AD is more sparse but this method is also influenced by the overlapping uniform density. The MLE gives more weight to the right components. However, the density at index 36 corresponding to the Laplace$(0.4, 0.2)$ of $f_{\textnormal{gauss-lapl}}$ is completely avoided by both methods (see \Cref{fig:weights_gauss_laplace_around3_indexes}). It seems that both has selected a mixture of $\varphi(0.4, 10^{-3})$ (index 11) and the two uniforms on $[0.3, 0.4]$ and $[0.4, 0.5]$ (indexes 57 and 58) instead of the Laplace$(0.4, 0.2)$. This is not surprising since this mixture is very close to the true component (see \Cref{fig:laplaceVSgauss_uniform}).
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around_comp_N_1000.png}
+    \caption{Estimated weights of components at the same mean ($0.6$) of the $3^{rd}$ component $\varphi(0.6, 10^{-3})$ of $f_{\textnormal{gauss-lapl}}$ at index $15$ in $D_{GLU}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}
+    \label{fig:weights_gauss_laplace_around_indexes}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around3_comp_N_500.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around3_comp_N_1000.png}
+    \caption{Estimated weights of components at the same mean ($0.4$) of the $4^{th}$ component $Laplace(0.4, 0.2)$ of $f_{\textnormal{gauss-lapl}}$ at index $36$ in $D_{GLU}$, with $N=500$ (upper panel) and $N=1000$
+    (lower panel).}
+    \label{fig:weights_gauss_laplace_around3_indexes}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/laplaceVSgauss_uniform.png}
+    \caption{Comparison of mixture of $\varphi(0.5, 10^{-3})$ and Uniform on $[-1,2]$ with $Laplace(0.5, 0.2)$ }
+    \label{fig:laplaceVSgauss_uniform}
+\end{figure}
+\begin{figure}
+\center
+\begin{tabular}{|c|l|c|l|c|l|}
+\hline
+0 & Normal( 0 , 1 ) &22 & Normal( 1 , 0.01 ) &44 & Laplace( 0.8 , 0.05 ) \\ \hline
+1 & Normal( 0 , 0.1 ) &23 & Normal( 1 , 0.001 ) &45 & Laplace( 0.8 , 0.1 ) \\ \hline
+2 & Normal( 0 , 0.01 ) &24 & Laplace( 0 , 0.05 ) &46 & Laplace( 0.8 , 0.2 ) \\ \hline
+3 & Normal( 0 , 0.001 ) &25 & Laplace( 0 , 0.1 ) &47 & Laplace( 0.8 , 0.5 ) \\ \hline
+4 & Normal( 0.2 , 1 ) &26 & Laplace( 0 , 0.2 ) &48 & Laplace( 0.8 , 1 ) \\ \hline
+5 & Normal( 0.2 , 0.1 ) &27 & Laplace( 0 , 0.5 ) &49 & Laplace( 1 , 0.05 ) \\ \hline
+6 & Normal( 0.2 , 0.01 ) &28 & Laplace( 0 , 1 ) &50 & Laplace( 1 , 0.1 ) \\ \hline
+7 & Normal( 0.2 , 0.001 ) &29 & Laplace( 0.2 , 0.05 ) &51 & Laplace( 1 , 0.2 ) \\ \hline
+8 & Normal( 0.4 , 1 ) &30 & Laplace( 0.2 , 0.1 ) &52 & Laplace( 1 , 0.5 ) \\ \hline
+9 & Normal( 0.4 , 0.1 ) &31 & Laplace( 0.2 , 0.2 ) &53 & Laplace( 1 , 1 ) \\ \hline
+10 & Normal( 0.4 , 0.01 ) &32 & Laplace( 0.2 , 0.5 )&54 & Uniform( 0.0 , 0.1 ) \\ \hline
+11 & Normal( 0.4 , 0.001 ) &33 & Laplace( 0.2 , 1 )&55 & Uniform( 0.1 , 0.2 ) \\ \hline
+12 & Normal( 0.6 , 1 ) &34 & Laplace( 0.4 , 0.05 )&56 & Uniform( 0.2 , 0.3 ) \\ \hline
+13 & Normal( 0.6 , 0.1 ) &35 & Laplace( 0.4 , 0.1 )&57 & Uniform( 0.3 , 0.4 ) \\ \hline
+14 & Normal( 0.6 , 0.01 ) &36 & Laplace( 0.4 , 0.2 )&58 & Uniform( 0.4 , 0.5 ) \\ \hline
+15 & Normal( 0.6 , 0.001 ) &37 & Laplace( 0.4 , 0.5 )&59 & Uniform( 0.5 , 0.6 ) \\ \hline
+16 & Normal( 0.8 , 1 ) &38 & Laplace( 0.4 , 1 )&60 & Uniform( 0.6 , 0.7 ) \\ \hline
+17 & Normal( 0.8 , 0.1 ) &39 & Laplace( 0.6 , 0.05 )&61 & Uniform( 0.7 , 0.8 ) \\ \hline
+18 & Normal( 0.8 , 0.01 ) &40 & Laplace( 0.6 , 0.1 )&62 & Uniform( 0.8 , 0.9 ) \\ \hline
+19 & Normal( 0.8 , 0.001 ) &41 & Laplace( 0.6 , 0.2 )&63 & Uniform( 0.9 , 1.0 ) \\ \hline
+20 & Normal( 1 , 1 ) &42 & Laplace( 0.6 , 0.5 )& &   \\ \hline
+21 & Normal( 1 , 0.1 ) &43 & Laplace( 0.6 , 1 )& &   \\ \hline
+\end{tabular}
+\caption{Indices and components of the dictionary $D_{GL}$ and $D_{GLU}$ }
+\label{table:densities_DGLU}
 \end{figure}
 
 \subsubsection{Concluding remarks} 
