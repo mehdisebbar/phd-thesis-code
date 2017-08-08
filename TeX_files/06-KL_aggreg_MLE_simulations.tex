@@ -171,7 +171,7 @@ The Dantzig estimate $\hat\blambda^D$ is then obtained by solving the following 
     \left\{
     \begin{array}{ll}
         \text{minimize}\, &\|\blambda\|_1 \\
-        \text{subject to}\, &|(\bG\blambda)_m-\hat\beta|\leq \eta_{\gamma,m} \quad m\in \{1,\dots,M\},
+        \text{subject to}\, &|(\bG\blambda)_m-\hat\beta_m|\leq \eta_{\gamma,m} \quad m\in \{1,\dots,M\},
     \end{array} \right.
 \end{equation*}
 where, for a constant $\gamma > 0$,
@@ -528,34 +528,25 @@ the quality of estimation. The $\ell_1$-constraint allow us to avoid the overfit
 
 \subsubsection{Comparison of weights estimated by AD and MLE}
 
-A closer look on the estimated weights by AD and MLE is necessary to observe the sparse estimation and the reasons of the poor performance of AD observed. We plotted the estimations of the weights when the target density is
-$f_{\textnormal{gauss}}$ and $f_{\textnormal{gauss-lapl}}$. The dictionary used for this study is $D_{GLU}$. Consider the density $f_{\textnormal{gauss}}$, the estimated weights of the components of this density are plotted in \Cref{fig:weights_gauss_real_indexes}. We invite the reader to check on the table at \Cref{table:densities_DGLU} to see the components corresponding to the indexes. We observe that MLE provides accurate estimations of the weights of each components of the mixture, we recall that they are set to 0.2 in $f_{\textnormal{gauss}}$. The estimations given by AD are less accurate. It turns out that AD is more influenced by the uniform densities that are overlapping the components of the mixture as shown in \Cref{fig:weights_gauss_unif_indexes}. The sparse estimation of the weights can be observed by looking at components not used in the mixture $f_{\textnormal{gauss}}$, we can see in \Cref{fig:weights_gauss_other_indexes} that both AD and MLE provide sparse solution as expected. 
+A closer look on the estimated weights by AD and MLE gives us knowledge on the behavior of these estimators. We considered the full dictionary $D_{GLU}$ and we provided a table of the indexes of components of this dictionary in \Cref{table:densities_DGLU}. We plotted the estimated weights of the true components of $f_{\textnormal{gauss}}$ and $f_{\textnormal{gauss-lapl}}$ in \Cref{fig:weights_gauss_real_indexes} and \Cref{fig:weights_gauss_laplace_real_indexes}. The MLE estimates correctly the real weights of $f_{\textnormal{gauss}}$ and most of the weights of $f_{\textnormal{gauss-lapl}}$. We recall the reader that those weights were set to $0.2$. However, AD did not succeed to estimate correctly these weights. It turns out that AD gave importance on components that overlap the true densities of the mixture as shown in \Cref{fig:weights_gauss_and_laplace_unif_indexes} with the uniform components. Both AD and MLE provide sparse estimators, this can be seen by looking at components not used in the dictionary (see \Cref{fig:weights_gauss_and_laplace_other_indexes}). As a matter of fact, the estimated weight vector by AD is more sparse that MLE, but AD is more prone to be influenced by overlapping densities.
+
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_real_comp_N_500.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_real_comp_N_1000.png}
-    \caption{Estimated weights of Gaussian components of $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
+    \caption{Estimated weights of the components of $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
     (lower panel).}
     \label{fig:weights_gauss_real_indexes}
 \end{figure}
 \begin{figure}
 \center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_unif_comp_N_500.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_unif_comp_N_1000.png}
-    \caption{Estimated weights of uniform components of the dictionary for $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
-    (lower panel).}{}
-    \label{fig:weights_gauss_unif_indexes}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_unif_comp_N_1000.png}
+    \caption{Estimated weights of uniform components of the dictionary for 
+    $f_{\textnormal{gauss}}$ (upper panel) and $f_{\textnormal{gauss-lapl}}$ (lower panel) with $N=1000$.}
+    \label{fig:weights_gauss_and_laplace_unif_indexes}
 \end{figure}
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_other_comp_N_500.png}
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_other_comp_N_1000.png}
-    \caption{Estimated weights of non-used components of the dictionary for $f_{\textnormal{gauss}}$, with $N=500$ (upper panel) and $N=1000$
-    (lower panel).}
-    \label{fig:weights_gauss_other_indexes}
-\end{figure}
-The same plots for the density $f_{\textnormal{gauss-lapl}}$ are given in \Cref{fig:weights_gauss_laplace_real_indexes,fig:weights_gauss_laplace_unif_indexes,fig:weights_gauss_laplace_other_indexes}. 
-When we look at the estimated weights of components of the density $f_{\textnormal{gauss-lapl}}$, AD estimated only 2 non zero components. A deeper look at the estimated weights of densities that have the same mean as the first component $\varphi(0, 10^{-2})$ of $f_{\textnormal{gauss-lapl}}$ reveals (see \Cref{fig:weights_gauss_laplace_around2_indexes}) that AD selected the uniform density (index 54) only. 
+
 \begin{figure}
 \center
     \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_real_comp_N_500.png}
@@ -566,51 +557,11 @@ When we look at the estimated weights of components of the density $f_{\textnorm
 \end{figure}
 \begin{figure}
 \center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_unif_comp_N_500.png}
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_unif_comp_N_1000.png}
-    \caption{Estimated weights of uniform components of the dictionary for $f_{\textnormal{gauss-lapl}}$, with $N=500$ (upper panel) and $N=1000$
-    (lower panel).}
-    \label{fig:weights_gauss_laplace_unif_indexes}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_and_laplace_other_comp_N_1000.png}
+    \caption{Estimated weights of non-used components of the dictionary for  $f_{\textnormal{gauss}}$ (upper panel) and $f_{\textnormal{gauss-lapl}}$ (lower panel), with $N=1000$.}
+    \label{fig:weights_gauss_and_laplace_other_indexes}
 \end{figure}
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_other_comp_N_500.png}
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_other_comp_N_1000.png}
-    \caption{Estimated weights of non-used components of the dictionary for $f_{\textnormal{gauss-lapl}}$, with $N=500$ (upper panel) and $N=1000$
-    (lower panel).}
-    \label{fig:weights_gauss_laplace_other_indexes}
-\end{figure}
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around2_comp_N_500.png}
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around2_comp_N_1000.png}
-    \caption{Estimated weights of components at the same mean ($0$) of the $1^{st}$ component $\varphi(0, 10^{-2})$ of $f_{\textnormal{gauss-lapl}}$ at index $2$ in $D_{GLU}$, with $N=500$ (upper panel) and $N=1000$
-    (lower panel).}
-    \label{fig:weights_gauss_laplace_around2_indexes}
-\end{figure}
-As a matter of fact, the estimated weight vector by AD is more sparse that MLE, but AD is more prone to be influenced by overlapping densities.\todos{verifier cette explication}. We performed a similar study for a better weighted density by AD at index 15 corresponding to $\varphi(0.6, 10^{-3})$ (see \Cref{fig:weights_gauss_laplace_around_indexes}). Again, the solution of AD is more sparse but this method is also influenced by the overlapping uniform density. The MLE gives more weight to the right components. However, the density at index 36 corresponding to the Laplace$(0.4, 0.2)$ of $f_{\textnormal{gauss-lapl}}$ is completely avoided by both methods (see \Cref{fig:weights_gauss_laplace_around3_indexes}). It seems that both has selected a mixture of $\varphi(0.4, 10^{-3})$ (index 11) and the two uniforms on $[0.3, 0.4]$ and $[0.4, 0.5]$ (indexes 57 and 58) instead of the Laplace$(0.4, 0.2)$. This is not surprising since this mixture is very close to the true component (see \Cref{fig:laplaceVSgauss_uniform}).
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around_comp_N_500.png}
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around_comp_N_1000.png}
-    \caption{Estimated weights of components at the same mean ($0.6$) of the $3^{rd}$ component $\varphi(0.6, 10^{-3})$ of $f_{\textnormal{gauss-lapl}}$ at index $15$ in $D_{GLU}$, with $N=500$ (upper panel) and $N=1000$
-    (lower panel).}
-    \label{fig:weights_gauss_laplace_around_indexes}
-\end{figure}
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around3_comp_N_500.png}
-    \includegraphics[width=0.8\textwidth]{./TeX_files/weight_f_gauss_laplace_around3_comp_N_1000.png}
-    \caption{Estimated weights of components at the same mean ($0.4$) of the $4^{th}$ component Laplace$(0.4, 0.2)$ of $f_{\textnormal{gauss-lapl}}$ at index $36$ in $D_{GLU}$, with $N=500$ (upper panel) and $N=1000$
-    (lower panel).}
-    \label{fig:weights_gauss_laplace_around3_indexes}
-\end{figure}
-\begin{figure}
-\center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/laplaceVSgauss_uniform.png}
-    \caption{Comparison of mixture of $\varphi(0.5, 10^{-3})$ and Uniform on $[-1,2]$ with Laplace$(0.5, 0.2)$ }
-    \label{fig:laplaceVSgauss_uniform}
-\end{figure}
+
 \begin{figure}
 \center
 \begin{tabular}{|c|l|c|l|c|l|}
@@ -685,6 +636,104 @@ by considering both statistical arguments and computational limitations.
     \label{fig:res_times}
 \end{figure}
 
-\section{Real use case}
+\section{A method for constructing the dictionary}
 
-The code is available on github
+In this section, we propose a data-driven method to construct a dictionary of densities for the KL-aggregation algorithm. We compare mixture densities estimated by this dictionary generation method and the KL-aggregation algorithm with the Kernel density estimator with the bandwidth selected via cross-validation and the Expectation-Maximization algorithm with the BIC criterion in different dimensional settings. We show experimentally that the KL-aggregation algorithm with a dictionary provided by this method offers good performance at an attractive computation cost.
+
+\subsection{Implementation}
+
+Given a sample $\bX_1,\dots,\bX_n\in\RR^p$, we construct the set of principal components $C$ of the design matrix $\bX$ by SVD. Then we build the set $S$ of all subspaces spanned by two elements of $C$:
+\begin{equation}
+  S = \{\textnormal{span}(\bv_i,\bv_j),\, (\bv_i,\bv_j) \in C.\}.
+\end{equation}
+On each subspace of $S$, we perform a clustering to find groups. For each group, we consider the points assigned to it in the original space and recover the empirical mean, the sample variance and construct a normal density with these parameters. The dictionary construction procedure is given in \Cref{algo:dictionary_generator}
+
+\begin{figure}[ht]
+\begin{center}
+\mybox{
+\begin{minipage}{0.85\linewidth}
+\begin{algorithmic}%\SetAlgoLined\tt\SetLine
+\small
+\STATE {\bfseries Input: $\bX_1,\dots,\bX_n\textnormal{ with } \bX_i\in\RR^p$.} 
+\STATE {\bfseries Output:} A dictionary of densities $\{f_1,\dots,f_M\}$.
+\STATE {\tt 1: Run a SVD on the design matrix $\bX$ and recover the set of $p$ principal components $C=\{\bv_1,\dots,\bv_p\}$.}
+\FOR{ $(\bv_i,\bv_j)\in C$ }
+\STATE {\tt 2: Run a clustering procedure on the data projected to $\textnormal{span}(\bv_i, \bv_j)$, $\bX_1^{(i,j)},\dots,\bX_n^{(i,j)}$, and construct clusters of points $G_1,\dots,G_K$}.
+\STATE {\tt 3: For each cluster $G_m$, $m\in [K]$, compute the mean $\hat\bmu_m$ and variance $\hat\bsigma_m$ of the points assigned to $G_m$ in the original space $\RR^P$}.
+\STATE {\tt 4: Add to the dictionary the Gaussian densities $\{\varphi_{(\hat\bmu_m, \hat\bsigma_m)}\}_{m\in [K]}$}
+\ENDFOR.
+\end{algorithmic}
+\end{minipage}}
+   \caption{Procedure for generating a dictionary of densities}
+   \label{algo:dictionary_generator}
+\end{center}
+\end{figure}
+A simple implementation would consider all principal components and thus $\frac{p(p-1)}{2}$ subspaces. On each of these subspace a clustering such as K-means with an arbitrary large number of clusters K would be applied. The whole complexity would be $\mathcal{O}(p^2n^{pK+1})$. To reduce the computational complexity of this procedure, especially in high dimension, we adopted three strategies. The first one consists to select the most informative components obtained via the SVD. One can use different techniques such as the Truncated SVD or the method proposed in \citep{Gavish2014} which circumvent the issue of not knowing $\textnormal{rank}(\bX)$. They considered the recovery of low-rank matrices from noisy data by hard thresholding of singular values by studying the asymptotic MSE. The AMSE-optimal choice of hard threshold would be for a $n$-by-$p$ matrix with $n\neq p$, $\hat\tau_* = \omega(\beta).y_{med}$, with $\beta = n/p$, $y_{med}$ is the median singular value of $\bX$ and $\omega(\beta)$ is described in \citep{Gavish2014}. The second strategy is to performs a model selection for each clustering which reduces the number of densities added to the dictionary. The clustering method chosen is EM with BIC. The third strategy addresses the problem of density duplicates in the dictionary originating from the same subset of points. We saw in the previous section that overlapping densities can degrade the performance of our estimators. One would like to remove these similar densities by performing a two-sample test. The reduction of multivariate two-sample testing to a binary classification problem follows from Friedman in \citep{Friedman:2003id}. To test whether two densities $P$ and $Q$ are equal, we draw two samples $\{\by_1,\dots,\by_n\}$ and $\{\bz_1,\dots,\bz_m\}$ from $P$ and $Q$ respectively and construct the dataset
+\begin{equation}
+  \mathcal{D} = \{(\bu_i,l_i)\}_{i=1}^{n+m}  \coloneqq  \{(\by_i,-1)\}_{i=1}^n \cup \{(\bz_i,0)\}_{i=1}^m.
+\end{equation}
+We shuffle $\mathcal{D}$ and keep a record of the original assignments for each sample in $\mathcal{D}$. Then, we split this dataset into two parts, $\mathcal{D}_{tr}$ for training a binary classifier and $\mathcal{D}_{te}$ for predicting the classification scores $\{s_i\}_{i=1}^{n+m}$. We consider the two sets $S_+$ and $S_-$, the first one contains the scores of the samples originating from $\{\bz_i\}_{i=1}^m$ and $S_-$ contains the scores of the samples originating from $\{\by_i\}_{i=1}^n$. We can view $S_+$ and $S_-$ as two samples drawn from two probability distributions, $p_+(s)$ and $p_-(s)$, and  apply a goodness-of-fit test such as the univariate Kolmogorov–Smirnov test, for testing the equality of these two densities. The resulting test statistic is the statistic for the multivariate two-sample test for the equality of the distributions $P$ and $Q$.
+
+\subsection{Experimental evaluation}
+
+We created a mixture of 6 components in dimension 5, see \Cref{fig:experiments_data}, which mimics data that can be seen in real use cases\todos{imagerie ?}. The simulation were run in dimension 3, 4 and 5 by selecting the corresponding first axis. We generated $n\in\{100, 500, 1000\}$ points and ran 200 simulations. We used the dictionary generation procedure for the KL-aggregation algorithm and compared the $L_2$-loss and $KL$-loss with EM-BIC and KDE-CV. The computation times were also recorded.
+
+\subsubsection{Discussion of the results}
+We compared, first, the KL-algorithm with the dictionary generated by our procedure to KDE-CV and EM-BIC without the two optimizations techniques discussed before (selection of principal components and the deletion of similar densities). In the three scenarios (dimension 3,4 and 5), KDE-CV performs better but our algorithm took less time (see \Cref{fig:result_dict_gen_dim_3,fig:result_dict_gen_dim_4,fig:result_dict_gen_dim_5}). The time given for MLE is the total computational time of the generation of the dictionary and the aggregation algorithm. However, adding the two optimizations techniques, we have better results for our algorithm \Cref{fig:result_dict_gen_dim_3_gof_pc_select,fig:result_dict_gen_dim_4_gof_pc_select,fig:result_dict_gen_dim_5_gof_pc_select}. Despite adding more  ``intelligence" in the construction of the dictionary, this procedures counterbalance the cost of adding too much densities to the KL-aggregation algorithm and therefore lead to similar computational times. Moreover, our algorithm outperforms KDE-CV and EM-BIC with these dictionaries in all scenarios.
+
+\begin{figure}
+\center
+    \includegraphics[width=\textwidth]{./TeX_files/experiments_data.png}
+    \caption{Simulated data for the dictionary generator algorithm and KL-aggregation}
+    \label{fig:experiments_data}
+\end{figure}
+
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_3_KL.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_3_L2.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_3.png}
+    \caption{Results for dimension 3. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). Without dictionary generation optimizations.}
+    \label{fig:result_dict_gen_dim_3}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_4_KL.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_4_L2.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_4.png}
+    \caption{Results for dimension 4. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). Without dictionary generation optimizations.}
+    \label{fig:result_dict_gen_dim_4}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_5_KL.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_5_L2.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_5.png}
+    \caption{Results for dimension 5. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). The KL divergence for EM-BIC could not be computed. Without dictionary generation optimizations.}
+    \label{fig:result_dict_gen_dim_5}
+\end{figure}
+
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_3_KL_gof_pc_select.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_3_L2_gof_pc_select.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_3_gof_pc_select.png}
+    \caption{Results for dimension 3. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). With selection of principal components and deletion of similar densities.}
+    \label{fig:result_dict_gen_dim_3_gof_pc_select}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_4_KL_gof_pc_select.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_4_L2_gof_pc_select.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_4_gof_pc_select.png}
+    \caption{Results for dimension 4. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). With selection of principal components and deletion of similar densities.}
+    \label{fig:result_dict_gen_dim_4_gof_pc_select}
+\end{figure}
+\begin{figure}
+\center
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_5_KL_gof_pc_select.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_5_L2_gof_pc_select.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_5_gof_pc_select.png}
+    \caption{Results for dimension 5. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). The KL divergence for EM-BIC could not be computed. With selection of principal components and deletion of similar densities.}
+    \label{fig:result_dict_gen_dim_5_gof_pc_select}
+\end{figure}
