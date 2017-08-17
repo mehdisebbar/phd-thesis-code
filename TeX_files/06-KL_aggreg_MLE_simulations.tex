@@ -18,10 +18,7 @@ The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previ
 \end{equation}
 One can note that this problem is convex as the composition of $-\log$ and a linear function is convex. Furthermore, the feasible space is also convex. This problem can be solved via a Primal-Dual interior point method. But we opted for an approach based on the accelerated proximal gradient descent method because of its suitability to the problems in high-dimensions with sparsity assumption \citep{Beck:2009:FIS:1658360.1658364}.
 
-
-
 \section{Implementation}
-
 
 \begin{figure}[ht]
 \begin{center}
@@ -636,31 +633,50 @@ by considering both statistical arguments and computational limitations.
     \label{fig:res_times}
 \end{figure}
 
-\section{A method for constructing the dictionary}
+\section{A method for constructing the dictionary of densities}
 
 In this section, we propose a data-driven method to construct a dictionary of densities for the KL-aggregation algorithm. We compare mixture densities estimated by this dictionary generation method and the KL-aggregation algorithm with the Kernel density estimator with the bandwidth selected via cross-validation and the Expectation-Maximization algorithm with the BIC criterion in different dimensional settings. We show experimentally that the KL-aggregation algorithm with a dictionary provided by this method offers good performance at an attractive computation cost.
 
-\subsection{Implementation}
+\subsection{Implementation of the dictionary generator}
 
-Given a sample $\bX_1,\dots,\bX_n\in\RR^p$, we construct the set of principal components $C$ of the design matrix $\bX$ by SVD. Then we build the set $S$ of all subspaces spanned by two elements of $C$:
+Given a sample $\bX_1,\dots,\bX_n\in\RR^p$, we construct the set of principal components $C$ of the design matrix $\bX$ by PCA. Then we build the set $S$ of all subspaces spanned by two elements of $C$:
 \begin{equation}
   S = \{\textnormal{span}(\bv_i,\bv_j),\, (\bv_i,\bv_j) \in C.\}.
 \end{equation}
-On each subspace of $S$, we perform a clustering to find groups. For each group, we consider the points assigned to it in the original space and recover the empirical mean, the sample variance and construct a normal density with these parameters. The dictionary construction procedure is given in \Cref{algo:dictionary_generator}
+On each subspace of $S$, we perform a clustering to find groups. For each group, we consider the points assigned to it in the original space and recover the empirical mean, the sample variance and construct a normal density with these parameters. A simple implementation would consider all principal components and thus $\frac{p(p-1)}{2}$ subspaces. On each of these subspace a clustering such as K-means with an arbitrary large number of clusters K would be applied. The whole complexity would be $\mathcal{O}(p^2n^{2K+1})$. To reduce the computational complexity of this procedure, especially in high dimension, we adopted three strategies:
+\begin{enumerate}
+  \item Select the most informative components obtained via the PCA. One can use different techniques such as the Truncated SVD or the method proposed in \citep{Gavish2014} which circumvent the issue of not knowing $\textnormal{rank}(\bX)$. They considered the recovery of low-rank matrices from noisy data by hard thresholding of singular values by studying the asymptotic MSE. The AMSE-optimal choice of hard threshold would be for a $n$-by-$p$ matrix with $n\neq p$, $\hat\tau_* = \omega(\beta).y_{med}$, with $\beta = n/p$, $y_{med}$ is the median singular value of $\bX$ and $\omega(\beta)$ is described in \citep{Gavish2014}. An approximation of $\omega(\beta)$ is $\omega(\beta) \approx 0.56\beta^3 - 0.95\beta^2 + 1.82\beta + 1.43$. 
+  \item Perform a model selection for each clustering which reduces the number of densities added to the dictionary. The clustering method chosen is EM with BIC. 
+  \item We address the problem of density duplicates in the dictionary originating from the same subset of points. We saw in the previous section that overlapping densities can degrade the performance of our estimators. One would like to remove these similar densities by performing a two-sample test. The reduction of multivariate two-sample testing to a binary classification problem follows from Friedman in \citep{Friedman:2003id}. To test whether two densities $P$ and $Q$ are equal, we draw two samples $\{\by_1,\dots,\by_n\}$ and $\{\bz_1,\dots,\bz_m\}$ from $P$ and $Q$ respectively and construct the dataset
+\begin{equation}
+  \mathcal{D} = \{(\bu_i,l_i)\}_{i=1}^{n+m}  \coloneqq  \{(\by_i,-1)\}_{i=1}^n \cup \{(\bz_i,0)\}_{i=1}^m.
+\end{equation}
+We shuffle $\mathcal{D}$ and keep a record of the original assignments for each sample in $\mathcal{D}$. Then, we split this dataset into two parts, $\mathcal{D}_{tr}$ for training a binary classifier and $\mathcal{D}_{te}$ for predicting the classification scores $\{s_i\}_{i=1}^{n+m}$. We consider the two sets $S_+$ and $S_-$, the first one contains the scores of the samples originating from $\{\bz_i\}_{i=1}^m$ and $S_-$ contains the scores of the samples originating from $\{\by_i\}_{i=1}^n$. We can view $S_+$ and $S_-$ as two samples drawn from two probability distributions, $p_+(s)$ and $p_-(s)$, and  apply a goodness-of-fit test such as the univariate Kolmogorov–Smirnov test, for testing the equality of these two densities. The resulting test statistic is the statistic for the multivariate two-sample test for the equality of the distributions $P$ and $Q$. 
+\end{enumerate}
+The dictionary construction procedure is given in \Cref{algo:dictionary_generator}
 
 \begin{figure}[ht]
 \begin{center}
 \mybox{
-\begin{minipage}{0.85\linewidth}
+\begin{minipage}{1.1\linewidth}
 \begin{algorithmic}%\SetAlgoLined\tt\SetLine
 \small
-\STATE {\bfseries Input: $\bX_1,\dots,\bX_n\textnormal{ with } \bX_i\in\RR^p$.} 
-\STATE {\bfseries Output:} A dictionary of densities $\{f_1,\dots,f_M\}$.
-\STATE {\tt 1: Run a SVD on the design matrix $\bX$ and recover the set of $p$ principal components $C=\{\bv_1,\dots,\bv_p\}$.}
-\FOR{ $(\bv_i,\bv_j)\in C$ }
-\STATE {\tt 2: Run a clustering procedure on the data projected to $\textnormal{span}(\bv_i, \bv_j)$, $\bX_1^{(i,j)},\dots,\bX_n^{(i,j)}$, and construct clusters of points $G_1,\dots,G_K$}.
-\STATE {\tt 3: For each cluster $G_m$, $m\in [K]$, compute the mean $\hat\bmu_m$ and variance $\hat\bsigma_m$ of the points assigned to $G_m$ in the original space $\RR^P$}.
-\STATE {\tt 4: Add to the dictionary the Gaussian densities $\{\varphi_{(\hat\bmu_m, \hat\bsigma_m)}\}_{m\in [K]}$}
+\STATE {{\bfseries Input:} $\bX_1,\dots,\bX_n\textnormal{ with } \bX_i\in\RR^p$. And $K_{max}$, maximum number of clusters for EM-BIC, significance level $\alpha$.} 
+\STATE {\bfseries Output:} A dictionary of densities $D=\{f_1,\dots,f_M\}$.
+\STATE {\tt 1: Construct the set $\Omega$ of singular values of the design matrix $\bX\in\RR^{p\times n}$ which are greater than $\omega(\beta).y_{med}$ with $y_{med}$ median of singular values, $\beta = p/n$ and $\omega(\beta) \approx 0.56\beta^3 - 0.95\beta^2 + 1.82\beta + 1.43$.}
+\STATE {\tt 2: Construct the set of principal components $\bar C$ corresponding to the singular values in $\Omega$.}
+\FOR{ $\bv_i,\bv_j\in \bar C$ }
+\STATE {\tt 3: Run EM-BIC with maximum $K_{max}$ clusters on the data projected to $\textnormal{span}(\bv_i, \bv_j)$, $\bX_1^{(i,j)},\dots,\bX_n^{(i,j)}$, and construct clusters of points $G_1,\dots,G_K$}.
+\STATE {\tt 4: For each cluster $G_m$, $m\in [K]$, compute the mean $\hat\bmu_m$ and variance $\hat\bSigma_m$ of the points assigned to $G_m$ in the original space $\RR^P$}.
+\STATE {\tt 5: Add to the dictionary $D$ the Gaussian densities $\{\varphi_{(\hat\bmu_m, \hat\bsigma_m)}\}_{m\in [K]}$.}
+\ENDFOR.
+\FOR{$\hat f_i, \hat f_j \in D$}
+\STATE{\tt 6: Draw two samples $\{\by_1,\dots,\by_l\}, \{\bz_1,\dots,\bz_m\}$ from $\bY\sim \hat f_i$ and $\bZ\sim \hat f_j$ and construct the dataset $\mathcal{D} = \{(\bu_i,l_i)\}_{i=1}^{n+m}  \coloneqq  \{(\by_i,-1)\}_{i=1}^n \cup \{(\bz_i,0)\}_{i=1}^m.$}
+\STATE{\tt 7: Shuffle and split $\mathcal{D}$ into $\mathcal{D}_{tr}$ and $\mathcal{D}_{te}$.}
+\STATE{\tt 8: Train a binary classifier on $\mathcal{D}_{tr}$ and get the classification scores $\{s_i\}$ on $\mathcal{D}_{te}$.}
+\STATE{\tt 9: Separate $\{s_i\}$ into $\{s_i\}^+$, scores of points drawn from $\bZ$ and $\{s_i\}^-$ for $\bY$.}
+\STATE{\tt 10: Perform a two-samples Kolmogorov-Smirnov test on $\{s_i\}^+$ and $\{s_i\}^-$ and reject $H_0$ (The two multivariate samples are drawn from the same distribution) with significance level $\alpha$.}
+\STATE{\tt 11: {\bf If} $H_0$ rejected, remove $\hat f_j$ of $D$, {\bf else}, keep $\hat f_i$ and $\hat f_j$.}
 \ENDFOR.
 \end{algorithmic}
 \end{minipage}}
@@ -668,19 +684,14 @@ On each subspace of $S$, we perform a clustering to find groups. For each group,
    \label{algo:dictionary_generator}
 \end{center}
 \end{figure}
-A simple implementation would consider all principal components and thus $\frac{p(p-1)}{2}$ subspaces. On each of these subspace a clustering such as K-means with an arbitrary large number of clusters K would be applied. The whole complexity would be $\mathcal{O}(p^2n^{pK+1})$. To reduce the computational complexity of this procedure, especially in high dimension, we adopted three strategies. The first one consists to select the most informative components obtained via the SVD. One can use different techniques such as the Truncated SVD or the method proposed in \citep{Gavish2014} which circumvent the issue of not knowing $\textnormal{rank}(\bX)$. They considered the recovery of low-rank matrices from noisy data by hard thresholding of singular values by studying the asymptotic MSE. The AMSE-optimal choice of hard threshold would be for a $n$-by-$p$ matrix with $n\neq p$, $\hat\tau_* = \omega(\beta).y_{med}$, with $\beta = n/p$, $y_{med}$ is the median singular value of $\bX$ and $\omega(\beta)$ is described in \citep{Gavish2014}. The second strategy is to performs a model selection for each clustering which reduces the number of densities added to the dictionary. The clustering method chosen is EM with BIC. The third strategy addresses the problem of density duplicates in the dictionary originating from the same subset of points. We saw in the previous section that overlapping densities can degrade the performance of our estimators. One would like to remove these similar densities by performing a two-sample test. The reduction of multivariate two-sample testing to a binary classification problem follows from Friedman in \citep{Friedman:2003id}. To test whether two densities $P$ and $Q$ are equal, we draw two samples $\{\by_1,\dots,\by_n\}$ and $\{\bz_1,\dots,\bz_m\}$ from $P$ and $Q$ respectively and construct the dataset
-\begin{equation}
-  \mathcal{D} = \{(\bu_i,l_i)\}_{i=1}^{n+m}  \coloneqq  \{(\by_i,-1)\}_{i=1}^n \cup \{(\bz_i,0)\}_{i=1}^m.
-\end{equation}
-We shuffle $\mathcal{D}$ and keep a record of the original assignments for each sample in $\mathcal{D}$. Then, we split this dataset into two parts, $\mathcal{D}_{tr}$ for training a binary classifier and $\mathcal{D}_{te}$ for predicting the classification scores $\{s_i\}_{i=1}^{n+m}$. We consider the two sets $S_+$ and $S_-$, the first one contains the scores of the samples originating from $\{\bz_i\}_{i=1}^m$ and $S_-$ contains the scores of the samples originating from $\{\by_i\}_{i=1}^n$. We can view $S_+$ and $S_-$ as two samples drawn from two probability distributions, $p_+(s)$ and $p_-(s)$, and  apply a goodness-of-fit test such as the univariate Kolmogorov–Smirnov test, for testing the equality of these two densities. The resulting test statistic is the statistic for the multivariate two-sample test for the equality of the distributions $P$ and $Q$.
 
 \subsection{Experimental evaluation}
 
-We created a mixture of 6 components in dimension 5, see \Cref{fig:experiments_data}, which mimics data that can be seen in real use cases\todos{imagerie ?}. The simulation were run in dimension 3, 4 and 5 by selecting the corresponding first axis. We generated $n\in\{100, 500, 1000\}$ points and ran 200 simulations. We used the dictionary generation procedure for the KL-aggregation algorithm and compared the $L_2$-loss and $KL$-loss with EM-BIC and KDE-CV. The computation times were also recorded.
+We created a mixture of 6 components in dimension 5, see \Cref{fig:experiments_data}, which mimics data that can be seen in real use cases\todos{imagerie ?}. The simulation were run in dimension 3, 4 and 5 by selecting the corresponding first axis. We generated $n\in\{200, 500, 1000, 5000\}$ points and ran 200 simulations. We used the dictionary generation procedure for the KL-aggregation algorithm with $K_{max} = 10$ on each subspaces and $\alpha=0.05$. The dataset has been split into two equal parts, one for the dictionary generator and the other for the KL-aggregation algorithm. We compared the $L_2$-loss and KL-loss of our method to EM-BIC ($K_{max} = 20$) and KDE-CV (The bandwidth $h$ is selected via cross-validation in $[0.01, \dots, 1]$ in an equal partition of 20 elements). The computation times were also recorded. 
 
-\subsubsection{Discussion of the results}
-We compared, first, the KL-algorithm with the dictionary generated by our procedure to KDE-CV and EM-BIC without the two optimizations techniques discussed before (selection of principal components and the deletion of similar densities). In the three scenarios (dimension 3,4 and 5), KDE-CV performs better but our algorithm took less time (see \Cref{fig:result_dict_gen_dim_3,fig:result_dict_gen_dim_4,fig:result_dict_gen_dim_5}). The time given for MLE is the total computational time of the generation of the dictionary and the aggregation algorithm. However, adding the two optimizations techniques, we have better results for our algorithm \Cref{fig:result_dict_gen_dim_3_gof_pc_select,fig:result_dict_gen_dim_4_gof_pc_select,fig:result_dict_gen_dim_5_gof_pc_select}. Despite adding more  ``intelligence" in the construction of the dictionary, this procedures counterbalance the cost of adding too much densities to the KL-aggregation algorithm and therefore lead to similar computational times. Moreover, our algorithm outperforms KDE-CV and EM-BIC with these dictionaries in all scenarios.
+\subsubsection{ Results without the selection of principal components and the goodness-of-fit test for the dictionary generator algorithm.}
 
+We compared, first, the KL-algorithm with the dictionary generated by our procedure to KDE-CV and EM-BIC without the two computation optimization techniques discussed before (selection of principal components and the deletion of similar densities). The time given for MLE is the total computational time of the generation of the dictionary and the aggregation algorithm. In the three scenarios (dimension 3,4 and 5), our algorithm presents same performance as EM-BIC in $L_2$ and KL loss with a better result when $N=5000$ (see \Cref{fig:result_dict_gen_dim_3,fig:result_dict_gen_dim_4,fig:result_dict_gen_dim_5}). Both methods outperforms KDE-CV in all scenarios. This indicates that the set of bandwidths explored for KDE-CV does not fit the data correctly. Increasing the size of this set would increase dramatically the computation times of KDE-CV. Despite the quadratic increase of the size of the dictionary with the dimension, our algorithm takes less time to compute than KDE-CV and slightly more than EM-BIC.
 \begin{figure}
 \center
     \includegraphics[width=\textwidth]{./TeX_files/experiments_data.png}
@@ -709,13 +720,15 @@ We compared, first, the KL-algorithm with the dictionary generated by our proced
     \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_5_KL.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_5_L2.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_5.png}
-    \caption{Results for dimension 5. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). The KL divergence for EM-BIC could not be computed. Without dictionary generation optimizations.}
+    \caption{Results for dimension 5. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). Without dictionary generation optimizations.}
     \label{fig:result_dict_gen_dim_5}
 \end{figure}
+\subsubsection{Results with the selection of principal components and the goodness-of-fit test for the dictionary generator algorithm.}
 
+Adding the two computation optimization techniques, our algorithm shows a greater error variance, see  \Cref{fig:result_dict_gen_dim_3_gof_pc_select,fig:result_dict_gen_dim_4_gof_pc_select,fig:result_dict_gen_dim_5_gof_pc_select}. Despite adding more  ``intelligence" in the construction of the dictionary, this procedures counterbalance the cost of adding too much densities to the KL-aggregation algorithm and therefore leads to smaller computational times. 
 \begin{figure}
 \center
-    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_3_KL_gof_pc_select.png}
+    \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_3_KL_gof_pc_select.png} 
     \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_3_L2_gof_pc_select.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_3_gof_pc_select.png}
     \caption{Results for dimension 3. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). With selection of principal components and deletion of similar densities.}
@@ -734,6 +747,8 @@ We compared, first, the KL-algorithm with the dictionary generated by our proced
     \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_5_KL_gof_pc_select.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_loss_dim_5_L2_gof_pc_select.png}
     \includegraphics[width=0.8\textwidth]{./TeX_files/dict_gen_time_dim_5_gof_pc_select.png}
-    \caption{Results for dimension 5. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). The KL divergence for EM-BIC could not be computed. With selection of principal components and deletion of similar densities.}
+    \caption{Results for dimension 5. KL-Loss (upper panel), $L_2$-Loss (middle panel) and computation time (lower panel). With selection of principal components and deletion of similar densities.}
     \label{fig:result_dict_gen_dim_5_gof_pc_select}
 \end{figure}
+\subsection{Concluding remarks}
+To conclude, the density dictionary generation method we developed is well suited for our KL-aggregation algorithm. The combination of both gives us the best results compared to EM-BIC and KDE-CV while having the smaller computation time. We observed in our simulations that the use of a goodness-of-fit test among our techniques to lighten the density dictionary gives us an estimation of the number of real clusters in the data and can be seen as a parameter-free clustering method. From this perspective, our method can be related to a subspace clustering method.
