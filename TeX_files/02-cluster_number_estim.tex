@@ -1,10 +1,10 @@
 %!TEX root = ../main.tex
 
-\chapter{Estimating the number of clusters}
+\section{Estimating the number of clusters}
 
 In this chapter, we will focus on the open problem of estimating the number of clusters. Most of current clustering methods such that K-Means, Expectation-Maximisation with Gaussian mixture model or hierarchical clustering need a this parameter in input. Different methods are being used to perform a selection of the best model according to a criterion, unfortunately with a computational cost. In this work, we will try to tackle this challenge.
 
-\section{Introduction and related work}
+\subsection{Introduction and related work}
 In previous models, we knew the number of components $K$ in the Gaussian mixture. In reality this parameter is unknown. 
 Several methods exists to select the number of clusters
 
@@ -16,11 +16,11 @@ A common method to select the number of clusters is to use the Bayesian Informat
 And select the model which minimizes the BIC. This can be done by running EM algorithm over a large number of models which is computationally expensive.
 \subsection{Silhouette method}
 
-\subsection{Elbow method}
+\subsubsection{Elbow method}
 
-\subsection{Gap Statistic}
+\subsubsection{Gap Statistic}
 
-\section{Our First method}
+\subsection{Our First method}
 
 The idea is to add a regularization term on the estimation of the $n\times K$ matrix $\bTau$, the estimate of the number of clusters K will be the number of non-empty columns of $\bTau$.\
 
@@ -143,7 +143,7 @@ We use the algorithm of last chapter with the new estimation procedure of $\bTau
 \end{figure}
 
 
-\section{Sparse Weights Vector Estimation}
+\subsection{Sparse Weights Vector Estimation}
 
  We fit a model with an arbitrarily large number of components $K$ and penalyze the weights vector $\bpi$. The penalized negative log-likelihood is:
 \begin{equation}

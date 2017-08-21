@@ -1,10 +1,10 @@
 %!TEX root = ../main.tex
 
-\chapter{Graphical Lasso for Gaussian mixtures}\label{chapgraphlasso}
+\section{Graphical Lasso for Gaussian mixtures}\label{chapgraphlasso}
 
 As we saw in the introduction chapter, the number of free parameters in a full GMM with $K$ components in dimension $p$ are $(K-1)+Kp+Kp(p+1)/2$ which means that for $K=5$ and $p=100$ we have $125704$ parameters to estimate. In this high dimensional setting, the EM algorithm experiences severe performance degradation. In particular, the inversion of the covariance matrices are challenged. One way to tackle these problems is to use regularization. We will make the assumption on some structure on the inverse of the covariance matrix of a component called the precision or concentration matrix. The work presented in this chapter is inspired by \citep{glasso07}, \citep{banerjee}, \citep{yuanLin_graph} and \citep{meinshausen2006} in which they penalize the components of the precision matrix of a Gaussian graphical model. We generalize this work to the Gaussian mixture model.
 
-\section{Introduction}
+\subsection{Introduction}
 We consider $\bX=(\bX^{(1)},\dots,\bX^{(p)})$ a random vector admitting a $p$-dimensional normal distribution $\mathcal N(\bmu, \bSigma)$ with $\bSigma$ non-singular. One can construct an undirected graph $G=(V,E)$ with $p$ vertices corresponding to each coordinates and, $E=(e_{i,j})_{1\leq i < j \leq p}$, the edges between the vertices describing the conditional independence relationship among $\bX^{(1)},\dots,\bX^{(p)}$. 
 If in this graph, $e_{i,j}$ is absent in $E$ if and only if $X^{(i)}$ and $X^{(j)}$ 
 are independent conditionally to the other variables $\{X^{(l)}\}$ with $l\neq i,j$ (noted $X^{(i)} \ci X^{(j)}|X^{(l)}\, l\neq i,j$), then $G$ is called the Gaussian concentration graph model for the Gaussian random vector $\bX$. 
@@ -213,7 +213,7 @@ Therefore, for $j=1,\dots,p$, the permuted target components of $\bOmega$ are
 \end{figure}
 In what follows, we will adapt these methods on a Gaussian mixture models, more precisely we will assume that each clusters present a sparse Gaussian concentration graph. We will rely on the Graphical Lasso for estimating the precision matrix and derive a EM algorithm.
 
-\section{Graphical Lasso on Gaussian mixtures}
+\subsection{Graphical Lasso on Gaussian mixtures}
 
 In this section, we present our contribution. We consider a Gaussian mixture model of $K$ components and our task is to estimate the parameters $\btheta=(\theta_1,\dots,\theta_K)$ with $\theta_k=(\pi_k, \bmu_k, \bOmega_k)$ where $\bOmega_k$ is the precision matrix regarding the $k^{th}$ component of the mixture. We denote $\varphi_{(\bmu_{k},\bOmega_{k})}$ the Gaussian density of mean $\bmu_k$ and precision matrix $\bOmega_k$. The penalized log-likelihood is
 

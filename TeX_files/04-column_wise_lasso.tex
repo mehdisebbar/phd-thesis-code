@@ -1,11 +1,11 @@
 %!TEX root = ../main.tex
 
-\chapter{structural analysis on $\bSigma$ approach}
+\section{structural analysis on $\bSigma$ approach}
 
 We consider a multivariate Gaussian distribution with mean $\bmu^*$ and covariance $\bSigma^*$ and $Y_1,\dots,Y_N \in \RR^p$ iid drawn from this distribution. We would like to estimate $\bmu^*$ and $\bSigma^*$. We know that $\hat\bmu_n=\bar Y_n$, then wlog we consider $\mu^*=0$, the problem is to estimate $\bSigma^*$. We will study the precision matrix and consider that $\Sigma^{-1}$ is sparse. We note $\Sigma^{-1}=\Omega$, $Y_n$ the $n$-th random variable and $Y_n^i$ the $i$-th component of this vector.\
 If $\Sigma^{-1}_{ij}=0 \Rightarrow Y^i \ci Y^j$ conditionally to $Y^{l\ne\{i,j\}}$. Thus, it makes sense to impose a $L_1$ penalty on $\Sigma^{-1}$ to increase its sparsity.
 
-\section{Graphical Lasso}
+\subsection{Graphical Lasso}
 Let consider a multivariate normal distribution with parameters $\mu^*,\; \Sigma^*$ with density;
 \begin{equation}
 \mathcal N(x|\mu^*,\Sigma^*)
@@ -38,7 +38,7 @@ Where C is a constant (dependent on N). Thus, considering the sparsity of the pr
 A reason to use the $L_1$ penalization instead of the ridge is that for an $L_p$ penalization, the problem is convex for $p\geq 1$ and we have parsimonious property for $p\leq 1$.\
 This is a convex optimization problem, however the complexity is $O(p^3)$ (Source, high dim \& var select Buhlmann 2006 ? Wassermann)
 
-\section{Column-Wise Lasso}
+\subsection{Column-Wise Lasso}
 
 We consider a gaussian vector $Y\in \RR^d$, $Y \sim \mathcal N(0,\Sigma)$. We can write $Y=(Y^1,Y^{2:d})$. With this decomposition we can write the covariance matrix as following:
 \begin{equation}
@@ -117,4 +117,3 @@ with
   verifier\
   \end{bmatrix}
 \end{equation}
-\subsection{The Square-Root Lasso}
