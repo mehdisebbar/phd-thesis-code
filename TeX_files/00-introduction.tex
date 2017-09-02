@@ -3,12 +3,49 @@
 \chapter{Introduction\label{chap:intro}}
 \minitoc
 
-The broad goal of this thesis is to tackle a clustering problem in the scope of mixtures model framework. More precisely, we will study the clustering of points drawn from high-dimensional Gaussian mixtures distributions. Thus, in the first part of this section we present the Gaussian mixture model and the second part we describe the well know  Expectation-Maximization algorithm (EM). We will also present the limitations of this algorithm in high-dimensional setting.
-\section{The clustering problem and density estimation problem}
-\begin{enumerate}
-  \item Will approach this problem from a probabilistic point a view
-  \item CS point of view
-\end{enumerate}
+In this thesis, we study the unsupervised learning problem through the study of the clustering of high dimensional Gaussian mixtures and density estimation. In this chapter, we introduce the clustering problem in the first section and the Gaussian mixtures framework in the second. In the third section, we highlight the complexities inherent to the high dimension. Then we will discuss some of the work carried out during this thesis but has not been the subject of a completed work.
+
+\section{Clustering and density estimation problem}
+The goal of cluster analysis is to find groups in data so that each element within a groups have small dissimilarities compared to outside of the group. Many techniques exists  \todos{refaire}, we will review 4 well-known techniques, $K$-means, Hierarchical clustering, Spectral clustering and EM on Gaussian mixtures model. 
+\subsection{Dimensions in Clustering}
+Dimensions given in \citep{hennig2015handbook}
+\begin{itemize}
+  \item By Type of Clustering: Hard vs. Soft: eg K-means vs GMM
+  \item By Type of Clustering: Flat vs. Hierarchical eg Hierarchical Clsutering
+  \item By Data Type or Format
+  We could collect data about each student’s grades, study habits, and so on, and use these variables for the purpose of clustering. Alternatively, we could collect data about how students interact with each other, like the network of friendships and collaboration in the class. In the former case, we describe the data points by a vector of features; in the latter, we describe the (pairwise) relations between data points. Hence, the latter is distinguished by terms such as relational clustering or similarity-based clustering.
+  \item By Clustering Criterion: (Probabilistic) Model-Based vs. Cost-Based
+  \item By Regime: Parametric (K Is Input) vs. Nonparametric (Smoothness Parameter Is Input)
+\end{itemize}
+\subsection{Clustering Approaches}
+\begin{itemize}
+\item Centroid-Based Clustering
+\item 1.5.2 Agglomerative Hierarchical Methods
+\item 1.5.3 Spectral Clustering
+\item 1.5.4 Mixture Probability Models
+\item 1.5.5 Density-Based Clustering
+\end{itemize}
+\subsubsection{Centroid-Based Clustering: $K$-means}
+\todos{changer avec la version EM de bishop}
+$K$-means is a popular method of clustering which aims to partition the data into $K$ sets $(\bS_1,\dots,\bS_k)$ such that the within-cluster sum of squares is minimal. It has been introduced in signal theory.\todos{ajouter}
+The goal of $K$-means is to find $\{\bc_1,\dots,\bc_K\}$ that minimize the objective function
+\begin{equation}
+  J_{k\textnormal{-means}}=\sum_{i=1}^N\min_{j\in [K]}\|\bx_i - \bmu_j \|^2.
+  \label{kmeans_min_problem}
+\end{equation}
+\todos{changer avec cost function p57 cluster analysis}
+A simple and yet widely use method to resolve the $K$-means minimization problem is the Lloyd's algorithm \citep{lloyd1982} by its performance\todos{non}. It turns out that today the algorithm of Lloyd is assimilated with the minimization problem of $K$-means (\Cref{kmeans_min_problem}). The Lloyd algorithm consist to build a Voronoi partition of the data and iterate.
+Kmeans, loyds p 70 cluster analysis, difference k-means algo et kmeans objective, kmeans++, 
+
+\begin{defi}{(Voronoi Partition)} 
+Given $n$ points in $\RR^p$ $\mathcal{D}=\{\bx_1,\dots,\bx_n\}$, $K$ points $\bc_1,\dots,\bc_K$ and a distance $d$, a Voronoi partition of $\mathcal{D}$ consists on $K$ disjoint clusters such that for $i\in[K]$, cluster $i$ is the set of points satisfying $d(\bx, \bc_i) \leq d(\bx, \bc_j)$ for all $j\neq i$.
+\end{defi}
+\todos{graph: points avec centres et distances, voronoi partitions ou suite de graphes, etapes de clustering}
+
+It is a hard-assignement method since it assign points to clusters and does not reflect a level of uncertainty on the assignements.
+Drawbacks with high dimension, problem of euclidian distance,
+\subsection{Finding the number of clusters}
+
 
 \section{The Gaussian mixture model}
 
@@ -249,13 +286,13 @@ However,  an interesting phenomenon occurs in high dimension, Scoot and Thomson 
 The reader can find a more thorough study of high dimensional statistics in \cite{giraud2014introduction}.  The reader can refer to \citep{bouveyron:hal-00750909} to have an overview of the different Gaussian mixture models for clustering in high dimension.
 
 \section{Some contributions}
-%!TEX root = ../main.tex
+In this section, we present some works carried out during this thesis which have unfortunately not been able to be the subject of an in-depth study that can be published. The first part deals with the sparse hypothesis of the precision matrices within a high dimensional Gaussian mixture and adapts the single-component Graphical Lasso from \citep{glasso07} to the mixture setting. In the second part, we assume that the weight vector of the mixture is sparse in order to obtain an estimator of the number of components in the mixture that is generally unknown. 
 
-\section{Graphical Lasso for Gaussian mixtures}\label{chapgraphlasso}
+\subsection{Graphical Lasso for Gaussian mixtures}\label{chapgraphlasso}
 
-As we saw in the introduction chapter, the number of free parameters in a full GMM with $K$ components in dimension $p$ are $(K-1)+Kp+Kp(p+1)/2$ which means that for $K=5$ and $p=100$ we have $125704$ parameters to estimate. In this high dimensional setting, the EM algorithm experiences severe performance degradation. In particular, the inversion of the covariance matrices are challenged. One way to tackle these problems is to use regularization. We will make the assumption on some structure on the inverse of the covariance matrix of a component called the precision or concentration matrix. The work presented in this chapter is inspired by \citep{glasso07}, \citep{banerjee}, \citep{yuanLin_graph} and \citep{meinshausen2006} in which they penalize the components of the precision matrix of a Gaussian graphical model. We generalize this work to the Gaussian mixture model.
+As we saw in the introduction chapter\todos{changer en section}, the number of free parameters in a full GMM with $K$ components in dimension $p$ are $(K-1)+Kp+Kp(p+1)/2$ which means that for $K=5$ and $p=100$ we have $125704$ parameters to estimate. In this high dimensional setting, the EM algorithm experiences severe performance degradation. In particular, the inversion of the covariance matrices are challenged. One way to tackle these problems is to use regularization. We will make the assumption on some structure on the inverse of the covariance matrix of a component called the precision or concentration matrix. The work presented in this chapter is inspired by \citep{glasso07}, \citep{banerjee}, \citep{yuanLin_graph} and \citep{meinshausen2006} in which they penalize the components of the precision matrix of a Gaussian graphical model. We generalize this work to the Gaussian mixture model.
 
-\subsection{Introduction}
+\subsubsection{Introduction}
 We consider $\bX=(\bX^{(1)},\dots,\bX^{(p)})$ a random vector admitting a $p$-dimensional normal distribution $\mathcal N(\bmu, \bSigma)$ with $\bSigma$ non-singular. One can construct an undirected graph $G=(V,E)$ with $p$ vertices corresponding to each coordinates and, $E=(e_{i,j})_{1\leq i < j \leq p}$, the edges between the vertices describing the conditional independence relationship among $\bX^{(1)},\dots,\bX^{(p)}$. 
 If in this graph, $e_{i,j}$ is absent in $E$ if and only if $X^{(i)}$ and $X^{(j)}$ 
 are independent conditionally to the other variables $\{X^{(l)}\}$ with $l\neq i,j$ (noted $X^{(i)} \ci X^{(j)}|X^{(l)}\, l\neq i,j$), then $G$ is called the Gaussian concentration graph model for the Gaussian random vector $\bX$. 
@@ -464,7 +501,7 @@ Therefore, for $j=1,\dots,p$, the permuted target components of $\bOmega$ are
 \end{figure}
 In what follows, we will adapt these methods on a Gaussian mixture models, more precisely we will assume that each clusters present a sparse Gaussian concentration graph. We will rely on the Graphical Lasso for estimating the precision matrix and derive a EM algorithm.
 
-\subsection{Graphical Lasso on Gaussian mixtures}
+\subsubsection{Graphical Lasso on Gaussian mixtures}
 
 In this section, we present our contribution. We consider a Gaussian mixture model of $K$ components and our task is to estimate the parameters $\btheta=(\theta_1,\dots,\theta_K)$ with $\theta_k=(\pi_k, \bmu_k, \bOmega_k)$ where $\bOmega_k$ is the precision matrix regarding the $k^{th}$ component of the mixture. We denote $\varphi_{(\bmu_{k},\bOmega_{k})}$ the Gaussian density of mean $\bmu_k$ and precision matrix $\bOmega_k$. The penalized log-likelihood is
 
@@ -553,27 +590,22 @@ Our algorithm solves a graphical lasso problem within each cluster. We use a blo
 
 %!TEX root = ../main.tex
 
-\section{Estimating the number of clusters}
+\subsection{Estimating the number of clusters}
 
 In this chapter, we will focus on the open problem of estimating the number of clusters. Most of current clustering methods such that K-Means, Expectation-Maximisation with Gaussian mixture model or hierarchical clustering need a this parameter in input. Different methods are being used to perform a selection of the best model according to a criterion, unfortunately with a computational cost. In this work, we will try to tackle this challenge.
 
-\subsection{Introduction and related work}
+\subsubsection{Introduction and related work}
 In previous models, we knew the number of components $K$ in the Gaussian mixture. In reality this parameter is unknown. 
 Several methods exists to select the number of clusters
 
-\subsection{Bayesian Information Criterion (BIC)}
+\subsubsection{Bayesian Information Criterion (BIC)}
 A common method to select the number of clusters is to use the Bayesian Information Criterion given by:
 \begin{equation}
   BIC(K) = -\log\ell_n(\hat\btheta^K)+K.\log(n)
 \end{equation}
 And select the model which minimizes the BIC. This can be done by running EM algorithm over a large number of models which is computationally expensive.
-\subsection{Silhouette method}
 
-\subsubsection{Elbow method}
-
-\subsubsection{Gap Statistic}
-
-\subsection{Our First method}
+\subsubsection{Our First method}
 
 The idea is to add a regularization term on the estimation of the $n\times K$ matrix $\bTau$, the estimate of the number of clusters K will be the number of non-empty columns of $\bTau$.\
 
