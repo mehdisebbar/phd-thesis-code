@@ -30,20 +30,47 @@ Dimensions given in \citep{hennig2015handbook}
 $K$-means is a popular method of clustering which aims to partition the data into $K$ sets $(\bS_1,\dots,\bS_k)$ such that the within-cluster sum of squares is minimal. It has been introduced in signal theory.\todos{ajouter}
 The goal of $K$-means is to find $\{\bc_1,\dots,\bc_K\}$ that minimize the objective function
 \begin{equation}
-  J_{k\textnormal{-means}}=\sum_{i=1}^N\min_{j\in [K]}\|\bx_i - \bmu_j \|^2.
+  J_{k\textnormal{-means}}(\bc_1,\dots,\bc_K)=\sum_{i=1}^N\min_{j\in [K]}\|\bx_i - \bc_j \|^2.
   \label{kmeans_min_problem}
 \end{equation}
 \todos{changer avec cost function p57 cluster analysis}
 A simple and yet widely use method to resolve the $K$-means minimization problem is the Lloyd's algorithm \citep{lloyd1982} by its performance\todos{non}. It turns out that today the algorithm of Lloyd is assimilated with the minimization problem of $K$-means (\Cref{kmeans_min_problem}). The Lloyd algorithm consist to build a Voronoi partition of the data and iterate.
-Kmeans, loyds p 70 cluster analysis, difference k-means algo et kmeans objective, kmeans++, 
+(Kmeans, loyds p 70 cluster analysis, difference k-means algo et kmeans objective, kmeans++, NP hard, mini batch kmeans fast)
 
 \begin{defi}{(Voronoi Partition)} 
 Given $n$ points in $\RR^p$ $\mathcal{D}=\{\bx_1,\dots,\bx_n\}$, $K$ points $\bc_1,\dots,\bc_K$ and a distance $d$, a Voronoi partition of $\mathcal{D}$ consists on $K$ disjoint clusters such that for $i\in[K]$, cluster $i$ is the set of points satisfying $d(\bx, \bc_i) \leq d(\bx, \bc_j)$ for all $j\neq i$.
 \end{defi}
 \todos{graph: points avec centres et distances, voronoi partitions ou suite de graphes, etapes de clustering}
+\begin{figure}[h]
+\begin{center}
+\mybox{
+\begin{minipage}{0.85\linewidth}
+\begin{algorithmic}%[1]\tt
+\small
+\STATE {\bfseries Input:} N points $\bx_1,\ldots,\bx_n\in\RR^p$ and the number of clusters $K$.
+\STATE {\bfseries Output:} Cluster centers $\hat\bc_1,\dots,\hat\bc_K$ and clusters assignments.
+\STATE {\bfseries Init:} Set $J_{\textnormal{old}}=\infty.$ and chose $K$ seed points $\bc_1,\dots,\bc_K$. Compute the $K$-means cost $J_{\textnormal{curr}}$ given in \cref{kmeans_min_problem} with these points as centers.
+\WHILE{$J_{\textnormal{curr}}  < J_{\textnormal{old}}$} 
+\STATE{\tt 1: Compute the Voronoi partitioning of the data with $\bc_1,\dots,\bc_K$ as centers. Get $K$ clusters, $C_1,\dots,C_K$} 
+\STATE{\tt 2: On each clusters, compute the sample means $\hat\bc_1,\dots,\hat\bc_K$:}
+\begin{equation}
+  \hat\bc_i = \frac{1}{|C_i|}\sum_{x_j\in C_i} x_j>
+\end{equation}
+\STATE{\tt 3: Set $J_{\textnormal{old}} = J_{\textnormal{curr}}$ and compute the new $K$-means cost $J_{\textnormal{curr}}$ with $\hat\bc_1,\dots,\hat\bc_K$ as centers.}
+\ENDWHILE
+\end{algorithmic}
+\end{minipage}
+}
+   \caption{$K$-means Lloyd's algorithm}
+   \label{algo:lloyd_algo}
+\end{center}
+\vspace{-15pt}
+\end{figure}
+Note that the choice of the cluster sample mean as center of the cluster is deeply connected to the choice of the Euclidean since it minimize the $K$-means objective.
+The reader can refer to [Voronoi partition algorithm papers] for getting more info. Note that the 
 
-It is a hard-assignement method since it assign points to clusters and does not reflect a level of uncertainty on the assignements.
-Drawbacks with high dimension, problem of euclidian distance,
+(It is a hard-assignement method since it assign points to clusters and does not reflect a level of uncertainty on the assignements.
+Drawbacks with high dimension, problem of euclidian distance,)
 \subsection{Finding the number of clusters}
 
 
