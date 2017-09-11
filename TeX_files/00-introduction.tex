@@ -6,9 +6,12 @@
 In this thesis, we study the unsupervised learning problem through the study of the clustering of high dimensional Gaussian mixtures and density estimation. In this chapter, we introduce the clustering problem in the first section and the Gaussian mixtures framework in the second. In the third section, we highlight the complexities inherent to the high dimension. Then we will discuss some of the work carried out during this thesis but has not been the subject of a completed work.
 
 \section{Clustering and density estimation problem}
-The goal of cluster analysis is to find groups in data so that each element within a groups have small dissimilarities compared to outside of the group. Many techniques exists  \todos{refaire}, we will review 4 well-known techniques, $K$-means, Hierarchical clustering, Spectral clustering and EM on Gaussian mixtures model. 
+
+The goal of cluster analysis is to find groups in data so that each element within a groups have small dissimilarities compared to outside of the group. The literature is rich on this topic, with different approaches coming from statistics and computer science. We will give a glimpse on 4 well-known techniques, $K$-means, Hierarchical clustering, Spectral clustering and EM on Gaussian mixtures model which will be our topic of main interest. The reader can refer to \citep{hennig2015handbook} for an extensive review of the clustering problem.
+
 \subsection{Dimensions in Clustering}
 Dimensions given in \citep{hennig2015handbook}
+
 \begin{itemize}
   \item By Type of Clustering: Hard vs. Soft: eg K-means vs GMM
   \item By Type of Clustering: Flat vs. Hierarchical eg Hierarchical Clsutering
@@ -17,7 +20,9 @@ Dimensions given in \citep{hennig2015handbook}
   \item By Clustering Criterion: (Probabilistic) Model-Based vs. Cost-Based
   \item By Regime: Parametric (K Is Input) vs. Nonparametric (Smoothness Parameter Is Input)
 \end{itemize}
+
 \subsection{Clustering Approaches}
+
 \begin{itemize}
 \item Centroid-Based Clustering
 \item 1.5.2 Agglomerative Hierarchical Methods
@@ -25,22 +30,34 @@ Dimensions given in \citep{hennig2015handbook}
 \item 1.5.4 Mixture Probability Models
 \item 1.5.5 Density-Based Clustering
 \end{itemize}
-\subsubsection{Centroid-Based Clustering: $K$-means}
-\todos{changer avec la version EM de bishop}
-$K$-means is a popular method of clustering which aims to partition the data into $K$ sets $(\bS_1,\dots,\bS_k)$ such that the within-cluster sum of squares is minimal. It has been introduced in signal theory.\todos{ajouter}
-The goal of $K$-means is to find $\{\bc_1,\dots,\bc_K\}$ that minimize the objective function
+
+\subsection{Centroid-Based Clustering: $K$-means}
+
+$K$-means is a popular method of clustering which aims to partition the data into $K$ clusters such that the within-cluster sum of squares is minimal. It has been introduced in signal theory for vector quantization by \citep{macqueen1967}. Given $N$ points, $\bx_1,\dots,\bx_n$ in $\RR^p$, the goal of $K$-means is to find a set of centers $\mathcal{C}=\{\bc_1,\dots,\bc_K\}$ that minimize the following objective function:
 \begin{equation}
-  J_{k\textnormal{-means}}(\bc_1,\dots,\bc_K)=\sum_{i=1}^N\min_{j\in [K]}\|\bx_i - \bc_j \|^2.
+  \mathcal{L}_{k\textnormal{-means}}(\bc_1,\dots,\bc_K)=\sum_{i=1}^N\min_{\bc \in \mathcal{C}}\|\bx_i - \bc \|^2.
   \label{kmeans_min_problem}
 \end{equation}
-\todos{changer avec cost function p57 cluster analysis}
-A simple and yet widely use method to resolve the $K$-means minimization problem is the Lloyd's algorithm \citep{lloyd1982} by its performance\todos{non}. It turns out that today the algorithm of Lloyd is assimilated with the minimization problem of $K$-means (\Cref{kmeans_min_problem}). The Lloyd algorithm consist to build a Voronoi partition of the data and iterate.
-(Kmeans, loyds p 70 cluster analysis, difference k-means algo et kmeans objective, kmeans++, NP hard, mini batch kmeans fast)
-
+Clearly this objective function is not convex and finding an exact solution of this problem is known to be NP-hard, even for $2$-means \citep{dasgupta2008hardness,Aloise:2009:NES:1519378.1519389}. As a matter of fact, for $K$ and $p$ fixed, the problem can be solved exactly in $O(n^{Kp})$ iterations \citep{Inaba:1994:AWV:177424.178042}. A simple and yet widely used approximation method to resolve the $K$-means minimization problem is the Lloyd's algorithm \citep{lloyd1982}. Today, because of its popularity, Lloyd's method is assimilated with the minimization problem of $K$-means (\cref{kmeans_min_problem}). A key element of this method is the Voronoi partitioning:
 \begin{defi}{(Voronoi Partition)} 
 Given $n$ points in $\RR^p$ $\mathcal{D}=\{\bx_1,\dots,\bx_n\}$, $K$ points $\bc_1,\dots,\bc_K$ and a distance $d$, a Voronoi partition of $\mathcal{D}$ consists on $K$ disjoint clusters such that for $i\in[K]$, cluster $i$ is the set of points satisfying $d(\bx, \bc_i) \leq d(\bx, \bc_j)$ for all $j\neq i$.
 \end{defi}
-\todos{graph: points avec centres et distances, voronoi partitions ou suite de graphes, etapes de clustering}
+The procedure consists to build a Voronoi partition of the data from $K$ initial randomly chosen centers and iterate partitioning with the cell-means of the previous partition. The Llyod's procedure is described in \Cref{algo:lloyd_algo}. The following lemma will help us to understand the convergence of the algorithm:
+\begin{lemma}
+Consider a set $\mathcal{X} \subset\RR^p$ and $\bmu$ its mean. For any $\by\in \RR^p$, we have that 
+\begin{equation}
+  \sum_{\bx \in \mathcal{X}} d(\bx,\by)^2 = \sum_{\bx\in\mathcal{X}}d(\bx,\bmu)^2 + |\mathcal{X}|d(\bmu,\by)^2.
+\end{equation}
+\label{lemma_lloyd_decr_cost}
+\end{lemma}
+The reader can refer to Fact 5.1 of \cite{hennig2015handbook} for a simple proof. This lemma claims that, after a Voronoi partitioning, replacing a center by the mean of the cell can not increase the $K$-means cost.
+ Unfortunately, Lloyd's algorithm tends to reach local optimums of the $K$-means objective. Hence, several runs of the algorithm are necessary to insure an acceptable clustering.
+ \begin{figure}[h]
+ \center
+ \includegraphics[scale=0.35]{TeX_files/voronoi_kmeans.png}
+ \caption{Llyod's algorithm with random initialization centers and final Voronoi partitions at different steps: with 1 iteration (left), 3  (middle) and 10 (right) iterations (the algorithm converged). $K$-means costs are given on top.}
+ \label{voronoi_graph}
+ \end{figure}
 \begin{figure}[h]
 \begin{center}
 \mybox{
@@ -49,14 +66,14 @@ Given $n$ points in $\RR^p$ $\mathcal{D}=\{\bx_1,\dots,\bx_n\}$, $K$ points $\bc
 \small
 \STATE {\bfseries Input:} N points $\bx_1,\ldots,\bx_n\in\RR^p$ and the number of clusters $K$.
 \STATE {\bfseries Output:} Cluster centers $\hat\bc_1,\dots,\hat\bc_K$ and clusters assignments.
-\STATE {\bfseries Init:} Set $J_{\textnormal{old}}=\infty.$ and chose $K$ seed points $\bc_1,\dots,\bc_K$. Compute the $K$-means cost $J_{\textnormal{curr}}$ given in \cref{kmeans_min_problem} with these points as centers.
-\WHILE{$J_{\textnormal{curr}}  < J_{\textnormal{old}}$} 
-\STATE{\tt 1: Compute the Voronoi partitioning of the data with $\bc_1,\dots,\bc_K$ as centers. Get $K$ clusters, $C_1,\dots,C_K$} 
-\STATE{\tt 2: On each clusters, compute the sample means $\hat\bc_1,\dots,\hat\bc_K$:}
+\STATE {\bfseries Init:} Set $\mathcal{L}_{\textnormal{old}}=\infty.$ and chose $K$ seed points $\bc_1,\dots,\bc_K$. Compute the $K$-means cost $\mathcal{L}_{\textnormal{curr}}$ given in \cref{kmeans_min_problem} with these points as centers.
+\WHILE{$\mathcal{L}_{\textnormal{curr}}  < \mathcal{L}_{\textnormal{old}}$} 
+\STATE{\tt 1: }Compute the Voronoi partitioning of the data with $\bc_1,\dots,\bc_K$ as centers. Get $K$ clusters, $C_1,\dots,C_K$.
+\STATE{\tt 2: }On each clusters, compute the sample means $\hat\bc_1,\dots,\hat\bc_K$:
 \begin{equation}
-  \hat\bc_i = \frac{1}{|C_i|}\sum_{x_j\in C_i} x_j>
+  \hat\bc_i = \frac{1}{|C_i|}\sum_{x_j\in C_i} x_j
 \end{equation}
-\STATE{\tt 3: Set $J_{\textnormal{old}} = J_{\textnormal{curr}}$ and compute the new $K$-means cost $J_{\textnormal{curr}}$ with $\hat\bc_1,\dots,\hat\bc_K$ as centers.}
+\STATE{\tt 3: }Set $\mathcal{L}_{\textnormal{old}} = \mathcal{L}_{\textnormal{curr}}$ and compute the new $K$-means cost $\mathcal{L}_{\textnormal{curr}}$ with $\hat\bc_1,\dots,\hat\bc_K$ as centers.
 \ENDWHILE
 \end{algorithmic}
 \end{minipage}
@@ -66,13 +83,90 @@ Given $n$ points in $\RR^p$ $\mathcal{D}=\{\bx_1,\dots,\bx_n\}$, $K$ points $\bc
 \end{center}
 \vspace{-15pt}
 \end{figure}
-Note that the choice of the cluster sample mean as center of the cluster is deeply connected to the choice of the Euclidean since it minimize the $K$-means objective.
-The reader can refer to [Voronoi partition algorithm papers] for getting more info. Note that the 
+ Note that Lloyd's algorithm has several drawbacks: 
+\begin{enumerate}
+\item It is a hard-assignment method since it assigns points to clusters and does not reflect a level of uncertainty on the assignments such as a probability of belonging to a cluster.
+ \item The number of clusters has to be given, we will see some techniques to select the number of clusters in \cref{estim_nb_clusters_sect}.
+ \item The worst-case time complexity $T(n)$ is superpolynomial, $T(n)=2^{\Omega(\sqrt{n})}$ iterations \citep{kmeans_slow_arthur_2016} (not bounded above by any polynomial). Fortunately, in practice it is observed that Lloyd's algorithm converges quickly to a local minimum.
+ \item If the initial centers are chosen randomly, the resulting $K$-means cost can be made arbitrarily bad compared to the optimal clustering (see section 5.2 of \citep{hennig2015handbook}). $K$-means$++$ \citep{Arthur:2007:KAC:1283383.1283494} address this problem by choosing carefully the initializations centers in Lloyd's algorithm, see \Cref{algo:kmeans++_algo} for the procedure, and showed that $K$-means$++$ is a $\log K$ approximation algorithm for the $K$-means objective, see \Cref{kmeans++_theo}.
+\begin{theorem}{\citep{Arthur:2007:KAC:1283383.1283494}}
+\label{kmeans++_theo}
+Let $S$ be the set of centers output by the algorithm $K$-means$++$ and $\mathcal{L}(S)$ be the $K$-means cost of the clustering obtained using $S$ as the centers. Then $\EE[\mathcal{L(S)}]\leq O(\log(K))\mathcal{L}^*$, where $\mathcal{L}^*$ is the cost of the optimal $K$-means solution. 
+\end{theorem}
+\item $K$-means can not distinguish noise or select relevant features. This last point is particularly important in the case of high dimensional data, since it is generally accepted that the most relevant clusters lies in subspaces of much smaller dimension, we will discuss this phenomenon in \cref{curse_dim_section}. An idea would be to adapt Lloyd's method to the weighted $p^{th}$-root of the Minkowski metric
+\begin{equation}
+  d_{\bw}(\bx,\by) = \sum_{l=1}^p w_l|\bx_l - \by_l|^p,
+\end{equation}
+with $\bw$ a weight vector updated at each iterations. A first method of weighted $K$-means has been introduced in \citep{makarenkov2001optimal} and further developed in \citep{Huang_mink_kmeans} ($WK$-Means) for the Euclidean norm. An extension to the Minkowski metric is proposed in \citep{CordeirodeAmorim:2012:MMF:2051369.2051484} ($MWK$-Means) that outperforms $K$-means and $WK$-Means. Note that the use of a different metric has a profound impact on the implementation and running costs since the computation of Minkowski centers is not straightforward.
+\end{enumerate}
+\begin{figure}[h]
+\begin{center}
+\mybox{
+\begin{minipage}{0.85\linewidth}
+\begin{algorithmic}%[1]\tt
+\small
+\STATE {\bfseries Input:} N points $\bx_1,\ldots,\bx_n\in\RR^p$ and the number of clusters $K$.
+\STATE {\bfseries Init:} Chose one center $\bc_1$ uniformly at random among the data points and add it to the set $\mathcal{S}$.
+\FOR{$j=2$ to $K$ } 
+\STATE{\tt 1:} Chose a point $\bx$ with probability proportional to $\min_{\bc \in \mathcal{S}} d(\bx,\bc)^2$  and add it to $\mathcal{S}$.
+\ENDFOR
+\STATE {\tt 2:} Proceed with $K$-means algorithm and the set $\mathcal{S}$ as initialization clusters. 
+\end{algorithmic}
+\end{minipage}
+}
+   \caption{$K$-means$++$ algorithm}
+   \label{algo:kmeans++_algo}
+\end{center}
+\vspace{-15pt}
+\end{figure}
+The research on $K$-means is dense and several variants of this method has been developed. For instance $K$-medoids \citep{KaufmanR90} uses points of the data as centers, Mini-batch $K$-means\citep{Sculley:2010:WKC:1772690.1772862} takes mini-batches of data to reduce significantly computational times without penalizing too much the $K$-means cost or clustering algorithms that enjoy strong theoretical guarantees on non-worst case scenarios using notion of stability\citep{Ostrovsky2006}. The reader can refer to \citep{hennig2015handbook} for further details on this topic.
 
-(It is a hard-assignement method since it assign points to clusters and does not reflect a level of uncertainty on the assignements.
-Drawbacks with high dimension, problem of euclidian distance,)
+\subsection{Agglomerative Hierarchical Methods}
+The idea of Hierarchical clustering is to form a hierarchy of points. There exists two types: agglomerative and divisive. The first type consists to start from $N$ sets, each containing one element of the dataset and merge sets iteratively into larger groups according to an agglomeration rule and a similarity, i.e. building a hierarchy, until finding only one cluster that contains the whole data. The similarity can be a Minkowski distance, the cosine similarity or other distance such as Hamming, Hellinger or Mahalanobis.  The divisive procedure is the opposite of the agglomerative, starting from the whole dataset and splitting iteratively until obtaining $N$ sets. Let us consider the agglomerative procedure and a metric $d$, a simple implementation is to build the a dissimilarity matrix $S=(d_{ij}=d(i,j))_{i,j\in [N]^2}$ (which is symmetric) and consider the couple $(i,j)$ such that $d_{ij}$ is the smallest dissimilarity in $S$. We create a new object $i \cup j$, add it to the matrix $S$ with the rule $d_{i\cup j, k}=\min\{d_{ik},d_{jk}\}$ and remove the rows and columns of sets $i$ and $j$ in $S$. The iteration of this procedure leads to one final cluster containing all points in the dataset. This method is called Single linkage clustering \citep{Graham:1985:HMS:1435654.1436662} and is detailed in \Cref{algo:single_linkage_hier_algo}. Unfortunately this procedure has a complexity of $O(n^2)$ \citep{hierarchicalMurtagh}, a more efficient method, SLINK has a complexity of $O(n^2)$. The hierarchy can be visualized via the dendrogram in \Cref{dendrogram_graph}.
+
+
+wiki(Complete linkage clustering avoids a drawback of the alternative single linkage method - the so-called chaining phenomenon, where clusters formed via single linkage clustering may be forced together due to single elements being close to each other, even though many of the elements in each cluster may be very distant to each other)
+-Hierarchical methods are a popular technique of clustering, X percent of psy/med research rely on this method.
+-2 techniques: aglomerative/ separative
+-Single linkage rule and metric used, lance williams dissim update
+-with clusters centers, ward
+-chain method
+-no theoretical results
+-drawbacks
+
+\begin{figure}[h]
+\begin{center}
+\mybox{
+\begin{minipage}{0.85\linewidth}
+\begin{algorithmic}%[1]\tt
+\small
+\STATE {\bfseries Input:} Dissimilarity matrix $S$.
+\WHILE{At least 2 objects remain} 
+\STATE{\tt 1:} Determine the smallest dissimilarity $d_{ij}$ in $S$.
+\STATE{\tt 2:} Let $m$ be the size of $S$, compute the dissimilarities for the new object $i\cup j$:
+\begin{equation}
+  d_{i\cup j, k} = \min\{d_{ik},d_{jk}\},\quad k\in [m], m\neq i,j.
+\end{equation}
+\STATE{\tt 3:} Add the dissimilarities of $i\cup j$ in $S$ and remove those of sets $i$ and $j$.
+\ENDWHILE
+\end{algorithmic}
+\end{minipage}
+}
+   \caption{Simple single linkage hierarchical clustering}
+   \label{algo:single_linkage_hier_algo}
+\end{center}
+\vspace{-15pt}
+\end{figure}
+ \begin{figure}[h]
+ \center
+ \includegraphics[scale=0.35]{TeX_files/dendrogram.png}
+ \caption{The dataset of \Cref{voronoi_graph} with 4 clusters (left) used with the Agglomerative hierarchical clustering and its corresponding dendrogram (right). A simple way for finding clusters would be to cut the dendrogram with a horizontal line from bottom to top until finding the number of clusters desired. Note the difficulty to select the 4 original clusters.}
+ \label{dendrogram_graph}
+ \end{figure}
+
+\subsection{Spectral clustering}
+
 \subsection{Finding the number of clusters}
-
 
 \section{The Gaussian mixture model}
 
@@ -298,8 +392,24 @@ large running times. However, the computation of the elements of the covariance
 matrices $\bSigma^t_k$ and the mean vectors $\bmu^t_k$ can be parallelized which
 may lead to considerable savings in the running time.
 
-\section{The curse of dimensionality}
+\subsection{$K$-means from the EM angle}
 
+In this section, we will see that the $K$-means problem is closely related to the EM algorithm. We rewrite the minimization problem of $K$-means defined in \cref{kmeans_min_problem} as following
+\begin{equation}
+  \min_{\bc_1,\dots,\bc_K}\min_{\bR \in \{0,1\}^{N\times K}}\sum_{i=1}^N\sum_{k=1}^K r_{ik}\|\bx_i - \bc_k \|^2,
+\end{equation}
+where the matrix $\bR$ follows the $1$-of-$K$ coding scheme, i.e. if a point $\bx_i$ is assigned to the cluster $m$, then $r_{im}=1$ and $r_{il}=0, \forall l\in [K] \neq m$. One can see the underlying iterative procedure, the first one consists to minimize the objective function with respect to $\bc_1,\dots,\bc_K$ with $\bR$ fixed (Maximization step) and the second one consists to minimize the objective function with respect to $\bR$ with $\bc_1,\dots,\bc_K$ fixed (Expectation step). Consider the \textbf{E}-step, the objective function is linear with respect to $\bR$.  It consists for a data point $\bx_i$, to find the cluster $k$ such that $k = \argmin_{j\in[K]}\|\bx_i-\bc_j\|^2$. For the \textbf{M}-step, setting the gradient with respect to $\bc_k$ to 0 gives us
+\begin{equation}
+  2\sum_{i=1}^N r_{ik} (\bx_i-\bc_k) = 0,
+\end{equation}
+which leads to
+\begin{equation}
+  \bc_k = \frac{\sum_{i=1}^N r_{ik}\bx_i}{\sum_{i=1}^N r_{ik}}.
+\end{equation}
+Since $\sum_{i=1}^Nr_{ik}$ is the size of the cluster $k$, we recovered the Lloyd's algorithm.
+
+\section{The curse of dimensionality}
+\label{curse_dim_section}
 \todos{reecrire cette partie en commencant par le pb de la HD en stats en general, se baser sur les points de Giraud, puis une deuxieme sous section avec le cas du clustering et les pistes de resolution connues, ex: penalization, subspace clustering...}
 \todos{Ajouter un tableau des differents types de modeles et le nombre de parametres}
 
@@ -618,7 +728,7 @@ Our algorithm solves a graphical lasso problem within each cluster. We use a blo
 %!TEX root = ../main.tex
 
 \subsection{Estimating the number of clusters}
-
+\label{estim_nb_clusters_sect}
 In this chapter, we will focus on the open problem of estimating the number of clusters. Most of current clustering methods such that K-Means, Expectation-Maximisation with Gaussian mixture model or hierarchical clustering need a this parameter in input. Different methods are being used to perform a selection of the best model according to a criterion, unfortunately with a computational cost. In this work, we will try to tackle this challenge.
 
 \subsubsection{Introduction and related work}
