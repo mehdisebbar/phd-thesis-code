@@ -122,13 +122,29 @@ with $\bw$ a weight vector updated at each iterations. A first method of weighte
 The research on $K$-means is dense and several variants of this method has been developed. For instance $K$-medoids \citep{KaufmanR90} uses points of the data as centers, Mini-batch $K$-means\citep{Sculley:2010:WKC:1772690.1772862} takes mini-batches of data to reduce significantly computational times without penalizing too much the $K$-means cost or clustering algorithms that enjoy strong theoretical guarantees on non-worst case scenarios using notion of stability\citep{Ostrovsky2006}. The reader can refer to \citep{hennig2015handbook} for further details on this topic.
 
 \subsection{Agglomerative Hierarchical Methods}
-The idea of Hierarchical clustering is to form a hierarchy of points. There exists two types: agglomerative and divisive. The first type consists to start from $N$ sets, each containing one element of the dataset and merge sets iteratively into larger groups according to an agglomeration rule and a similarity, i.e. building a hierarchy, until finding only one cluster that contains the whole data. The similarity can be a Minkowski distance, the cosine similarity or other distance such as Hamming, Hellinger or Mahalanobis.  The divisive procedure is the opposite of the agglomerative, starting from the whole dataset and splitting iteratively until obtaining $N$ sets. Let us consider the agglomerative procedure and a metric $d$, a simple implementation is to build the a dissimilarity matrix $S=(d_{ij}=d(i,j))_{i,j\in [N]^2}$ (which is symmetric) and consider the couple $(i,j)$ such that $d_{ij}$ is the smallest dissimilarity in $S$. We create a new object $i \cup j$, add it to the matrix $S$ with the rule $d_{i\cup j, k}=\min\{d_{ik},d_{jk}\}$ and remove the rows and columns of sets $i$ and $j$ in $S$. The iteration of this procedure leads to one final cluster containing all points in the dataset. This method is called Single linkage clustering \citep{Graham:1985:HMS:1435654.1436662} and is detailed in \Cref{algo:single_linkage_hier_algo}. Unfortunately this procedure has a complexity of $O(n^2)$ \citep{hierarchicalMurtagh}, a more efficient method, SLINK has a complexity of $O(n^2)$. The hierarchy can be visualized via the dendrogram in \Cref{dendrogram_graph}.
+The idea of Hierarchical clustering is to form a hierarchy of clusters (i.e. nested clusters) which might be interesting to see how clusters are related to each other (something we cannot see with $K$-means). This method of clustering is very popular due to its simplicity and the resulting structure and organization. There exists two types: agglomerative and divisive. The first type consists to start from $N$ sets, each containing one element of the dataset and merge sets iteratively into larger groups according to an agglomeration rule and a similarity, i.e. building a hierarchy, until finding only one cluster that contains the whole data. The similarity can be a Minkowski distance, the cosine similarity or other distance such as Hamming, Hellinger or Mahalanobis.  The divisive procedure is the opposite of the agglomerative, starting from the whole dataset and splitting iteratively until obtaining $N$ sets. Divisive methods are generally very expensive, with a complexity of $O(2^n)$ , and are therefore not used in practice.
 
-
+Let us consider the agglomerative procedure and a metric $d$, a simple implementation is to build the dissimilarity matrix $S=(d_{ij}=d(i,j))_{i,j\in [N]^2}$ (which is symmetric) and consider the couple $(i,j)$ such that $d_{ij}$ is the smallest dissimilarity in $S$. We create a new object $i \cup j$, add it to the matrix $S$ with the rule $d_{i\cup j, k}=\min\{d_{ik},d_{jk}\}$ and remove the rows and columns of sets $i$ and $j$ in $S$. The iteration of this procedure leads to one final cluster containing all points in the dataset. This method is called Single linkage clustering \citep{Graham:1985:HMS:1435654.1436662} and is detailed in \Cref{algo:single_linkage_hier_algo}. This procedure has a complexity of $O(n^2)$\citep{hierarchicalMurtagh}. The hierarchy can be visualized via a binary tree called `dendrogram' in \Cref{dendrogram_graph}. This method has a severe drawback called `chaining phenomenon' where clusters can be merged due to close points even if it contains other points very distant. A alternative method called `Complete linkage clustering' solves this problem by taking the $\max$ instead of the $\min$ in step 1 of \Cref{algo:single_linkage_hier_algo}. 
+ \begin{figure}[h]
+ \center
+ \includegraphics[scale=0.35]{TeX_files/dendrogram.png}
+ \caption{The dataset of \Cref{voronoi_graph} with 4 clusters (left) used with the Agglomerative hierarchical clustering and its corresponding dendrogram (right). A simple way for finding clusters would be to cut the dendrogram with a horizontal line from bottom to top until finding the number of clusters desired. Note the difficulty to select the 4 original clusters.}
+ \label{dendrogram_graph}
+ \end{figure}
+Lance and Williams developed an updating formula \citep{lance_williams_67} for the dissimilarities that generalize several methods of agglomerative methods. 
+\begin{equation}
+  d(i \cup j,k) = \alpha_id(i,k)+\alpha_jd(j,k)+\beta d(i, j) +\gamma |d(i,k)-d(j,k)|.
+\end{equation}
+For instance, the single-linkage method is recovered by setting $\alpha_i =\alpha_j = 1/2$, $\beta =0$ and $\gamma =-1/2$ and the complete-linkage method with $\alpha_i =\alpha_j = 1/2$, $\beta =0$ and $\gamma =1/2$. The reader can find parameters for other methods in Table 6.1 of \citep{hennig2015handbook}.
+Another popular method is the Ward method also called Ward's minimum variance method which consists to optimize an objective function such as the sum of squares. 
+\begin{align*}
+  \Delta(A,B) &= \sum_{i\in A\cup B} \|\bx_i - \bc_{A \cup B} \|^2-\sum_{i\in A} \|\bx_i - \bc_{A} \|^2-\sum_{i\in B} \|\bx_i - \bc_{B} \|^2\\
+  &= \frac{n_An_B}{n_A+ n_B}\|\bc_A - \bc_B \|^2.
+\end{align*}
 wiki(Complete linkage clustering avoids a drawback of the alternative single linkage method - the so-called chaining phenomenon, where clusters formed via single linkage clustering may be forced together due to single elements being close to each other, even though many of the elements in each cluster may be very distant to each other)
 -Hierarchical methods are a popular technique of clustering, X percent of psy/med research rely on this method.
 -2 techniques: aglomerative/ separative
--Single linkage rule and metric used, lance williams dissim update
+-Single linkage rule and metric used, lance williams dissim update, complete link, average, centroid, ward (variance)
 -with clusters centers, ward
 -chain method
 -no theoretical results
@@ -140,14 +156,14 @@ wiki(Complete linkage clustering avoids a drawback of the alternative single lin
 \begin{minipage}{0.85\linewidth}
 \begin{algorithmic}%[1]\tt
 \small
-\STATE {\bfseries Input:} Dissimilarity matrix $S$.
-\WHILE{At least 2 objects remain} 
+\STATE {\bfseries Input:} A dissimilarity matrix $S$.
+\WHILE{at least 2 objects remain in S} 
 \STATE{\tt 1:} Determine the smallest dissimilarity $d_{ij}$ in $S$.
-\STATE{\tt 2:} Let $m$ be the size of $S$, compute the dissimilarities for the new object $i\cup j$:
+\STATE{\tt 2:} Let $m$ be the size of $S$, compute the dissimilarities for the new cluster $i\cup j$:
 \begin{equation}
   d_{i\cup j, k} = \min\{d_{ik},d_{jk}\},\quad k\in [m], m\neq i,j.
 \end{equation}
-\STATE{\tt 3:} Add the dissimilarities of $i\cup j$ in $S$ and remove those of sets $i$ and $j$.
+\STATE{\tt 3:} Add the dissimilarities of $i\cup j$ in $S$ and remove those of clusters $i$ and $j$.
 \ENDWHILE
 \end{algorithmic}
 \end{minipage}
@@ -157,12 +173,7 @@ wiki(Complete linkage clustering avoids a drawback of the alternative single lin
 \end{center}
 \vspace{-15pt}
 \end{figure}
- \begin{figure}[h]
- \center
- \includegraphics[scale=0.35]{TeX_files/dendrogram.png}
- \caption{The dataset of \Cref{voronoi_graph} with 4 clusters (left) used with the Agglomerative hierarchical clustering and its corresponding dendrogram (right). A simple way for finding clusters would be to cut the dendrogram with a horizontal line from bottom to top until finding the number of clusters desired. Note the difficulty to select the 4 original clusters.}
- \label{dendrogram_graph}
- \end{figure}
+
 
 \subsection{Spectral clustering}
 
