@@ -124,11 +124,11 @@ The research on $K$-means is dense and several variants of this method has been 
 \subsection{Agglomerative Hierarchical Methods}
 The idea of Hierarchical clustering is to form a hierarchy of clusters (i.e. nested clusters) which might be interesting to see how clusters are related to each other (something we cannot see with $K$-means). This method of clustering is very popular due to its simplicity and the resulting structure and organization. There exists two types: agglomerative and divisive. The first type consists to start from $N$ sets, each containing one element of the dataset and merge sets iteratively into larger groups according to an agglomeration rule and a similarity, i.e. building a hierarchy, until finding only one cluster that contains the whole data. The similarity can be a Minkowski distance, the cosine similarity or other distance such as Hamming, Hellinger or Mahalanobis.  The divisive procedure is the opposite of the agglomerative, starting from the whole dataset and splitting iteratively until obtaining $N$ sets. Divisive methods are generally very expensive, with a complexity of $O(2^n)$ , and are therefore not used in practice.
 
-Let us consider the agglomerative procedure and a metric $d$, a simple implementation is to build the dissimilarity matrix $S=(d_{ij}=d(i,j))_{i,j\in [N]^2}$ (which is symmetric) and consider the couple $(i,j)$ such that $d_{ij}$ is the smallest dissimilarity in $S$. We create a new object $i \cup j$, add it to the matrix $S$ with the rule $d_{i\cup j, k}=\min\{d_{ik},d_{jk}\}$ and remove the rows and columns of sets $i$ and $j$ in $S$. The iteration of this procedure leads to one final cluster containing all points in the dataset. This method is called Single linkage clustering \citep{Graham:1985:HMS:1435654.1436662} and is detailed in \Cref{algo:single_linkage_hier_algo}. This procedure has a complexity of $O(n^2)$\citep{hierarchicalMurtagh}. The hierarchy can be visualized via a binary tree called `dendrogram' in \Cref{dendrogram_graph}. This method has a severe drawback called `chaining phenomenon' where clusters can be merged due to close points even if it contains other points very distant. A alternative method called `Complete linkage clustering' solves this problem by taking the $\max$ instead of the $\min$ in step 1 of \Cref{algo:single_linkage_hier_algo}. 
+Let us consider the agglomerative procedure and a metric $d$, a simple implementation is to build the dissimilarity matrix $S=(d_{ij}=d(i,j))_{i,j\in [N]^2}$ (which is symmetric) and consider the couple $(i,j)$ such that $d_{ij}$ is the smallest dissimilarity in $S$. We create a new object $i \cup j$, add it to the matrix $S$ with the rule $d_{i\cup j, k}=\min\{d_{ik},d_{jk}\}$ and remove the rows and columns of sets $i$ and $j$ in $S$. The iteration of this procedure leads to one final cluster containing all points in the dataset. This method is called Single linkage clustering \citep{Graham:1985:HMS:1435654.1436662} and is detailed in \Cref{algo:single_linkage_hier_algo}. This procedure has a complexity of $O(n^2)$\citep{hierarchicalMurtagh}. The hierarchy can be visualized via a binary tree called `dendrogram' in \Cref{dendrogram_graph}. This method has a severe drawback called `chaining phenomenon' where clusters can be merged due to close points even if it contains other points very distant. A alternative method called `Complete linkage clustering' solves this problem by taking the maximum instead of the minimum in step 1 of \Cref{algo:single_linkage_hier_algo}. 
  \begin{figure}[h]
  \center
  \includegraphics[scale=0.35]{TeX_files/dendrogram.png}
- \caption{The dataset of \Cref{voronoi_graph} with 4 clusters (left) used with the Agglomerative hierarchical clustering and its corresponding dendrogram (right). A simple way for finding clusters would be to cut the dendrogram with a horizontal line from bottom to top until finding the number of clusters desired. Note the difficulty to select the 4 original clusters.}
+ \caption{The dataset with 4 clusters (top-left) used with the Agglomerative hierarchical clustering and its corresponding dendrogram, single-link (top-right), complete-link (bottom-left) and Ward's method (bottom-right). A simple way for finding clusters would be to cut the dendrogram with a horizontal line from bottom to top until finding the number of clusters desired. Note the difficulty to select the 4 original clusters.}
  \label{dendrogram_graph}
  \end{figure}
 Lance and Williams developed an updating formula \citep{lance_williams_67} for the dissimilarities that generalize several methods of agglomerative methods. 
@@ -136,19 +136,12 @@ Lance and Williams developed an updating formula \citep{lance_williams_67} for t
   d(i \cup j,k) = \alpha_id(i,k)+\alpha_jd(j,k)+\beta d(i, j) +\gamma |d(i,k)-d(j,k)|.
 \end{equation}
 For instance, the single-linkage method is recovered by setting $\alpha_i =\alpha_j = 1/2$, $\beta =0$ and $\gamma =-1/2$ and the complete-linkage method with $\alpha_i =\alpha_j = 1/2$, $\beta =0$ and $\gamma =1/2$. The reader can find parameters for other methods in Table 6.1 of \citep{hennig2015handbook}.
-Another popular method is the Ward method also called Ward's minimum variance method which consists to optimize an objective function such as the sum of squares. 
+Another popular method worth mentioning for its use of cluster centers is the Ward's method\citep{ward63} also called Ward's minimum variance method which consists to optimize an objective function such as the sum of squares. Consider the merging cost of combining clusters $A$ and $B$:
 \begin{align*}
   \Delta(A,B) &= \sum_{i\in A\cup B} \|\bx_i - \bc_{A \cup B} \|^2-\sum_{i\in A} \|\bx_i - \bc_{A} \|^2-\sum_{i\in B} \|\bx_i - \bc_{B} \|^2\\
-  &= \frac{n_An_B}{n_A+ n_B}\|\bc_A - \bc_B \|^2.
+  &= \frac{n_An_B}{n_A+ n_B}\|\bc_A - \bc_B \|^2,
 \end{align*}
-wiki(Complete linkage clustering avoids a drawback of the alternative single linkage method - the so-called chaining phenomenon, where clusters formed via single linkage clustering may be forced together due to single elements being close to each other, even though many of the elements in each cluster may be very distant to each other)
--Hierarchical methods are a popular technique of clustering, X percent of psy/med research rely on this method.
--2 techniques: aglomerative/ separative
--Single linkage rule and metric used, lance williams dissim update, complete link, average, centroid, ward (variance)
--with clusters centers, ward
--chain method
--no theoretical results
--drawbacks
+where $\bc_i$ is the center of cluster $i$.  This quantity is positive, hence the within-group variance increases when merging two clusters. Ward's method seek to minimize this growth. Note that Ward's method can be expressed in the Lance-Williams framework for evaluating $d(A \cup B, K)$ with $\alpha_i=(n_i+n_K)/(n_A+n_B+n_K)$, $\beta=-n_K/(n_A+n_B+n_K)$ and $\gamma=0$. More efficient algorithms relies on `Nearest Neighbor Chains'. Density based clustering
 
 \begin{figure}[h]
 \begin{center}
