@@ -1,0 +1,23 @@
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {3.1}Introduction}{\reset@font\mtcSfont 83}{section.3.1}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {3.2}Implementation}{\reset@font\mtcSfont 84}{section.3.2}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {3.3}Alternative methods considered}{\reset@font\mtcSfont 86}{section.3.3}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.3.1}SPADES}{\reset@font\mtcSSfont 87}{subsection.3.3.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.3.2}Adaptive Dantzig density estimation}{\reset@font\mtcSSfont 87}{subsection.3.3.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.3.3}Kernel density estimation}{\reset@font\mtcSSfont 90}{subsection.3.3.3}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Methods based on minimizing the AMISE}{\reset@font\mtcSSSfont 91}{section*.48}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Behavior of KDE in high dimension}{\reset@font\mtcSSSfont 92}{section*.50}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {3.4}Experimental Evaluation}{\reset@font\mtcSfont 93}{section.3.4}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.4.1}Dictionaries considered}{\reset@font\mtcSSfont 93}{subsection.3.4.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.4.2}Densities considered}{\reset@font\mtcSSfont 93}{subsection.3.4.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.4.3}Discussion of the results}{\reset@font\mtcSSfont 95}{subsection.3.4.3}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Mis-specification bias}{\reset@font\mtcSSSfont 96}{section*.53}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Assessing estimation error}{\reset@font\mtcSSSfont 96}{section*.56}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Impact of the choice of the dictionary }{\reset@font\mtcSSSfont 99}{section*.59}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Comparison of weights estimated by AD and MLE}{\reset@font\mtcSSSfont 101}{section*.62}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Concluding remarks}{\reset@font\mtcSSSfont 101}{section*.68}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {3.5}A method for constructing the dictionary of densities}{\reset@font\mtcSfont 109}{section.3.5}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.5.1}Implementation of the dictionary generator}{\reset@font\mtcSSfont 109}{subsection.3.5.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.5.2}Experimental evaluation}{\reset@font\mtcSSfont 113}{subsection.3.5.2}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode  Results without the selection of principal components and the goodness-of-fit test for the dictionary generator algorithm.}{\reset@font\mtcSSSfont 113}{section*.74}}
+{\reset@font\mtcSSSfont\mtc@string\contentsline{subsubsection}{\noexpand \leavevmode Results with the selection of principal components and the goodness-of-fit test for the dictionary generator algorithm.}{\reset@font\mtcSSSfont 113}{section*.79}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {3.5.3}Concluding remarks}{\reset@font\mtcSSfont 114}{subsection.3.5.3}}

@@ -19,7 +19,7 @@ The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previ
 One can note that this problem is convex as the composition of $-\log$ and a linear function is convex. Furthermore, the feasible space is also convex. This problem can be solved via a Primal-Dual interior point method. But we opted for an approach based on the accelerated proximal gradient descent method because of its suitability to the problems in high-dimensions with sparsity assumption \citep{Beck:2009:FIS:1658360.1658364}.
 
 \section{Implementation}
-
+\label{mle_kl_estim_impl}
 \begin{figure}[ht]
 \begin{center}
 \mybox{
@@ -93,7 +93,7 @@ This method has been coined Fast Iterative Shrinkage-Thresholding Algorithm (FIS
 \STATE {\bfseries Input:} A gradient step $\lambda$.
 \STATE {\bfseries Output:} parameter estimate $\hat\bpi$.
 \STATE {\tt 1: Initialize $t_0=1$ and $\bpi_0=(1/K,\dots,1/K)$,}
-\FOR{$k\geq 0,$ until convergence occurs, }
+\FOR{$k\geq 1,$ until convergence occurs, }
 \STATE {(a) $\bpi_k = \bPi_{\BB_+^K}\big( \xi_k - \lambda \nabla f_{\xi_k}(\xi_k)\big)$,}
 \STATE {(b) $t_{k+1}= \frac{1+\sqrt{1+4t_k^2}}{2}$,}
 \STATE {(c) $\xi_{k+1} = \bpi_k + \big(\frac{t_k-1}{t_{k+1}}\big)(\bpi_k-\bpi_{k-1})$.}
