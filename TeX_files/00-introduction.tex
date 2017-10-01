@@ -95,7 +95,7 @@ with $\bw$ a weight vector updated at each iterations. A first method of weighte
 The research on $K$-means is dense and several variants of this method has been developed. For instance $K$-medoids \citep{KaufmanR90} uses points of the data as centers, Mini-batch $K$-means \citep{Sculley:2010:WKC:1772690.1772862} takes mini-batches of data to reduce significantly computational cost without penalizing too much the $K$-means cost, or clustering algorithms that enjoy strong theoretical guarantees on non-worst case scenarios using the notion of stability \citep{Ostrovsky2006}. The reader can refer to \citep{hennig2015handbook} for further details on this topic.
 
 \subsection{Agglomerative Hierarchical Methods}
-In this section, we will present the Agglomerative Hierarchical clustering, a very popular method due to its simplicity and the nested structure of clusters that it produces. The idea of Hierarchical clustering is to form a hierarchy of clusters (i.e. nested partitions) according to a merging rule which helps us to see how clusters are related to each other (a structure unavailable with the other methods). There exist two types of hierarchical clustering: agglomerative and divisive. The first type consists in starting from $N$ clusters, each containing one element of the dataset and in merging clusters iteratively into larger groups according to an agglomeration rule and a similarity. This process builds a hierarchy, until finding only one cluster that contains the whole dataset. The similarity can be a Minkowski distance, the cosine similarity or other distance such as Hamming, Hellinger or Mahalanobis.  The divisive procedure is the opposite of the agglomerative: starting from the whole dataset and splitting iteratively until obtaining $N$ clusters. Divisive methods are generally very expensive, with a complexity of $O(2^n)$ \citep{Guenoche1991}, and are therefore not used in practice. 
+In this section, we will present the Agglomerative Hierarchical clustering, a very popular method due to its simplicity and the nested structure of clusters that it produces. The idea of Hierarchical clustering is to form a hierarchy of clusters (\textit{i.e.} nested partitions) according to a merging rule which helps us to see how clusters are related to each other (a structure unavailable with the other methods). There exist two types of hierarchical clustering: agglomerative and divisive. The first type consists in starting from $N$ clusters, each containing one element of the dataset and in merging clusters iteratively into larger groups according to an agglomeration rule and a similarity. This process builds a hierarchy, until finding only one cluster that contains the whole dataset. The similarity can be a Minkowski distance, the cosine similarity or other distance such as Hamming, Hellinger or Mahalanobis.  The divisive procedure is the opposite of the agglomerative: starting from the whole dataset and splitting iteratively until obtaining $N$ clusters. Divisive methods are generally very expensive, with a complexity of $O(2^n)$ \citep{Guenoche1991}, and are therefore not used in practice. 
 Let us consider the agglomerative procedure and a metric $d$, a simple implementation is to build the dissimilarity matrix of the $N$ original clusters $\{\bx_1\},\dots,\{\bx_N\}$ noted $S=(d_{ij}=d(\bx_i,\bx_j))_{i,j\in [N]^2}$ (which is symmetric) and consider the couple $(i,j)$ such that $d_{ij}$ is the smallest dissimilarity in $S$. We create a new cluster $i \cup j$, add it to the matrix $S$ with the rule $d_{i\cup j, k}=\min\{d_{ik},d_{jk}\}$ and remove the rows and columns of sets $i$ and $j$ from $S$. The iteration of this procedure leads to one final cluster containing all points in the dataset. This method is called `Single-linkage' clustering \citep{Graham:1985:HMS:1435654.1436662}; a naive implementation of it with a complexity of $O(n^3)$ is given in \Cref{algo:single_linkage_hier_algo}. Note that it can be optimized to $O(n^2)$\citep{hierarchicalMurtagh}. The hierarchy can be visualized via a binary tree called ``dendrogram'', see an illustration in \Cref{dendrogram_graph}. This method has a severe drawback called `chaining phenomenon' referring to the fact that clusters can be merged due to the presence of close points even if they contain other points that are very distant. An alternative method called `Complete-linkage' clustering solves this problem by taking the maximum instead of the minimum in step 1 of the Single-linkage algorithm in \Cref{algo:single_linkage_hier_algo}. Similarly to Single-linkage method, the complexity of the naive implementation is $O(n^3)$ but can be optimized to $O(n^2)$. Another popular method worth mentioning for its use of cluster centers is Ward's method\citep{ward63} also called Ward's minimum variance method which consists in optimizing an objective function, generally the sum of squared Euclidean distances between points. Let us consider the merging cost of combining clusters $A$ and $B$. If $A\cap B = \emptyset$, then
 \begin{align*}
   \Delta(A,B) &= \sum_{i\in A\cup B} \|\bx_i - \bc_{A \cup B} \|^2-\sum_{i\in A} \|\bx_i - \bc_{A} \|^2-\sum_{i\in B} \|\bx_i - \bc_{B} \|^2\\
@@ -140,7 +140,7 @@ where the parameters $\alpha_i , \alpha_j, \beta, \gamma$ depend on the clusteri
 \vspace{-15pt}
 \end{figure}
 \subsection{Spectral clustering}
-Recently, spectral clustering has become widely used thanks to its performance compared to traditional clustering techniques and its computational attractiveness. One interesting feature of spectral clustering is that it does not make any assumption on the form of the clusters contrary to $K$-means. This method of clustering relies deeply on the graph theory \citep{Donath:1973:LBP:1664638.1664644,Fiedler1973}. The reader can refer to \citep{Luxburg:2007:TSC:1288822.1288832} and \citep{SPIELMAN2007284} for a survey of the literature on this topic. Although several methods exist which all are referred to as ``Spectral clustering'' we will describe the simplest formulation of this method. Let us consider $\bx_1,\dots,\bx_N$, $N$ points in $\RR^p$ and a similarity measure $s_{ij} \geq 0$ between $\bx_i$ and $\bx_j$. We can construct the similarity matrix $\bS=(s_{ij})_{i,j\in [N^2]}$ which can be represented by a similarity graph $G=(V,E)$ where the vertices $v_1,\dots,v_N$ correspond to the points $\bx_1,\dots,\bx_N$ and the edge between $v_i$ and $v_j$ exists if $s_{ij}\neq 0 $ and thus has weight $s_{ij}$. Note that $G$ is an undirected graph, i.e. $s_{ij}=s_{ji}$. The main idea of spectral clustering is to find a partition of $G$ with minimal cuts, that is to find a partition such that the cumulative weight of the edges between different groups is low and those within a group are high. This can be done by analyzing the spectrum of the Laplacian matrix $\bL$ of $\bS$ and a clustering such as $K$-means in a low-dimensional subspace spanned by eigenvectors of $\bL$ corresponding to its largest eigenvalues. It is clear that a sparse graph $G$ is interesting for such a cutting problem. There exist several methods to sparsify $\bS$:
+Recently, spectral clustering has become widely used thanks to its performance compared to traditional clustering techniques and its computational attractiveness. One interesting feature of spectral clustering is that it does not make any assumption on the form of the clusters contrary to $K$-means. This method of clustering relies deeply on the graph theory \citep{Donath:1973:LBP:1664638.1664644,Fiedler1973}. The reader can refer to \citep{Luxburg:2007:TSC:1288822.1288832} and \citep{SPIELMAN2007284} for a survey of the literature on this topic. Although several methods exist which all are referred to as ``Spectral clustering'' we will describe the simplest formulation of this method. Let us consider $\bx_1,\dots,\bx_N$, $N$ points in $\RR^p$ and a similarity measure $s_{ij} \geq 0$ between $\bx_i$ and $\bx_j$. We can construct the similarity matrix $\bS=(s_{ij})_{i,j\in [N^2]}$ which can be represented by a similarity graph $G=(V,E)$ where the vertices $v_1,\dots,v_N$ correspond to the points $\bx_1,\dots,\bx_N$ and the edge between $v_i$ and $v_j$ exists if $s_{ij}\neq 0 $ and thus has weight $s_{ij}$. Note that $G$ is an undirected graph, \textit{i.e.} $s_{ij}=s_{ji}$. The main idea of spectral clustering is to find a partition of $G$ with minimal cuts, that is to find a partition such that the cumulative weight of the edges between different groups is low and those within a group are high. This can be done by analyzing the spectrum of the Laplacian matrix $\bL$ of $\bS$ and a clustering such as $K$-means in a low-dimensional subspace spanned by eigenvectors of $\bL$ corresponding to its largest eigenvalues. It is clear that a sparse graph $G$ is interesting for such a cutting problem. There exist several methods to sparsify $\bS$:
 \begin{description}
 \item[$K$-nearest neighbor graphs:] Modify the similarity matrix $\bS$ by keeping for each nodes the $k$-nearest neighbors and set $s_{ij}=0$ for the other vertices. We can make this graph undirected in different ways, see section 2.2 of \citep{Luxburg:2007:TSC:1288822.1288832}.
 \item[$\varepsilon$-neighborhood graph:] We connect nodes $v_i$ and $v_j$ if $s_{i,j}\geq \varepsilon$, this graph is usually unweighted.
@@ -196,21 +196,25 @@ and can be solved explicitly. It turns out that choosing $\bH$ as the matrix wit
   \min_{\bU\in\RR^{N\times k}} Tr(\bU^T\bD^{-\nicefrac{1}{2}}\bL\bD^{-\nicefrac{1}{2}}\bU)\quad \textnormal{subject to}\quad \bU^T\bU = \bI.
 \end{equation}
 These relaxations do not give guarantees on the quality of the solutions and the resulting partition can be significantly worse than the optimal one in regards to RatioCut and Ncut \citep{Guattery98,Nadler07fundamentallimitations}. In particular, spectral clustering methods are global methods and fail to identify clusters at different scales \citep{Nadler07fundamentallimitations}. But these approximations are computationally attractive and very simple to solve, especially with a sparse weighted adjacency matrix.
+
 \subsection{Finding the number of clusters}\label{sec:estim_nb_clusters}
 \label{sec:finding_clusters_nb}
-The determination of the number of clusters in a dataset is fundamental and still unsolved problem. Numerous approaches to this problem has been developed over the years, see \citep{Hardy:1996:NC:255810.255820,Milligan1985} and Chapter 26 of \citep{hennig2015handbook}. Several popular heuristics rely on a graphical interpretation of the quality of clustering. The most popular are the Elbow criterion which consists to perform clusterings with different number of clusters $K$ and compute the ratio of the between group variance versus the total variance (the F-test statistic) for each of them. The detection of an `elbow' indicates the appropriate number of clusters i.e. with larger $K$, the clusters does not give more information on the variance. Another technique that relies on a graphical interpretation is the Silhouette method \citep{Rousseeuw:1987:SGA:38768.38772} which asses how well a point is assigned to its cluster compared to nearest neighbor cluster. A more formal approach is the `Gap Statistic' developed in \citep{gap_stat_tibsh_2001}, an efficient statistical procedure that compare the change in within-cluster dispersion with that expected under a reference null distribution. In the case of the spectral clustering, one can use the `eigengap' heuristic on the eigenvalues $\lambda_1,\dots,\lambda_N$ of the Laplacian matrix by choosing $K$ such that $\lambda_1,\dots,\lambda_K$ are small and $\lambda_{K+1}$ is relatively large (see section 8.3 of \citep{Luxburg:2007:TSC:1288822.1288832}). Finally, a model selection criterion widely used on probabilistic models and important in our work is the Bayesian Information Criterion (BIC). This method has been developed in \citep{schwarz1978} following the work of Akaike on the AIC \citep{Akaike1998}. The idea of this method under the assumption that the observations $\{\bx_i,\dots,\bx_N\}$ are drawn from an exponential family is to derive from the approximation of the asymptotic expansion of the Bayes estimator the following quantity
+The determination of the number of clusters in a dataset is fundamental and still unsolved problem. Numerous approaches to this problem has been developed over the years, see \citep{Hardy:1996:NC:255810.255820,Milligan1985} and Chapter 26 of \citep{hennig2015handbook}. Several popular heuristics rely on a graphical interpretation of the quality of clustering. The most popular is the Elbow criterion which consists in performing clusterings with different number of clusters $K$ and computing the ratio of the between group variance and the total variance (the F-test statistic) for each $K$. The detection of an `elbow' indicates the appropriate number of clusters; \textit{i.e.} clusterings with larger $K$ do not really improve the explained proportion of the variance. Another technique that relies on a graphical interpretation is the Silhouette method \citep{Rousseeuw:1987:SGA:38768.38772} which assesses how well a point is assigned to its cluster compared to nearest neighbor cluster. A more formal approach is the `Gap Statistic' developed in \citep{gap_stat_tibsh_2001}, an efficient statistical procedure that compares the change in within-cluster dispersion with that expected under a reference null distribution. In the case of the spectral clustering, one can use the `eigengap' heuristic on the eigenvalues $\lambda_1,\dots,\lambda_N$ of the Laplacian matrix by choosing $K$ such that $\lambda_1,\dots,\lambda_K$ are small and $\lambda_{K+1}$ is relatively large (see section 8.3 of \citep{Luxburg:2007:TSC:1288822.1288832}). Finally, a model selection criterion widely used in probabilistic models and important in our work is the Bayesian Information Criterion (BIC). This method has been developed in \citep{schwarz1978} following the work of Akaike on the AIC \citep{Akaike1998}. The idea of this method, under the assumption that the observations $\{\bx_1,\dots,\bx_N\}$ are drawn from an exponential family, is to derive from the approximation of the asymptotic expansion of the Bayes estimator the following quantity
 \begin{equation}
-  \textnormal{BIC} = \hat\ell_j(\hat\theta,\bx)-\frac{1}{2}k_j\log(N),
+  \textnormal{BIC} = \hat\ell_j(\hat\theta_j,\bx)-\frac{1}{2}k_j\log(N),
 \end{equation}
-where $\hat\ell_j(\hat\theta,\bx)$ is the maximized likelihood of model $j$, $\hat\theta$ is the MLE and $k_j$ is number of free parameters of model $j$. Therefore, the model selection rule is to chose the model for which the BIC is the largest. BIC has several nice properties, in particular it penalizes the complexity of the model which is interesting since choosing the model only on the criterion of the{} likelihood in the case of Gaussian mixtures leads to select as many components as there are points. One can remark that all procedures mentioned previously require to perform a large number of clusterings and select the best model according to those criteria. This approach is computationally expensive. In \Cref{sparse_weight_vect_estim}, we try to address this challenge by iteratively penalizing the weight vector of large Gaussian mixture in an EM-like procedure.
+where $\hat\ell_j(\hat\theta,\bx)$ is the maximized log-likelihood of model $j$, $\hat\theta_j$ is the MLE and $k_j$ is the number of free parameters of model $j$. Therefore, the model selection rule is to choose the model for which the BIC is the largest. BIC has several nice properties; in particular, it penalizes the complexity of the model which is interesting since choosing the model only on the criterion of the{} likelihood in the case of Gaussian mixtures leads to select as many components as there are points. 
+
+One can remark that all procedures mentioned previously require to perform a large number of clusterings and select the best model according to a given criterion. Such an approach is computationally expensive. In \Cref{sparse_weight_vect_estim}, we try to address this challenge by iteratively penalizing the weight vector of large Gaussian mixture in an EM-like procedure.
+
 \section{The Gaussian Mixture Model}
-We will now focus on the main tool of this thesis. The Gaussian Mixture Model (GMM) is an important framework for clustering problems. Unlike the other methods previously seen, it is a probabilistic approach for clustering. One of the main advantages of model-based clustering is that the resulting partition can be interpreted statistically. It assumes that the observations are drawn from a
-mixture distribution the components of which are Gaussian  with parameters $(\bmu_k,\bSigma_k)$:
+We will now focus on the Gaussian Mixture Model (GMM), an important framework for clustering problems. Unlike the other previously seen methods, it is a probabilistic approach to clustering. One of the main advantages of model-based clustering is that the resulting partition can be interpreted statistically. It assumes that the observations are drawn from a
+mixture distribution the components of which are Gaussian  with parameters $(\bmu_k,\bSigma_k)$, the density of the $k$-th mixture component is
 \begin{equation}
-\varphi_{\bmu_k,\bSigma_k}(x)=\frac{1}{(2\pi)^{p/2}|\bSigma_k|^{1/2}} \exp\Big(-\frac{1}{2}(\bx-\bmu_k)^\top\bSigma_k^{-1}(\bx-\bmu_k)\Big)
+\varphi_{\bmu_k,\bSigma_k}(x)=\frac{1}{(2\pi)^{p/2}|\bSigma_k|^{1/2}} \exp\Big(-\frac{1}{2}(\bx-\bmu_k)^\top\bSigma_k^{-1}(\bx-\bmu_k)\Big).
 \end{equation}
 Let $\btheta$ be the list containing all the unknown parameters of a Gaussian mixture model: the family of means $\bmu = (\bmu_1,\ldots,\bmu_K)
-\in (\RR^p)^K$, the family of covariance matrices $\bSigma = (\bSigma_1,\ldots,\bSigma_k)\in(\mathcal S_{++}^p)^K$ and the vector of cluster probabilities  $\bpi=(\pi_1,\ldots,\pi_k)\in [0,1]^K$ such that $\b1_p^\top\bpi=1$.
+\in (\RR^p)^K$, the family of covariance matrices $\bSigma = (\bSigma_1,\ldots,\bSigma_k)\in(\mathcal S_{++}^p)^K$ and the vector of cluster probabilities  $\bpi=(\pi_1,\ldots,\pi_K)\in [0,1]^K$ such that $\b1_K^\top\bpi=1$.
 The density of one observation $\bX_1$ is then given by:
 \begin{equation}\label{mixture}
 p_{\btheta}(\bx)=\sum_{k=1}^K\pi_k\varphi_{\bmu_k,\bSigma_k}(\bx),\qquad \forall \bx\in\RR^p,
@@ -219,11 +223,11 @@ where $\btheta=(\bmu,\bSigma,\bpi)$.
 This model can be interpreted from a latent variable perspective. Let $Z$ be a discrete random variable
 taking its values in the set $[K]$ and such that $\Pb(Z=k) = \pi_k$ for every $k\in[K]$. The random variable $Z$
 indicates the cluster from which the observation $\bX$ is drawn.  Considering that all the conditional distributions
-$\bX|Z=k$ are Gaussian, we get the following formula for the marginal density of $X$:
+$\bX|Z=k$ are Gaussian, we get the following formula for the marginal density of $\bX$:
 \begin{equation}
 p_{\btheta}(\bx)=\sum_{k=1}^K \Pb(Z=k)p_{\theta}(\bx|Z=k) = \sum_{k=1}^K\pi_k\varphi_{\bmu_k,\bSigma_k}(\bx),\qquad \forall \bx\in\RR^p.
 \end{equation}
-In the clustering problem, the goal is to assign $X$ to a cluster or, equivalently, to predict the cluster $Z$ of the vector $\bX$.
+In the clustering problem, the goal is to assign $\bX$ to a cluster or, equivalently, to predict the cluster $Z$ of the vector $\bX$.
 A prediction function in such a context is $g:\RR^p\to[K]$ such that $g(\bX)$ is as close as possible to $Z$. If we measure the
 risk of a prediction function $g$ in terms of misclassification error rate $R_\btheta(g) = \Pb_\btheta(g(\bX)\not=Z)$, then it is
 well known that the optimal (Bayes) predictor $g^*_\btheta \in \arg\min_g R_\btheta(g)$ is provided by the rule
@@ -246,10 +250,10 @@ then to define the clustering rule by
 \hat g(\bx) = g^*_{\hat\btheta}(\bx)=\arg\max_{k\in [K]} \tau_k(\bx,\hat\btheta)=\arg\max_{k\in [K]}\
 \hat\pi_k\varphi_{\hat\bmu_k,\hat\bSigma_k}(\bx).
 \end{equation}
-A common approach to estimating the parameter $\btheta$ is to rely on the likelihood maximization. Let $\bX_1,\dots,\bX_n$ with $\bX_i\in \RR^p$ be a set of iid observations drawn from the density $p_{\btheta}$
-given by (\ref{mixture}). The graphical model in \Cref{fig:grap_model_gmm} depicts the scheme of the observations.
+A common approach to estimating the parameter $\btheta$ is to rely on the likelihood maximization. Let $\bX_1,\dots,\bX_N$ with $\bX_i\in \RR^p$ be a set of iid observations drawn from the density $p_{\btheta}$
+given by (\ref{mixture}). The graphical model in \Cref{fig:graph_model_gmm_} depicts the scheme of the observations.
 %%GRAPH of pgm
-\begin{figure}[h]
+\begin{figure}
 \centering\small
 \begin{tikzpicture}
 \tikzstyle{main}=[circle, minimum size = 6mm, thick, draw =black!80, node distance = 10mm]
@@ -267,13 +271,13 @@ given by (\ref{mixture}). The graphical model in \Cref{fig:grap_model_gmm} depic
 \node[main,draw=none] (c) [right=of z] {$\{\pi_k\}$};
 \path (c) edge [connect] (z);
 \end{tikzpicture}
-\label{fig:grap_model_gmm}
 \caption{The Gaussian Mixture Model.}
+\label{fig:graph_model_gmm_}
 \end{figure}
 The log-likelihood of the Gaussian mixture model is
 \begin{equation}\label{log-likelihood}
-\ell_n(\btheta)=\sum_{i=1}^{n}\log{p_{\btheta}(\bx_i)}=
-\sum_{i=1}^{n}\log\bigg\{{\sum_{k=1}^K\pi_k\varphi_{(\bmu_{k},\bSigma_{k})}(\bx_i)}\bigg\}.
+\ell_N(\btheta)=\sum_{i=1}^{N}\log{p_{\btheta}(\bx_i)}=
+\sum_{i=1}^{N}\log\bigg\{{\sum_{k=1}^K\pi_k\varphi_{(\bmu_{k},\bSigma_{k})}(\bx_i)}\bigg\}.
 \end{equation}
 Because of the presence in this equation of the logarithm of a sum, the maximization of the log-likelihood is
 a difficult nonlinear and nonconvex problem. In particular, this is not a exponential family distribution yielding simple expressions.
@@ -288,13 +292,13 @@ mixture modeling assumption:
 \begin{minipage}{0.95\linewidth}
 \begin{algorithmic}%[1]\tt
 \small
-\STATE {\bfseries Input:} data vectors $\bx_1,\ldots,\bx_n\in\RR^p$ and the number of clusters $K$
+\STATE {\bfseries Input:} data vectors $\bx_1,\ldots,\bx_N\in\RR^p$ and the number of clusters $K$
 \STATE {\bfseries Output:} function  $\hat g : \RR^p\to [K]$
 \STATE {\tt 1:} Estimate $\btheta=(\bpi,\bmu,\bSigma)$ by maximizing the log-likelihood:
 \begin{align}\label{step:1}
 \hat\btheta
-    &\in\arg\max_{\btheta\in\bTheta}  \ell(\btheta|\bx_1,\dots,\bx_n)
-    =\arg\max_{\bpi,\bmu,\bSigma}  \sum_{i=1}^{n}\log\bigg\{{\sum_{k=1}^K\pi_k\varphi_{\bmu_{k},\bSigma_{k}}(\bx_i)}\bigg\}.
+    &\in\arg\max_{\btheta\in\bTheta}  \ell(\btheta|\bx_1,\dots,\bx_N)
+    =\arg\max_{\bpi,\bmu,\bSigma}  \sum_{i=1}^{N}\log\bigg\{{\sum_{k=1}^K\pi_k\varphi_{\bmu_{k},\bSigma_{k}}(\bx_i)}\bigg\}.
 \end{align}
 \STATE {\tt 2:} Output the clustering rule:
 \begin{equation}
@@ -324,7 +328,7 @@ of one observation derived from the log-sum inequality:
 \log\bigg\{{\sum_{k=1}^K\pi_k\varphi_{\bmu_{k},\bSigma_{k}}(\bx_i)}\bigg\} =
 \max_{\substack{\btau\in[0,1]^K \ \btau^\top \b1_K=1}} \sum_{k=1}^K \Big\{\tau_{k}\log\varphi_{\bmu_{k},\bSigma_{k}}(\bx_i)+\tau_{k} \log(\pi_k/\tau_{k})\Big\}.
 \end{equation}
-Let us denote by $\bTau = (\tau_{i,k})$ a $n\times K$ matrix with nonnegative entries such that $\bTau\b1_K = \b1_n$, that is each
+Let us denote by $\bTau = (\tau_{i,k})$ a $N\times K$ matrix with nonnegative entries such that $\bTau\b1_K = \b1_n$, that is each
 row of $\bTau$ is a probability distribution on $[K]$. Combining \eqref{step:1} and \eqref{hint}, we get
 \begin{align}\label{eq:3}
 \hat\btheta
@@ -346,7 +350,7 @@ admit explicit solutions.
 \begin{algorithmic}%[1]\tt
 %\SetLine%\SetAlgoLined
 \small
-\STATE {\bfseries Input:} data vectors $\bx_1,\ldots,\bx_n\in\RR^p$ and the number of clusters $K$
+\STATE {\bfseries Input:} data vectors $\bx_1,\ldots,\bx_N\in\RR^p$ and the number of clusters $K$
 \STATE {\bfseries Output:} parameter estimate $\hat\btheta = \{\hat\bmu_k,\hat\bSigma_k,\pi_k\}_{k\in[K]}$
 \STATE {\tt 1:} Initialize $t=0$, $\btheta=\btheta^0$.
 \STATE {\tt 2:} {\bf Repeat}
@@ -356,9 +360,9 @@ admit explicit solutions.
 \end{align*}
 \STATE \qquad{\tt 4:} Update the parameter $\btheta$:
 \begin{align*}
-\pi_k^{t+1}     &= \frac1n\sum_{i=1}^n \tau_{i,k}^t,\qquad
-\bmu_k^{t+1}    = \frac1{n\pi_k^{t+1}}\sum_{i=1}^n \tau_{i,k}^t\bx_i,\\
-\bSigma_k^{t+1} &= \frac1{n\pi_k^{t+1}}\sum_{i=1}^n \tau_{i,k}^t(\bx_i-\bmu_k^{t+1})(\bx_i-\bmu_k^{t+1})^\top.
+\pi_k^{t+1}     &= \frac1N\sum_{i=1}^N \tau_{i,k}^t,\qquad
+\bmu_k^{t+1}    = \frac1{N\pi_k^{t+1}}\sum_{i=1}^N \tau_{i,k}^t\bx_i,\\
+\bSigma_k^{t+1} &= \frac1{N\pi_k^{t+1}}\sum_{i=1}^N \tau_{i,k}^t(\bx_i-\bmu_k^{t+1})(\bx_i-\bmu_k^{t+1})^\top.
 \end{align*}
 \STATE \qquad {\tt 5:} increment $t$: $t=t+1$.
 \STATE {\tt 6:} {\bf Until} stopping rule.
@@ -374,7 +378,7 @@ admit explicit solutions.
 Let us introduce the cost function
 \begin{equation}
 \label{cost_gmm_em}
-F(\btheta,\bTau) = \sum_{i=1}^{n} \sum_{k=1}^K \Big\{\tau_{i,k}\log\varphi_{\bmu_{k},\bSigma_{k}}(\bx_i)+\tau_{i,k}
+F(\btheta,\bTau) = \sum_{i=1}^{N} \sum_{k=1}^K \Big\{\tau_{i,k}\log\varphi_{\bmu_{k},\bSigma_{k}}(\bx_i)+\tau_{i,k}
     \log(\pi_k/\tau_{i,k})\Big\}.
 \end{equation}
 Then, the following two optimization problems
@@ -384,9 +388,9 @@ Then, the following two optimization problems
 has explicit solutions given by
 \begin{align}
 \label{em-sols}
-\hat\pi_k     &= \frac1n\sum_{i=1}^n \tau_{i,k},\qquad\hat\bmu_k = \frac1{n\hat\pi_k}\sum_{i=1}^n \tau_{i,k}\bx_i ,\qquad \forall k\in[K],\\
-\hat\bSigma_k &= \frac1{n\hat\pi_k}\sum_{i=1}^n \tau_{i,k}(\bx_i-\hat\bmu_k)(\bx_i-\hat\bmu_k)^\top,\qquad\forall k\in[K],\\
-\hat\tau_{i,k}&= \frac{\pi_k\varphi_{\bmu_k,\bSigma_k}(\bx_i)}{\sum_{k'\in[K]}\pi_{k'}\varphi_{\bmu_{k'},\bSigma_{k'}}(\bx_i)},\qquad\forall k\in[K],\ \forall i\in[n] \label{tau_ik_em}.
+\hat\pi_k     &= \frac1N\sum_{i=1}^N \tau_{i,k},\qquad\hat\bmu_k = \frac1{N\hat\pi_k}\sum_{i=1}^N \tau_{i,k}\bx_i ,\qquad \forall k\in[K],\\
+\hat\bSigma_k &= \frac1{N\hat\pi_k}\sum_{i=1}^N \tau_{i,k}(\bx_i-\hat\bmu_k)(\bx_i-\hat\bmu_k)^\top,\qquad\forall k\in[K],\\
+\hat\tau_{i,k}&= \frac{\pi_k\varphi_{\bmu_k,\bSigma_k}(\bx_i)}{\sum_{k'\in[K]}\pi_{k'}\varphi_{\bmu_{k'},\bSigma_{k'}}(\bx_i)},\qquad\forall k\in[K],\ \forall i\in[N] \label{tau_ik_em}.
 \end{align}
 \end{lem}
 Based on this result, the EM algorithm is defined as in Figure~\ref{algo:EM}.
@@ -397,15 +401,15 @@ following conditions is fulfilled:
 \begin{description}
 \item[i)]  The number of iterations $t$ exceeds a pre-specified level $t_{\max}$.
 \item[ii)] The increase of the log-likelihood over past $t_0$ iterations is not
-significantly different from zero: $\ell_n(\btheta^{t})-\ell_n(\btheta^{t-t_0})\le \varepsilon$
+significantly different from zero: $\ell_N(\btheta^{t})-\ell_N(\btheta^{t-t_0})\le \varepsilon$
 for some pre-specified values $t_0\in\NN$ and $\varepsilon>0$.
 \end{description}
 EM is conceptually easy and each iteration increases the log-likelihood:
 $$
-\ell_n(\btheta^{t+1})\ge \ell_n(\btheta^{t}),\qquad \forall t\in\NN.
+\ell_N(\btheta^{t+1})\ge \ell_N(\btheta^{t}),\qquad \forall t\in\NN.
 $$
 \todos{preuve}
-The complexity at each step of the EM algorithm is $O(Knp^2)$ and
+The complexity at each step of the EM algorithm is $O(KNp^2)$ and
 it usually requires many iterations to converge. In a high-dimensional setting
 when $p$ is large, the quadratic dependence on $p$ may result in prohibitively
 large running times. However, the computation of the elements of the covariance
@@ -413,11 +417,11 @@ matrices $\bSigma^t_k$ and the mean vectors $\bmu^t_k$ can be parallelized which
 may lead to considerable savings in the running time.
 \subsection{$K$-means from the EM angle}
 
-In this section, we will see that the $K$-means problem is closely related to the EM algorithm. We rewrite the minimization problem of $K$-means defined in \cref{kmeans_min_problem} as following
+In this section, we will see that the $K$-means problem is closely related to the EM algorithm. We rewrite the minimization problem of $K$-means defined in \cref{kmeans_min_problem} as follows
 \begin{equation}
   \min_{\bc_1,\dots,\bc_K}\min_{\bR \in \{0,1\}^{N\times K}}\sum_{i=1}^N\sum_{k=1}^K r_{ik}\|\bx_i - \bc_k \|^2,
 \end{equation}
-where the matrix $\bR$ follows the $1$-of-$K$ coding scheme, i.e. if a point $\bx_i$ is assigned to the cluster $m$, then $r_{im}=1$ and $r_{il}=0, \forall l\in [K] \neq m$. One can see the underlying iterative procedure, the first one consists to minimize the objective function with respect to $\bc_1,\dots,\bc_K$ with $\bR$ fixed (Maximization step) and the second one consists to minimize the objective function with respect to $\bR$ with $\bc_1,\dots,\bc_K$ fixed (Expectation step). Consider the \textbf{E}-step, the objective function is linear with respect to $\bR$.  It consists for a data point $\bx_i$, to find the cluster $k$ such that $k = \argmin_{j\in[K]}\|\bx_i-\bc_j\|^2$. For the \textbf{M}-step, setting the gradient with respect to $\bc_k$ to 0 gives us
+where, in the matrix $\bR$, the rows sum to 1. One can solve this problem by repeating two steps, the first one consists in minimizing the objective function with respect to $\bc_1,\dots,\bc_K$ with $\bR$ fixed (Maximization step) and the second one consists in minimizing the objective function with respect to $\bR$ with $\bc_1,\dots,\bc_K$ fixed (Expectation step). Consider the \textbf{E}-step and note that the objective function is linear with respect to $\bR$.  It consists for a data point $\bx_i$, to find the cluster $k$ such that $k = \argmin_{j\in[K]}\|\bx_i-\bc_j\|^2$. For the \textbf{M}-step, setting the gradient with respect to $\bc_k$ to 0 gives us
 \begin{equation}
   2\sum_{i=1}^N r_{ik} (\bx_i-\bc_k) = 0,
 \end{equation}
@@ -425,29 +429,29 @@ which leads to
 \begin{equation}
   \bc_k = \frac{\sum_{i=1}^N r_{ik}\bx_i}{\sum_{i=1}^N r_{ik}}.
 \end{equation}
-Since $\sum_{i=1}^Nr_{ik}$ is the size of the cluster $k$, we recovered the Lloyd's algorithm.
+Since $\sum_{i=1}^Nr_{ik}$ is the size of the cluster $k$, we recovered Lloyd's algorithm.
 
 \section{The curse of dimensionality}\label{sec:hd_curse}
 \label{curse_dim_section}
-The expression `Curse of dimensionality' introduced by R.Bellman in his book on dynamic programming \citep{Bellman:1957} refers to the problems linked with high dimension. One can see that evaluating a function on the segment $(0,1)$ with a step size of $0.1$ is straightforward. However, evaluating the function in a grid of dimension 10 requires $10^{10}$ computations which can be intractable even today within a reasonable time. Many computational and statistical problems arise in this setting. Sometimes the literature refers to a `high dimensional' setting when $p \gg n$ and more precisely when the model considered has more parameters or degree of freedom than there are observations. In the following, we recall some classical phenomenons that appear in this context and focus on the clustering with high dimensional data. 
+The expression `Curse of dimensionality' introduced by R. Bellman in his book on dynamic programming \citep{Bellman:1957} refers to the problems related to high dimension. One can see that evaluating a function on the segment $(0,1)$ with a step size of $0.1$ is straightforward. However, evaluating the function in a grid of dimension 10 requires $10^{10}$ computations which can be intractable even today within a reasonable time. Many computational and statistical problems arise in this setting. Sometimes the literature refers to a `high dimensional' setting when $p \gg n$ and more precisely when the model considered has more parameters or degrees of freedom than there are observations. In the sequel, we recall some classical phenomena that appear in this context and focus on the clustering with high dimensional data. 
 
-We saw previously different clustering methods that rely on a distance such as the Euclidean distance. It turns out that in a high dimensional setting, the notion of nearest point vanishes: the minimal distance increases but on the other hand the variance of the distance between points has a slower increase. Consider 2 $p$-dimensional random variables $\bX,\bX'$ and the Euclidean norm, the scaled deviation is then
+We saw previously different clustering methods that rely on a distance such as the Euclidean distance. It turns out that in a high dimensional setting, the notion of nearest point vanishes: the minimal distance increases but on the other hand the variance of the distance between points has a slower increase. Consider 2 $p$-dimensional random vectors $\bX,\bX'$ with i.i.d. entries and the Euclidean norm, the scaled deviation is then
 \begin{equation}
   \frac{\textnormal{sdev}[\|\bX-\bX'\|^2]}{\EE[\|\bX-\bX'\|^2]} \approx \frac{1}{\sqrt{p}},
 \end{equation}
-and goes to $0$ when $p\rightarrow\infty$. A direct consequence of such distance concentration phenomenon is the loss of relevance of the methods based on discriminating near and far neighbors such as those studied in the previous section (nearest center for $K$-means, agglomeration in hierarchical clustering or constructing adjacency graph for spectral clustering). In the clustering context, a strong assumption for ensuring the separation of clusters would be to consider the inter-cluster distance dominant compared to the variance within each clusters. Another phenomenon is the "error accumulation", consider the classical linear regression setting  $\bY=\bX\bbeta^*+\beps$ with $\bX\in \RR^{N\times p}$ and $\beps_1,\dots,\beps_N$ i.i.d. centered with variance $\sigma^2$. The least-square estimator $\hat\bbeta = \argmin_{\bbeta\in\RR^{p}}\|\bY-\bX\bbeta\|^2$ verify the following estimation error
+and goes to $0$ when $p\rightarrow\infty$. A direct consequence of such distance concentration phenomenon is the loss of relevance of the methods based on discriminating near and far neighbors such as those studied in the previous section (nearest center for $K$-means, agglomeration in hierarchical clustering or constructing adjacency graph for spectral clustering). In the clustering context, a strong assumption for ensuring the separation of clusters would be to consider the inter-cluster distance dominant compared to the variance within each clusters. Another phenomenon is the ``error accumulation''. Consider the classical linear regression setting  $\bY=\bX\bbeta^*+\beps$ with $\bX$ an orthogonal matrix in $\RR^{N\times p}$ and $\beps_1,\dots,\beps_N$ i.i.d. centered with variance $\sigma^2$. The least-squares estimator $\hat\bbeta = \argmin_{\bbeta\in\RR^{p}}\|\bY-\bX\bbeta\|^2$ has an estimation error given by
 \begin{equation}
-  \EE[\|\hat\beta-\bbeta^*\|^2]=p\sigma^2.
+  \EE[\|\hat\bbeta-\bbeta^*\|^2]=p\sigma^2.
 \end{equation}
-Therefore we can see that the estimation error increases linearly with the dimension. Furthermore, an interesting phenomenon that occurs in high dimension is that spaces are mostly empty and the realizations of a $p$-dimensional random vector with a uniform probability distribution on the unit hypersphere lies with high probability close to the boundary of this hypersphere. Therefore, the data belong mostly in a $p-1$ dimensional subspace. Interestingly, the ratio of the volume of a hypersphere versus the volume of the hypercube goes to 0 as $p\rightarrow\infty$ (see section 2.3 of \citep{Zimek2012}). This means that most of the volume lies in the corner of the hypercube. Therefore, any methods based on a spherical distance such as the Euclidean norm is meaningless in this context. One could consider a probabilistic approach to overcome the issues with high dimension. Unfortunately, model-based clustering suffers over-parametrization. In the Gaussian mixture model of $K$ components in dimension $p$, the number of free parameters to estimate is
+Therefore we can see that the estimation error increases linearly with the dimension. Furthermore, an interesting phenomenon that occurs in high dimension is that spaces are mostly empty and the realizations of a $p$-dimensional random vector with a uniform probability distribution on the unit ball lie with high probability close to a hypersphere. Therefore, the data belong mostly to a $p-1$ dimensional subspace. Interestingly, the ratio of the volume of a unit ball and the volume of the unit hypercube goes to 0 as $p\rightarrow\infty$ (see section 2.3 of \citep{Zimek2012}). This means that most of the volume lies in the corner of the hypercube. Therefore, any method based on a spherical distance such as the Euclidean norm is deficient in this context. One can consider a probabilistic approach to overcome the issues with high dimension, but the naïve model-based clustering suffers over-parametrization. In the Gaussian mixture model of $K$ components in dimension $p$, the number of free parameters to estimate is
 \begin{equation}
-   \nu = \underbrace{(K-1)}_\text{Weights}+ \underbrace{Kp}_\text{Means} + \underbrace{Kp(p-1)^2}_\text{Covariances Matrices},
+   \nu = \underbrace{(K-1)}_\text{Weights}+ \underbrace{Kp}_\text{Means} + \underbrace{Kp(p-1)}_\text{Covariances Matrices},
  \end{equation}
-which for $p=100$ and $K=5$ is 125704. Moreover, the evaluation of $\hat\tau_{i,k}$ in \cref{tau_ik_em} needs to evaluate the inverse of the covariance matrix $\hat\bSigma_k$ which is called the precision matrix. If $n<<\nu$ the matrices $\hat\bSigma_k$ with $ k\in[K]$ are ill conditioned and the precision matrices are prone to large numerical errors or more often are singular and the problem can not be solved.
+which for $p=100$ and $K=5$ is 125704. Moreover, the evaluation of $\hat\tau_{i,k}$ in \cref{tau_ik_em} requires the computation of the inverse of the covariance matrix $\hat\bSigma_k$ which is called the precision matrix. If $n<p$ the matrices $\hat\bSigma_k$ with $ k\in[K]$ are ill-conditioned and the precision matrices are prone to large numerical errors or more often are singular and the problem can not be solved.
 
-Several popular methods are used to overcome these issues. One can reasonably consider that multiple variables are correlated or that most of the dimensions are irrelevant and therefore clusters may live on a lower-dimensional subspace. A first approach would be to perform a dimension reduction like Principal Component Analysis (PCA) but this leads to a decoupling of the dimension reduction task from the clustering task and may lead to a poor selection of the subspace \citep{bouveyron:hal-00750909}, keeping information from irrelevant dimensions. Moreover, the interpretation of the resulting linearly transformed dimensions are difficult to interpret. Another approach called ``feature selection'' consists in selecting the most relevant features but fails when clusters live in different subspaces. This scenario leads to the development of ``subspace clustering'' techniques that go one step further by selecting the most relevant features for each cluster separately (see \citep{Parsons:2004:SCH:1007730.1007731} for a review on this topic). 
+Several popular methods are used to overcome these issues. One can reasonably consider that several variables are correlated or that projections on many directions are irrelevant and, therefore, clusters may live on a lower-dimensional subspace. A first approach would be to perform a dimension reduction like Principal Component Analysis (PCA) but this leads to a decoupling of the dimension reduction task from the clustering task and may lead to a poor selection of the subspace \citep{bouveyron:hal-00750909}, keeping information from irrelevant dimensions. Moreover, the resulting linearly transformed dimensions are difficult to interpret. Another approach called ``feature selection'' consists in selecting the most relevant features but fails when clusters live in different subspaces. This scenario leads to the development of ``subspace clustering'' techniques that go one step further by selecting the most relevant features for each cluster separately (see \citep{Parsons:2004:SCH:1007730.1007731} for a review on this topic). 
 
-In our work, we discuss some approaches based on the regularization technique and make sparsity assumption on the structure of the precision matrices in the Gaussian mixture model. The goal is to reduce the number of free parameters and tackle the problem of estimating the inverse of the covariance matrix. In \cref{chapgraphlasso}, we address this challenge by studying some nice structural properties of precision matrices.
+In the rest of this chapter, we discuss some approaches based on the regularization technique and make sparsity assumption on the structure of the precision matrices in the Gaussian mixture model. The goal is to reduce the number of free parameters and tackle the problem of estimating the inverse of the covariance matrix. In \cref{chapgraphlasso}, we address this challenge by studying some nice structural properties of precision matrices.
 
 The reader can find a more thorough overview of high dimensional statistics in \cite{giraud2014introduction,Zimek2012,buhlmann2011statistics}. For a survey of clustering in high dimension, see \citep{bouveyron:hal-00750909,Parsons:2004:SCH:1007730.1007731}.
 
