@@ -237,13 +237,13 @@ For a given $\hat\bTau$, estimates of $(\pi_1,\dots,\pi_K)$ and $(\bmu_1,\dots,\
 and for a given $\hat\btheta$, the estimate of $\bTau$ obtained by the second optimization problem is
 \begin{equation}
 \label{em-sols-tau}
-\hat\tau_{i,k} = \text{P}_{\btheta}(Z=k|\bX=\bx_i)=\frac{\hat\pi_k\varphi_{\hat\bmu_k,\hat\bOmega_k}(\bx_i)}{\sum_{k'\in[K]}\hat\pi_{k'}\varphi_{\hat\bmu_{k'},\hat\bOmega_{k'}}(\bx_i)},\qquad\forall k\in[K],\ \forall i\in[N].
+\hat\tau_{i,k} = \textnormal{P}_{\hat\btheta}(Z=k|\bX=\bx_i)=\frac{\hat\pi_k\varphi_{\hat\bmu_k,\hat\bOmega_k}(\bx_i)}{\sum_{k'\in[K]}\hat\pi_{k'}\varphi_{\hat\bmu_{k'},\hat\bOmega_{k'}}(\bx_i)},\qquad\forall k\in[K],\ \forall i\in[N].
 \end{equation}
 However, due to the penalty $\lambda_k||\bOmega_k||_{1,1}$, the estimation of $\bOmega_k$ is not straightforward. To overcome this problem, let us introduce the weighted empirical covariance matrix
 \begin{equation}
 \bSigma_{N,k} = \frac{1}{N}\frac{\sum_{i=1}^N\tau_{i,k}(\bx_i-\hat\bmu_k)(\bx_i-\hat\bmu_k)^\top}{\sum_{i=1}^N\tau_{i,k}}.
 \end{equation}
-The penalized log-likelihood in equation \eqref{cost_fun_pen} can therefore be expanded as following
+The penalized log-likelihood in equation \eqref{cost_fun_pen} can therefore be expanded as follows
 \begin{align*}
 \label{cost_fun_pen_2}
 F^{pen}(\btheta,\bTau)  =& \sum_{k=1}^K \bigg( \sum_{i=1}^{N}\Big\{ \tau_{i,k} \Big(
@@ -290,7 +290,6 @@ In the light of this equation, one can notice that we solve a graphical lasso pr
    \label{algo:graph_lasso_EM}
 \end{center}
 \end{figure}
-\todos{regenerer les graphes et une conclusion, mentionner que ca a ete deja fait dans (cite)}
 
 \begin{figure}
         \captionsetup[subfigure]{aboveskip=-1pt}
@@ -350,14 +349,14 @@ In the light of this equation, one can notice that we solve a graphical lasso pr
 \section{Estimating the number of clusters}
 \label{estim_nb_clusters_sect}
 
-In this section, we will focus on the problem of estimating the number of clusters, $K$, in a Gaussian mixture model. Most of popular clustering methods such as K-Means, Expectation-Maximization with Gaussian mixture model or spectral clustering need this parameter in input. Different methods are being used to perform a selection of the best model according to a criterion, unfortunately with a computational cost. As we saw in \Cref{sec:finding_clusters_nb}, we generally have to perform multiple clusterings with the parameter $K$ ranging from say 2 to $K_{max}$, where $K_{max}$ is a the maximum number of clusters we assume are present in the dataset, and select the best model according to a criterion. In this work, we seek to adapt the EM algorithm with an `adaptive' sparse estimation of the weight vector of the Gaussian components.
+In this section, we will focus on the problem of estimating the number of clusters, $K$, in a Gaussian mixture model. Most of popular clustering methods such as K-Means, Expectation-Maximization with Gaussian mixture model or spectral clustering need this parameter in input. Various methods are used to perform a selection of the best model according to a given criterion. As we saw in \Cref{sec:finding_clusters_nb},a common approach is to perform multiple clusterings with the parameter $K$ ranging from say 2 to $K_{max}$, where $K_{max}$ is the maximum number of clusters we assume are present in the dataset, and to select the best model according to some prescribed criterion. In this work, we seek to incorporate the model selection step into the estimation step by means of an ``adaptive'' sparse estimation of the weight vector of the Gaussian components.
 
-\subsection{First method: regularizing the posteriors}\label{sec:tau_pen_estim}
-Our first approach was to penalize the matrix of posteriors $\bTau$ defined in \Cref{sec:EM_algo}. Given $N$ $p$-dimensional observations $\bx_1,\dots,\bx_N$, let us consider the EM algorithm with a number of clusters $K_{max}$ that we know is greater than the true number of clusters. The idea of this method is to add a regularization term on the estimation of the $N\times K_{max}$ matrix $\bTau$, the component $\tau_{i,j}$ of which, we recall, is defined as 
+\subsection{First method: regularizing the posterior probabilities}\label{sec:tau_pen_estim}
+Our first approach was to penalize the matrix of posteriors $\bTau$ defined in \Cref{sec:EM_algo}. Given $N$ $p$-dimensional observations $\bx_1,\dots,\bx_N$, let us consider the EM algorithm with a given maximal number of clusters $K_{max}$. The idea of this method is to add a regularization term on the estimation of the $N\times K_{max}$ matrix $\bTau$, the component $\tau_{i,j}$ of which, we recall, is defined as 
 \begin{equation}
   \tau_{i,j} = p_{\btheta}(Z=j | \bX=\bx_i) = \frac{\pi_j\varphi_{\bmu_j,\bSigma_j}(\bx_i)}{\sum_{k=1}^{K_{max}}\pi_k\varphi_{\bmu_k,\bSigma_k}(\bx_i)}.
 \end{equation}
-The estimate number of clusters $\hat K$ will be the number of non-empty columns of $\bTau$. Let us consider the probability simplex in $\RR^{K_{max}}$, $\bPi\coloneqq \{\btau \in \RR^{K_{max}} : \sum_{k=1}^{K_{max}}\tau_k=1, \tau_k\geq 0 \quad \forall k \in [K_{max}] \}$ and the indicator function $\chi_{\bPi}(.)$ defined as
+The estimated number of clusters $\hat K$ will be the number of non-zero columns of $\bTau$. Let us consider the probability simplex in $\RR^{K_{max}}$, $\bPi\coloneqq \{\btau \in \RR^{K_{max}} : \sum_{k=1}^{K_{max}}\tau_k=1, \tau_k\geq 0 \quad \forall k \in [K_{max}] \}$ and the indicator function $\chi_{\bPi}(.)$ defined as
 \begin{equation*}
     \chi_{\bPi}(\btau) =
     \begin{cases}
@@ -365,16 +364,16 @@ The estimate number of clusters $\hat K$ will be the number of non-empty columns
         +\infty & \text{elsewhere}.
     \end{cases}
 \end{equation*}
-We note $\bTau_{.,k}$ the $k^{th}$ column and $\bTau_{i,.}$ the $i^{th}$ line of $\bTau$. Using the cost function in \Cref{cost_gmm_em} and adding an $L_2$ penalization term of the columns of $\bTau$ with a parameter $\lambda > 0$, we have the following cost function for our problem:
+We note $\bTau_{.,k}$ the $k^{th}$ column and $\bTau_{i,.}$ the $i^{th}$ row of $\bTau$. Using the cost function in \Cref{cost_gmm_em} and adding a penalization term composed of the $L_2$-norms of the columns of $\bTau$ with a parameter $\lambda > 0$, we have the following cost function for our problem:
 \begin{align*}
 F^{pen}(\btheta,\bTau)  =& -\sum_{k=1}^K \bigg(\sum_{i=1}^{n} \Big\{\tau_{i,k}\log\varphi_{\bmu_{k},\bOmega_{k}}(\bx_i)+\tau_{i,k}\log(\frac{\pi_k}{\tau_{i,k}})\Big\}\bigg)\\
-&+ \lambda\sum_{k=1}^K \|\bTau_{.,k}\|_{2} + \sum_{i=1}^{n} \chi_{\bPi}(\bTau_{i,.}),
+&+ \lambda\sum_{k=1}^K \|\bTau_{.,k}\|_{2} + \sum_{i=1}^{n} \chi_{\bPi}(\bTau_{i,.}).
 \end{align*}
- and the expectation step in EM consists on the following optimization problem:
+The expectation step in an EM-like algorithm for this cost function leads to the following optimization problem:
 \begin{equation}
 \hat\bTau(\btheta)\in \argmin_{\bTau} F^{pen}(\btheta,\bTau).
 \end{equation}
-A nice property of this problem is that it is convex. Unfortunately, the regularization term prevents to derive an explicit solution. Furthermore, we cannot separate the objective function since we optimize along columns and lines of $\bTau$. The objective function $F^{pen}(\btheta,\bTau)$ rewritten $F^{pen}_{\btheta}(\bTau)$ can be split into two terms:
+A nice property of this problem is that it is convex. Unfortunately, the regularization term does not allow us to derive an explicit solution. Furthermore, the objective function is not decomposable since we optimize along columns and rows of $\bTau$. The objective function $F^{pen}(\btheta,\bTau)$ rewritten $F^{pen}_{\btheta}(\bTau)$ can be split into two terms:
 \begin{equation}
 F^{pen}_{\btheta}(\bTau)={\large f}({\footnotesize\bTau})+ {\large g}({\footnotesize\bTau})
 \end{equation}
@@ -384,18 +383,18 @@ with
 f(\bTau) =& -\sum_{k=1}^K \bigg(\sum_{i=1}^{n} \Big\{\tau_{i,k}\log\varphi_{\bmu_{k},\bOmega_{k}}(\bx_i)+\tau_{i,k} \log(\pi_k/\tau_{i,k})\Big\} + \sum_{k=1}^K \|\bTau_{.,k}\|_{2},\\
 g(\bTau) =& \sum_{i=1}^{n} \chi_A(\bTau_{i,.}).
 \end{align*}
-Note that $f$ is convex and differentiable on its domain, $g$ is also convex but not differentiable. We will tackle this problem by using a proximal method (see \citep{Parikh:2014:PA:2693612.2693613} for more details), the $(k+1)^{th}$ step is given by
+Note that $f$ is convex and differentiable on its domain, $g$ is also convex but not differentiable. We will tackle this problem by using a proximal method (see \citep{Parikh:2014:PA:2693612.2693613} for more details), proximal gradient descent. It is an iterative method the $(k+1)^{th}$ step of which is given by
 \begin{align*}
   \bTau^{k+1} &= {\bf{prox}}_{g}(\bTau^k - \eta \nabla f(\bTau^k))\\
       &= \textnormal{P}_{\bPi}(\bTau^k - \eta \nabla f(\bTau^k))\\
       &=\argmin_{ \bTau : \forall i, \bTau_{i,.} \in \bPi}\big( \| \bTau - (\bTau^k - \eta \nabla f(\bTau^k) ) \|^2_2 \big),
 \end{align*}
-where $\textnormal{P}_{\bPi}$ is the projection function on $\bPi$. The gradient of f on $\bTau$ is given by
+where $\textnormal{P}_{\bPi}$ is the projection function on $\bPi$. The gradient of $f$ on $\bTau$ is given by
 \begin{equation}
 \bigg[\nabla_{\bTau}f(\bTau)\bigg]_{i,j} = 
 1+\frac{\tau_{i,j}}{||\bTau_{.,j}||_2}-\log(\varphi_{\bmu_j,\bOmega_j}(\bx_i))-\log(\frac{\pi_j}{\tau_{i,j}})
 \end{equation}
-We use the algorithm FISTA \citep{Beck:2009:FIS:1658360.1658364} for this iteration procedure, we provide more details on this method in \Cref{mle_kl_estim_impl}. The implementation of this method is given in \Cref{algo:Pen_tau_EM_expect}, the whole EM-like method for the estimation of the parameters of the GMM is given in \Cref{algo:Pen_tau_EM}. 
+We use the algorithm FISTA \citep{Beck:2009:FIS:1658360.1658364} for minimizing $f+g$. We provide more details on this method in \Cref{mle_kl_estim_impl}. The implementation of this method is given in \Cref{algo:Pen_tau_EM_expect}, the whole EM-like method for the estimation of the parameters of the GMM is given in \Cref{algo:Pen_tau_EM}. 
 \begin{figure}
 \begin{center}
 \mybox{
@@ -409,7 +408,7 @@ We use the algorithm FISTA \citep{Beck:2009:FIS:1658360.1658364} for this iterat
 \xi_{i,k}^{0}  &= \frac{\pi_k^{0}\varphi_{\bmu_k^{0},\bOmega_k^{0}}(\bx_i)}{\sum_{k'\in[K]}\pi^{0}_{k'}\varphi_{\bmu^{0}_{k'},\bOmega^{0}_{k'}}(\bx_i)}
 \end{align*}
 \FOR{$k\geq 1,$ until convergence occurs, }
-\STATE {(a) $\bTau^k =\argmin_{ \bTau : \forall i, \bTau_{i,.} \in \bPi}\big( \| \bTau - (\bxi^k - \lambda \nabla f(\bxi^k) ) \|^2_2 \big)$,}
+\STATE {(a) $\bTau^k =\argmin_{ \bTau : \forall i, \bTau_{i,.} \in \bPi}\big( \| \bTau - (\bxi^k - \eta \nabla f(\bxi^k) ) \|^2_2 \big)$,}
 \STATE {(b) $t_{k+1}= \frac{1+\sqrt{1+4t_k^2}}{2}$,}
 \STATE {(c) $\bxi_{k+1} = \bTau^k + \bigg( \frac{t_k-1}{t_{k+1}}\bigg) \big( \bTau^k - \bTau^{k-1} \big)$.}
 \ENDFOR
@@ -447,32 +446,32 @@ We use the algorithm FISTA \citep{Beck:2009:FIS:1658360.1658364} for this iterat
    \label{algo:Pen_tau_EM}
 \end{center}
 \end{figure}
-A major drawback of this method is the computational cost in \Cref{algo:Pen_tau_EM_expect} of minimizing over the set of $N\times K_{max}$ matrices and we didn't manage to get interesting results for this algorithm.\todos{tentative de sortir des graphs en cours}
+A major drawback of this method is the computational cost  of minimizing over the set of $N\times K_{max}$ matrices and we didn't manage to get interesting results for this algorithm.
 
-\subsection{Second method: penalizing the weights vector}
+\subsection{Second method: penalizing the weight vector}
 \label{sparse_weight_vect_estim}
-The second approach that we took in order to have an estimate of the number of clusters, i.e. select an appropriate model, was to penalize the weights vector of the Gaussian mixture. The idea is similar to the previous method with an EM-like algorithm maximizing a penalized log-likelihood. Let $\lambda > 0$ be a parameter of penalization and consider the following negative penalized log-likelihood:
+The second approach that we took in order to have an estimate of the number of clusters was to penalize the weight vector of the Gaussian mixture. The idea is similar to the previous method with an EM-like algorithm maximizing a penalized log-likelihood. Let $\lambda > 0$ be a tuning parameter and consider the following negative penalized log-likelihood:
 \begin{equation}
   \ell_N(\btheta)=
--\frac{1}{N}\sum_{i=1}^{N}\log\bigg\{{\sum_{j=1}^K\pi_k\varphi_{(\bmu_{j},\bSigma_{j})}(\bx_i)}\bigg\}+\lambda\sum_{j=1}^{K}\pi_j^{1/\gamma}\quad \gamma\geq1,
+-\frac{1}{N}\sum_{i=1}^{N}\log\bigg\{{\sum_{j=1}^K\pi_k\varphi_{(\bmu_{j},\bSigma_{j})}(\bx_i)}\bigg\}+\lambda\sum_{j=1}^{K}\pi_j^{1/\gamma}\quad \gamma > 1,
 \end{equation}
 such that:
 \begin{equation}
   \forall j\in[K], \pi_j \geq 0 \quad \text{and} \quad \sum_{j}^{K}\pi_j=1.
 \end{equation}
-One may wonder why choosing such penalization ? The aim is to promote the merging of similar clusters. For instance, let us consider 2 similar clusters (similar means and covariance matrices) with a weight vector $\bpi=(1/2, 1/2)$ and the merged cluster with weight $\bpi'=(1)$. It is obvious that the log-likelihoods are the same. By choosing the $L_1$ norm, the weight vector $\pi_1+\pi_2$ leads to a penalty equal to 1 which is the same that taking the merged cluster with a weight and penalty equal to 1. However, by taking the penalty $\pi_1^{\nicefrac{1}{2}}+\pi_2^{\nicefrac{1}{2}}$ we have a penalty for the two clusters equal to $2/\sqrt{2}\sim 1.4$. Hence, the method will promote the solution with one cluster. Let us consider the $K$-dimensional probability simplex $\BB^+_K=\{\bpi\in \RR^K: \forall j\in[K], \pi_j \geq 0,\,  \sum_{j}\pi_j=1\}$. Our method is similar to EM in the expectation step and in the maximization step for estimating $\bmu_k$ and $\bSigma_k$, it differs on the estimation of the weights vector $\bpi$ by solving the following minimization problem:
+One may wonder why choosing such a penalization. The aim is to promote the merging of similar clusters. For instance, let us consider 2 similar clusters (similar means and covariance matrices) with a weight vector $\bpi=(1/2, 1/2)$ and the merged cluster with weight $\bpi'=(1, 0)$. It is obvious that the log-likelihoods are the same. By choosing the $L_1$ norm, the penalty $\|\bpi\|_1$ is equal to 1 both for $\bpi$ and $\bpi'$. However, by taking the penalty $\pi_1^{\nicefrac{1}{2}}+\pi_2^{\nicefrac{1}{2}}$, we have a penalty for the clustering with two clusters equal to $2/\sqrt{2}\sim 1.4$. Hence, the method will favor the solution with one cluster. Let us consider the $K$-dimensional probability simplex $\BB^+_K=\{\bpi\in \RR^K: \forall j\in[K], \pi_j \geq 0,\,  \sum_{j}\pi_j=1\}$. Our method is similar to EM in the expectation step and in the maximization step for estimating $\bmu_k$ and $\bSigma_k$, it differs on the estimation of the weights vector $\bpi$ by solving the following minimization problem:
 \begin{equation}
   \hat\bpi= \argmin_{\bpi\in\BB^+_K}\bigg\{
--\frac{1}{N}\sum_{i=1}^{N}\log\Big({\sum_{j=1}^K\pi_k\varphi_{(\bmu_{j},\bSigma_{j})}(\bx_i)}\Big)+\lambda\sum_{j=1}^{K}\pi_j^{1/\gamma}\bigg\} \quad \gamma\geq1.
+-\frac{1}{N}\sum_{i=1}^{N}\log\Big({\sum_{j=1}^K\pi_j\varphi_{(\bmu_{j},\bSigma_{j})}(\bx_i)}\Big)+\lambda\sum_{j=1}^{K}\pi_j^{1/\gamma}\bigg\} \quad \gamma > 1.
 \end{equation}
-Unfortunately, $\sum_{j}\pi_j^{1/\gamma}$ is not convex, we solve this problem by making a change of variable, let us note $\alpha_j = \pi_j^{1/\gamma}$ and consider the problem:
+Unfortunately, $\sum_{j}\pi_j^{1/\gamma}$ is neither convex nor smooth. We overcome this problem by making a change of variable. Let us note $\alpha_j = \pi_j^{1/\gamma}$ and consider the problem:
 \begin{equation}
-\hat\balpha\in\argmin_{\balpha\in \RR^{K}}\bigg\{
--\frac{1}{N}\sum_{i=1}^{N}\log\Big\{{\sum_{j=1}^K\alpha^\gamma_j\varphi_{(\bmu_{j},\bSigma_{j})}(\bx_i)}\Big\}+\lambda\sum_{j=1}^{K}\alpha_j \color{black} \bigg\}\quad \gamma\geq1,  
+\hat\balpha\in\argmin_{\balpha}\bigg\{
+-\frac{1}{N}\sum_{i=1}^{N}\log\Big\{{\sum_{j=1}^K\alpha^\gamma_j\varphi_{(\bmu_{j},\bSigma_{j})}(\bx_i)}\Big\}+\lambda\sum_{j=1}^{K}\alpha_j \color{black} \bigg\}\quad \gamma > 1,  
 \end{equation}
-with  $\forall j \in[K]\, \alpha_j^\gamma \geq0\ \text{and}\ \sum_{j}\alpha^\gamma_{K}=1$. This is a convex problem and we can recover an estimate $\hat\bpi=(\hat\alpha_1^{\gamma},\dots,\hat\alpha_K^{\gamma})$. The first term of this objective function is convex and differentiable with respect to $\balpha$, we note it $f_\btheta(\balpha)$. However, the second term, is convex but not differentiable w.r.t. $\balpha$. As we saw in the previous section, we can use an iterative proximal method to solve this problem. Let us consider $\gamma\geq 0$ and define $A_{\gamma}=\{\balpha\in\RR^K: \forall j \in[K]\, \alpha_j^\gamma \geq0\ \text{and}\ \sum_{j}\alpha^\gamma_{K}=1 \}$. If we consider {\large$\chi_{A_{\gamma}}$}, the indicator function of $A_{\gamma}$ ($0$ in $A_{\gamma}$, $\infty$ elsewhere), the minimization problem can be rewritten as
+subject to  $\forall j \in[K]\, \alpha_j \geq0\ \text{and}\ \sum_{j}\alpha^\gamma_{j}=1$. This is a smooth problem and we can recover an estimate $\hat\bpi=(\hat\alpha_1^{\gamma},\dots,\hat\alpha_K^{\gamma})$. The objective function is differentiable with respect to $\balpha$, we note it $f_\btheta(\balpha)$. As we saw in the previous section, we can use an iterative proximal method to solve this problem. Let us consider $\gamma > 1$ and define $A_{\gamma}=\{\balpha\in\RR^K: \forall j \in[K]\, \alpha_j\geq0\ \text{and}\ \sum_{j}\alpha^\gamma_{j}=1 \}$. If we consider {\large$\chi_{A_{\gamma}}$}, the indicator function of $A_{\gamma}$ ($0$ in $A_{\gamma}$, $\infty$ elsewhere), the minimization problem can be rewritten as
 \begin{equation}
-  \hat\balpha\in\argmin_{\balpha\in\RR^{K}}\{ f_\btheta(\balpha) + \chi_{A_{\gamma}}  \},
+  \hat\balpha\in\argmin_{\balpha\in\RR^{K}}\{ f_\btheta(\balpha) + \chi_{A_{\gamma}}(\balpha)\},
 \end{equation}
 and the $(t+1)^{th}$ step of the iterative proximal procedure is:
 \begin{align}
@@ -481,19 +480,19 @@ and the $(t+1)^{th}$ step of the iterative proximal procedure is:
 &=\argmin_{x\in\RR^{K}}\Big\{ \chi_{A_{\gamma}}(x) + \frac{1}{2}\|x-(\balpha^t - h \nabla f_{\btheta}(\balpha^t)) \|^2 \Big\}\\
 &=\textnormal{P}_{A_{\gamma}}(\balpha^t - h \nabla f_{\btheta}(\balpha^t) ),
 \end{align}
-with $h>0$ a gradient step, and for $j\in[K]$, the gradient of $f_{\btheta}$ w.r.t $\balpha$ is
+with $h>0$ a gradient step. For $j\in[K]$, the gradient of $f_{\btheta}$ w.r.t $\balpha$ is
 \begin{equation}
   \Big[\nabla f_{\btheta}(\balpha)\Big]_{j} = -\frac{1}{N}\sum_{i=1}^N\frac{\gamma\alpha_j^{\gamma-1}\varphi_{\bmu_j,\bSigma_j}(\bx_i)}{\sum_{k=1}^K\alpha_k^{\gamma}\varphi_{\bmu_k,\bSigma_k}(\bx_i)}+\lambda.
 \end{equation}
-The FISTA procedure for estimating $\hat\balpha$ is given in \Cref{algo:alpha_fista_proc}. Note that we relaxed the constraints by estimating the $K-1$ components of $\balpha$ since $\alpha_K=1-\sum_{k=1}^{K-1}\alpha_k$. The set $A_{\gamma}$ is redefined accordingly: $A=\{\balpha\in\RR^{K}: \sum_{k=1}^{K-1}\alpha_k\leq1,\, \alpha_K=1-\sum_{k=1}^{K-1}\alpha_k\}$. The final EM-like iteration procedure for estimating the parameters of a Gaussian mixture with penalization of the weights vector is given in \Cref{algo:EM_alpha_pen}.
-\begin{figure}[H]
+The FISTA procedure for estimating $\hat\balpha$ is given in \Cref{algo:alpha_fista_proc}. Note that we relaxed the constraints by estimating the $K-1$ components of $\balpha$ since $\alpha_K^{\gamma}=1-\sum_{k=1}^{K-1}\alpha_k^{\gamma}$. The set $A_{\gamma}$ is redefined accordingly: $A_{\gamma}=\{\balpha\in\RR^{K}: \sum_{k=1}^{K-1}\alpha_k^{\gamma}\leq1,\, \alpha_K^{\gamma}=1-\sum_{k=1}^{K-1}\alpha_k^{\gamma}\}$. The final EM-like procedure for estimating the parameters of a Gaussian mixture with penalization of the weight vector is given in \Cref{algo:EM_alpha_pen}.
+\begin{figure}
 \begin{center}
 \mybox{
 \begin{minipage}{0.85\linewidth}
 \begin{algorithmic}%\SetAlgoLined\tt\SetLine
 \small
 \STATE {\bfseries Input:} Parameter $\btheta=\{(\bmu_k,\bSigma_k,\bpi)_{k\in[K]}\}$.
-\STATE {\bfseries Output:} Parameter estimate $\hat\balpha = \big(\balpha_1,...,\balpha_{K-1},1-\sum_{j=1}^{K-1}\balpha_j).$
+\STATE {\bfseries Output:} Parameter estimate $\hat\balpha = \big(\balpha_1,...,\balpha_{K-1},(1-\sum_{j=1}^{K-1}\balpha_j^{\gamma})^{\nicefrac1{\gamma}}).$
 \STATE {\tt 1:} Initialize $t_0=1$ and $\xi^0=(\bpi_1^{1/\gamma},...,\bpi_{K-1}^{1/\gamma})$.
 \FOR{$k\geq1$, until convergence occurs, }
 \STATE {(a) $\balpha^k =\textnormal{P}_A(\xi^k - h \nabla f_{\btheta}(\xi^k))$,}
@@ -506,7 +505,7 @@ The FISTA procedure for estimating $\hat\balpha$ is given in \Cref{algo:alpha_fi
    \label{algo:alpha_fista_proc}
 \end{center}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}
 \begin{center}
 \mybox{
 \begin{minipage}{0.85\linewidth}
@@ -533,11 +532,14 @@ The FISTA procedure for estimating $\hat\balpha$ is given in \Cref{algo:alpha_fi
    \label{algo:EM_alpha_pen}
 \end{center}
 \end{figure}
-We generated different mixtures with $K$ varying from 2 to 30 components in dimension 5 and draw $N=1000$ observations. We compared our algorithm with EM and the BIC selection method with $K_{max}=2*K$. The resulting weight vectors are compared with the true weight $\bpi^*$ in $L_1$ norm. The plot of our simulations are given in \Cref{fig:results_alpha_pen}. In the horizontal axis, the number of real clusters in the mixture and in the vertical axis the error  $\|\hat\bpi-\bpi^*\|_1$. We ran 50 simulations, the first and third quartiles are shown as long as the median on each regions. As we can see, our algorithm shows promising results. With a small number of clusters, the estimation error $\|\hat\bpi-\bpi^*\|_1$ of our algorithm (green) is greater than with EM-BIC (red). However, when the number of clusters $K$ increases the estimation error of our algorithm decreases whereas the estimation error of EM-BIC increases. Such phenomenon of decreasing error while the complexity increase is not logical, we are confident that a more careful choice of the penalization parameter $\lambda$ would improve the error in low regime showing a slightly increasing curve, still better than EM-BIC.
+
+We generated different mixtures with $K$ varying from 2 to 30 components in dimension 5 and draw $N=1000$ observations. We compared our algorithm with EM and the BIC selection method with $K_{max}=2*K$. The resulting weight vectors are compared with the true weight $\bpi^*$ in $L_1$ norm. The plot of our simulations is given in \Cref{fig:results_alpha_pen}. The horizontal axis corresponds to the number of real clusters in the mixture and in the vertical axis corresponds to the error  $\|\hat\bpi-\bpi^*\|_1$. We ran 50 simulations, the first and third quartiles are shown as long as the median error. As we can see, our algorithm shows promising results. With a small number of clusters, the estimation error $\|\hat\bpi-\bpi^*\|_1$ of our algorithm (green) is larger than with EM-BIC (red). However, when the number of clusters $K$ increases, the estimation error of our algorithm decreases, whereas the estimation error of EM-BIC increases. Such phenomenon of decreasing error while the complexity increases is not natural. We believe that is caused by the choice of the parameter $\lambda$, a more clever choice of which would improve the error in the regime of small number of clusters.
 \begin{figure}
 \center
-  \includegraphics[scale=0.5]{./TeX_files/SparseWeightsVectorEstimation.png}
+  \includegraphics[scale=0.45]{./TeX_files/SparseWeightsVectorEstimation.png}
   \caption{Estimation error $\|\hat\bpi-\bpi^*\|_1$, for our algorithm (green) and EM-BIC (red). Vertical axis: error $\|\hat\bpi-\bpi^*\|_1$ in log scale, horizontal axis: real number of clusters. First and third quartiles are shown as long as the median.}
   \label{fig:results_alpha_pen}
 \end{figure}
-\todos{mentionner que cette approche est similaire avec les chapitres suivant sur le MLE}
+
+\section{Clustering and density estimation}
+We have tried several approaches to perform clustering using the GMM and various notions of sparsity. Unfortunately, the results were never as good as expected. One of the reasons is that all these approaches are too complex to be easily understood. In particular, they involve a number of parameters to be tuned, which turned out to be a difficult task. This led us to consider a slightly simpler task investigated in next chapters. It corresponds to choosing the weights of the components in a mixture assuming that the densities of the components (which can be interpreted as clusters) are known in advance. In practice, these densities can be furnished by some other algorithm or by an expert. This approach can be seen as an ensemble method applied to unsupervised learning.

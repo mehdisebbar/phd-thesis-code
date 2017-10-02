@@ -1,5 +1,6 @@
 {\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {2.1}Graphical Lasso for Gaussian mixtures}{\reset@font\mtcSfont 31}{section.2.1}}
 {\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {2.1.1}Graphical Lasso on Gaussian mixtures}{\reset@font\mtcSSfont 37}{subsection.2.1.1}}
 {\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {2.2}Estimating the number of clusters}{\reset@font\mtcSfont 40}{section.2.2}}
-{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {2.2.1}First method: regularizing the posteriors}{\reset@font\mtcSSfont 45}{subsection.2.2.1}}
-{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {2.2.2}Second method: penalizing the weights vector}{\reset@font\mtcSSfont 47}{subsection.2.2.2}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {2.2.1}First method: regularizing the posterior probabilities}{\reset@font\mtcSSfont 45}{subsection.2.2.1}}
+{\reset@font\mtcSSfont\mtc@string\contentsline{subsection}{\noexpand \leavevmode \numberline {2.2.2}Second method: penalizing the weight vector}{\reset@font\mtcSSfont 46}{subsection.2.2.2}}
+{\reset@font\mtcSfont\mtc@string\contentsline{section}{\noexpand \leavevmode \numberline {2.3}Clustering and density estimation}{\reset@font\mtcSfont 51}{section.2.3}}
