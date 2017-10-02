@@ -291,59 +291,39 @@ In the light of this equation, one can notice that we solve a graphical lasso pr
 \end{center}
 \end{figure}
 
+\subsubsection{Experimental evaluation}
+We created a mixture of $K\in\{2,4,10,20,50\}$ Gaussian components with equally distributed weights. The centers of the Gaussian densities reside on the nodes of the $p$-dimensional unit hypercube. We considered two simple structures of the precision matrices: 
+\begin{enumerate}
+  \item A multiple of the identity matrix ($10^{-3}I_p$).
+  \item The sum of the identity matrix with a matrix the upper and lower parts of which has a diagonal of ones at the middle.
+\end{enumerate}
+We sampled $N\in\{100, 500, 1000\}$ points from these densities in dimension $p\in\{2, 10, 50\}$ and compared the estimation error $\|\hat\bOmega_k-\bOmega^*\|_F$ of EM and our algorithm, where $\|.\|_F$ is the Frobenius norm. We ran 100 simulations for each scenarios. 
+
+In the first scenario, with the scaled identity matrix as precision matrix, the estimation error $\|\hat\bOmega_k-\bOmega^*\|_F$ of our algorithm is slightly better than EM, as shown in \Cref{fig:glasso_res_simu} and \Cref{fig:glasso_res_simu2}. The increase of the dimension accentuates the gap between EM and our algorithm. However, the increase of the number of clusters does not have a large impact on the error.
 \begin{figure}
-        \captionsetup[subfigure]{aboveskip=-1pt}
-        \centering
-        \begin{subfigure}[b]{\textwidth}
-                \includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_2_100.png} 
-                \caption{p=2, N=100}
-                \label{fig:glasso_dim2_N100}
-        \end{subfigure}       
-        \begin{subfigure}[b]{\textwidth}
-                \includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_5_1000.png}
-                \caption{p=5, N=1000}
-                \label{fig:glasso_dim5_N1000}
-        \end{subfigure}
-        \caption{Estimation with glasso on GMM}\label{fig:glasso_res_simu} 
+\centering
+\includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_2_100.png} 
+\includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_5_1000.png}
+\caption{Estimation error $\max_k\|\hat\bOmega_k-\bOmega_k^*\|_F$ in log scale for EM and graphical lasso on GMM where $\bOmega_k^*=10^{-3}I_p$.  With $p=2$, $N=100$ (upper graph) and $p=5$, $N=1000$ (lower graph).}
+\label{fig:glasso_res_simu} 
 \end{figure}
 
 \begin{figure}
-
-        \begin{subfigure}[b]{\textwidth}
-                \includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_10_1000.png} 
-                \caption{p=10, N=1000}
-                \label{fig:glasso_dim10_N1000}
-        \end{subfigure}       
-        \begin{subfigure}[b]{\textwidth}
-                \includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_50_1000.png}
-                \caption{p=50, N=1000}
-                \label{fig:glasso_dim50_N1000}
-        \end{subfigure}
-        \caption{Estimation with glasso on GMM}\label{fig:glasso_res_simu2} 
+\centering
+\includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_10_1000.png} 
+\includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_50_1000.png}
+\caption{Estimation error $\max_k\|\hat\bOmega_k-\bOmega_k^*\|_F$ in log scale for EM and graphical lasso on GMM where $\bOmega_k^*=10^{-3}I_p$.  With $p=10$, $N=1000$ (upper graph) and $p=50$,\, $N=1000$ (lower graph).}
+\label{fig:glasso_res_simu2} 
 \end{figure}
+In the second scenario, the estimation error of our algorithm is smaller than EM except in one case, in the middle graph of \Cref{fig:glasso_res_simu1_upper}. In this experiment we wanted to see the behavior of our algorithm in a non-high-dimensional regime when $p=10,\, N=500,\, K=4$ and it turns out that EM behave better. But as the number of clusters increases (\textit{i.e.} the complexity), the error of EM get worse. Finally, in a very high dimensional setting ($p=50,\, N=1000,\, K\in\{20, 50\}$), the estimation error of the graphical lasso on GMM algorithm is much better than EM.
 
 \begin{figure}
-
-        \begin{subfigure}[b]{\textwidth}
-                \includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_diag_upper10_100.png} 
-                \caption{p=10, N=100, upper diag}
-                \label{fig:glasso_dim10_N100_ud}
-        \end{subfigure}       
-        \begin{subfigure}[b]{\textwidth}
-                \includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_diag_upper10_500.png}
-                \caption{p=10, N=500, upper diag}
-                \label{fig:glasso_dim10_N500_ud}
-        \end{subfigure}
-        \caption{Estimation with glasso on GMM}\label{fig:glasso_res_simu2} 
-\end{figure}
-\begin{figure}
-
-        \begin{subfigure}[b]{\textwidth}
-                \includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_diag_upper50_1000.png} 
-                \caption{p=50, N=1000, upper diag}
-                \label{fig:glasso_dim50_N1000_ud}
-        \end{subfigure}       
-        \caption{Estimation with glasso on GMM}\label{fig:glasso_res_simu2} 
+\centering
+\includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_diag_upper10_100.png} 
+\includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_diag_upper10_500.png}
+\includegraphics[width=0.8\textwidth]{TeX_files/graph_lasso_diag_upper50_1000.png} 
+\caption{Estimation error $\max_k\|\hat\bOmega_k-\bOmega_k^*\|_F$ in log scale for EM and graphical lasso on GMM where $\bOmega^*$ is the sum of the identity matrix with a matrix the upper and lower parts of which has a diagonal of ones at the middle.  With $p=10$, $N=100$ (upper graph), $p=10$, $N=500$ (middle graph) and $p=50$, $N=1000$ (lower graph).}
+\label{fig:glasso_res_simu1_upper} 
 \end{figure}
 
 \section{Estimating the number of clusters}

@@ -219,8 +219,7 @@ showstringspaces=false
 %%%%%%%%%%%%%%%%%%%%DOCUMENT%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-
-\thispagestyle{empty}
+{\setlength{\baselineskip}{0.8\baselineskip}
 \vspace{-2cm}
 \voffset-10pt
 %%%
@@ -230,8 +229,6 @@ showstringspaces=false
 %%%
 \noindent
 \hspace*{-1cm}\hbox{\includegraphics[width=8.6cm]{ed_edmh-h.jpg}} 
-\hfill 
-\hspace*{-0.4cm}{\small {\bf NNT : 2016SACLY000}}
 %%%
 %% Numéro National de Thèse, à préciser lors du second dépôt 
 %% de la thèse post-soutenance
@@ -380,8 +377,7 @@ ENSAE-X Centre d'\'economie, statistique et sociologie, UMR 9194 CNRS\\
 {\sc   Pr\'enom NOM}&(Institution) {\small Codirecteur de th\`ese}\vspace{1mm}\\
 {\sc   Pr\'enom NOM}&(Institution) {\small Invit\'e}\vspace{1mm}\\
 \end{tabular}
-
-\vfill
+%$\vfill
 \noindent
 \hbox{\includegraphics[width=2.2cm]{logo_fmjh.jpg}}
 \hfill 
@@ -395,7 +391,7 @@ ENSAE-X Centre d'\'economie, statistique et sociologie, UMR 9194 CNRS\\
 %\hbox{\includegraphics[width=2.1cm]{logoINRA.jpg}}
 %\hbox{\includegraphics[width=2.5cm]{logoAgro.jpg}}
 %\hbox{\includegraphics[width=1.5cm]{logoCEA.jpg}}
-\hfill
+%\hfill
 %%%
 %% logo laboratoire(s) d'accueil, s'il existe
 %%%
@@ -412,12 +408,15 @@ ENSAE-X Centre d'\'economie, statistique et sociologie, UMR 9194 CNRS\\
 %\hbox{\includegraphics[width=2.7cm]{logoMaIAGE.png}}
 %\hbox{\includegraphics[width=2.5cm]{logoSAMOVAR.jpg}}
 %\hbox{\includegraphics[width=2cm]{logoUMA.jpg}}
+\hfill 
+\hspace*{-0.4cm}{\small {\bf NNT : 2016SACLY000}}
 \hfill \includegraphics[width=1cm]{pictoParis-Saclay.jpg}
-
+\par}
+\thispagestyle{empty}
 \newpage
 %\frontmatter
 
-\listoftodos
+%\listoftodos
 %\mainmatter
 \include{TeX_files/000-remerciements}
 \dominitoc% Initialization

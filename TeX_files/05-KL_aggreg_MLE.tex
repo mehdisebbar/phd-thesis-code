@@ -144,7 +144,7 @@ as a sparsity inducing penalty.
 
 \subsection{Additional notation}
 
-In what follows, for any $i\in [n]$, we denote by $\bZ_i$ the $K$-dimensional vector $[f_1(\bX_i),\ldots,f_K(\bX_i)]^\top$ and
+In what follows, for any $i\in [n]$, we denote by $\bZ_i$ the $K$- dimensional vector $[f_1(\bX_i),\ldots,f_K(\bX_i)]^\top$ and
 by $\bfZ$ the $n\times K$ matrix  $[\bZ^\top_1,\ldots,\bZ^\top_n]^\top$. We also define $\ell(u) = -\log u$,
 $u\in(0,+\infty)$,
 so that the MLE $\hat\bpi$ is the minimizer of the function
@@ -169,7 +169,10 @@ $\bar\kappa_{\bfA}(J,1)$. One can easily check that $\bar\kappa_{\bfA}(J,3)\le \
 $\bfA$ are bounded  from below by the smallest eigenvalue of $\bfA$.
 
 Let us fix a function $f_0:\calX\to\RR$ and denote 
-$\bar f_k = f_k-f_0$ and $\bar \bZ_i = [\bar f_1(\bX_i),\ldots,\bar f_K(\bX_i)]^\top$ 
+$\bar f_k = f_k-f_0$ and 
+\begin{equation}
+	\bar \bZ_i = [\bar f_1(\bX_i),\ldots,\bar f_K(\bX_i)]^\top,
+\end{equation}
 for $i\in[n]$. In the results of this work, the compatibility factors are used for the empirical 
 and population Gram matrices of vectors $\bar\bZ_k$, that is when $\bfA = \hat\bSigma_n$ and 
 $\bfA = \bSigma$ with

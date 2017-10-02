@@ -148,7 +148,7 @@ Recently, spectral clustering has become widely used thanks to its performance c
 We will note $\bW$ the resulting weighted adjacency matrix. The reader can find more details on the behavior of these different graphs in section 8 of \citep{Luxburg:2007:TSC:1288822.1288832}. The simplest approach for spectral clustering is to consider the `unnormalized graph Laplacian', $\bL=\bD-\bW$, where $\bD$ is a diagonal matrix called the `degree matrix' and the element $i$ of its diagonal is the degree of the vertex $v_i$, $d_i= \sum_{j=1}^Ns_{ij}$. An important property of this matrix is that its smallest eigenvalue is 0 and the corresponding eigenvector is the constant vector (see Proposition 1 of \citep{Luxburg:2007:TSC:1288822.1288832}). In the sequel, we say that $A \subset G$ is connected if any two vertices in $A$ can be joined with a path such that all the intermediate vertices lie in $A$. The subgraph $A$ is a connected component if it is connected and there are no connections between $A$ and its complement $\bar A$. An important result for spectral clustering is the following proposition:
 \begin{proposition}[Number of connected components, proposition 2 in \citep{Luxburg:2007:TSC:1288822.1288832}]
  The multiplicity $k$ of the eigenvalue 0 of $\bL$ is the number of connected components $A_1,\dots,A_k$ in the graph $G$. The eigenspace of eigenvalue 0 is spanned by the indicator vectors $1_{A_1},\dots,1_{A_k}$ of these components.
- \end{proposition}\todos{expliquer}
+ \end{proposition}
  The simplest implementation of the spectral clustering is given in \Cref{algo:unnorm_spectr_alg}.
  \begin{figure}[h]
 \begin{center}
@@ -408,7 +408,6 @@ EM is conceptually easy and each iteration increases the log-likelihood:
 $$
 \ell_N(\btheta^{t+1})\ge \ell_N(\btheta^{t}),\qquad \forall t\in\NN.
 $$
-\todos{preuve}
 The complexity at each step of the EM algorithm is $O(KNp^2)$ and
 it usually requires many iterations to converge. In a high-dimensional setting
 when $p$ is large, the quadratic dependence on $p$ may result in prohibitively

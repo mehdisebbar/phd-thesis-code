@@ -11,7 +11,7 @@ Before anything else, we remind the reader the problem setting and the estimator
 \begin{equation}
 f_{\bpi}(\bx)=\sum_{j=1}^K\pi_j f_j(\bx), \quad \bpi \in \BB_+^K=\Big\{\bpi\in [0,1]^K: \sum_{j=1}^K\pi_j=1\Big\}.
 \end{equation}
-The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previous experiments or expert knowledge. The problem of construction of this family is an open problem that we try to address in section ?\todos{en parler}. The objective of this chapter is to expose and study experimentally the algorithm implemented for computing the Maximum Likelihood Estimator (MLE), defined by
+The component densities $\calF=\{f_j:j\in[K]\}$ are assumed to be given by previous experiments or expert knowledge. The problem of construction of this family is an open problem that we try to address in \Cref{sec:method_dict_gen}. The objective of this chapter is to expose and study experimentally the algorithm implemented for computing the Maximum Likelihood Estimator (MLE), defined by
 \begin{equation}
 \label{MLE_2}
 \hat\bpi \in \argmin_{\bpi\in \BB_+^K}\Big\{-\frac{1}{n}\sum_{i=1}^n\log f_{\bpi}(\bX_i)\Big\}.
@@ -634,6 +634,7 @@ by considering both statistical arguments and computational limitations.
 \end{figure}
 
 \section{A method for constructing the dictionary of densities}
+\label{sec:method_dict_gen}
 
 In this section, we propose a data-driven method to construct a dictionary of densities for the KL-aggregation algorithm. We compare mixture densities estimated by this dictionary generation method and the KL-aggregation algorithm with the Kernel density estimator with the bandwidth selected via cross-validation and the Expectation-Maximization algorithm with the BIC criterion in different dimensional settings. We show experimentally that the KL-aggregation algorithm with a dictionary provided by this method offers good performance at an attractive computation cost.
 
@@ -687,7 +688,7 @@ The dictionary construction procedure is given in \Cref{algo:dictionary_generato
 
 \subsection{Experimental evaluation}
 
-We created a mixture of 6 components in dimension 5, see \Cref{fig:experiments_data}, which mimics data that can be seen in real use cases\todos{imagerie ?}. The simulation were run in dimension 3, 4 and 5 by selecting the corresponding first axis. We generated $N\in\{200, 500, 1000, 5000\}$ points and ran 200 simulations for each scenario (N, dimension). We used the dictionary generation procedure for the KL-aggregation algorithm with $K_{max} = 10$ on each subspaces and significance level $\alpha=0.05$. The dataset has been split into two equal parts, one for the dictionary generation algorithm and the other for the KL-aggregation algorithm. We compared the $L_2$-loss and KL-loss of our method to EM-BIC ($K_{max} = 20$) and KDE-CV (The bandwidth $h$ is selected via cross-validation in $[0.01, \dots, 1]$ in an equal partition of 20 elements). The computation times were also recorded. 
+We created a mixture of 6 components in dimension 5, see \Cref{fig:experiments_data}, which mimics data that can be seen in real use cases. The simulation were run in dimension 3, 4 and 5 by selecting the corresponding first axis. We generated $N\in\{200, 500, 1000, 5000\}$ points and ran 200 simulations for each scenario (N, dimension). We used the dictionary generation procedure for the KL-aggregation algorithm with $K_{max} = 10$ on each subspaces and significance level $\alpha=0.05$. The dataset has been split into two equal parts, one for the dictionary generation algorithm and the other for the KL-aggregation algorithm. We compared the $L_2$-loss and KL-loss of our method to EM-BIC ($K_{max} = 20$) and KDE-CV (The bandwidth $h$ is selected via cross-validation in $[0.01, \dots, 1]$ in an equal partition of 20 elements). The computation times were also recorded. 
 
 \subsubsection{ Results without the selection of principal components and the goodness-of-fit test for the dictionary generator algorithm.}
 
