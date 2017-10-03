@@ -189,7 +189,7 @@ Note that $\eta_{\gamma,m}$ depends on the data which explains the name \textit{
 \end{equation}
 then $(\bG\blambda_0)_m=\beta_{0,m}$ and the parameter $\eta_{\gamma,m}$ can be seen as the smallest quantity such that, for $\gamma > 1$, we have $|\beta_{0,m}-\hat\beta_m|\leq \eta_{\gamma,m}$ with high probability. Note that the assumption $\gamma > 1$ is an almost necessary condition to have a theoretical control on the quadratic error $\Ex\|\hat f^D-f_0 \|^2_2$. Therefore, we will follow the choice of $\gamma=1.01$ made by the authors in our experiments. The pseudo code of the procedure is given in \Cref{algo:ad_algo}. In what follows, the Adaptive Dantzig density estimator is noted $\hat f ^{AD}$ and the abbreviation AD is used in the plots.
 
-\begin{figure}[H]
+\begin{figure}[ht]
 \begin{center}
 \mybox{
 \begin{minipage}{0.85\linewidth}
@@ -379,8 +379,8 @@ f_{\textnormal{gauss-lapl}}=0.2\big(&\varphi_{(0 ,10^{-2})} + \varphi_{(0.2,10^{
 These target densities are plotted in \Cref{fig:target_densities}.
 \begin{figure}[h]
 \center
-\includegraphics[width=1.1\textwidth]{TeX_files/densities_f_star.png}
-\caption{Five target densities considered.}
+\includegraphics[width=\textwidth]{TeX_files/densities_f_star.png}
+\caption{Five target densities considered in the experiments.}
 \label{fig:target_densities}
 \end{figure}
 
@@ -659,7 +659,7 @@ The dictionary construction procedure is given in \Cref{algo:dictionary_generato
 \begin{figure}[ht]
 \begin{center}
 \mybox{
-\begin{minipage}{1.1\linewidth}
+\begin{minipage}{\linewidth}
 \begin{algorithmic}%\SetAlgoLined\tt\SetLine
 \small
 \STATE {{\bfseries Input:} $\bX_1,\dots,\bX_n\textnormal{ with } \bX_i\in\RR^p$. And $K_{max}$, maximum number of clusters for EM-BIC, significance level $\alpha$.} 

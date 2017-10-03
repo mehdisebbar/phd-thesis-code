@@ -1,7 +1,7 @@
 \documentclass[a4paper,12pt]{book}
 \usepackage[utf8]{inputenc}
 %line space
-\renewcommand{\baselinestretch}{1.5} % mettre en 1.5
+\renewcommand{\baselinestretch}{1.2} % mettre en 1.5
 
 % Custom colors
 \usepackage[dvipsnames]{xcolor}
@@ -19,7 +19,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{mathtools}
-
+\usepackage{a4wide}
 
 %strikethrough text 
 \usepackage{ulem}
@@ -210,17 +210,17 @@ showstringspaces=false
 \newtheorem{prop}{Proposition}[section]
 \newtheorem{theorem}{Theorem}[section]
 
-\topmargin=-5mm
-\textwidth=150mm
-\oddsidemargin=0mm
-\textheight=250mm
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%DOCUMENT%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 {\setlength{\baselineskip}{0.8\baselineskip}
-\vspace{-2cm}
+\vglue-2cm
+\topmargin=-5mm
+\textwidth=150mm
+\oddsidemargin=0mm
+\textheight=250mm
+
 \voffset-10pt
 %%%
 %% premiere ligne avec logo légaux et numéro national de thèse
@@ -228,7 +228,7 @@ showstringspaces=false
 %%  pour obtenir la configuration souhaitée)
 %%%
 \noindent
-\hspace*{-1cm}\hbox{\includegraphics[width=8.6cm]{ed_edmh-h.jpg}} 
+\hspace*{-1cm}\hbox{\includegraphics[height=2cm]{ed_edmh-h.jpg}} 
 %%%
 %% Numéro National de Thèse, à préciser lors du second dépôt 
 %% de la thèse post-soutenance
@@ -244,7 +244,7 @@ showstringspaces=false
 %%%
 %\hbox{\includegraphics[width=2.3cm]{logoCentraleSupelec.jpg}}
 %\hbox{\includegraphics[width=2cm]{logoHEC.jpg}}
-\hbox{\includegraphics[width=2cm]{logoensae-psay.jpg}}
+\hbox{\includegraphics[height=2cm]{logoensae-psay.jpg}}
 %\hbox{\includegraphics[width=2cm]{logoENSCachan.jpg}}
 %\hbox{\includegraphics[width=1.5cm]{logoENS.jpg}}
 %\hbox{\includegraphics[width=1.9cm]{logoENSTA.jpg}}
@@ -378,6 +378,7 @@ ENSAE-X Centre d'\'economie, statistique et sociologie, UMR 9194 CNRS\\
 {\sc   Pr\'enom NOM}&(Institution) {\small Invit\'e}\vspace{1mm}\\
 \end{tabular}
 %$\vfill
+
 \noindent
 \hbox{\includegraphics[width=2.2cm]{logo_fmjh.jpg}}
 \hfill 
@@ -408,13 +409,22 @@ ENSAE-X Centre d'\'economie, statistique et sociologie, UMR 9194 CNRS\\
 %\hbox{\includegraphics[width=2.7cm]{logoMaIAGE.png}}
 %\hbox{\includegraphics[width=2.5cm]{logoSAMOVAR.jpg}}
 %\hbox{\includegraphics[width=2cm]{logoUMA.jpg}}
-\hfill 
 \hspace*{-0.4cm}{\small {\bf NNT : 2016SACLY000}}
-\hfill \includegraphics[width=1cm]{pictoParis-Saclay.jpg}
+\hfill \includegraphics[width=1.5cm]{pictoParis-Saclay.jpg}
 \par}
 \thispagestyle{empty}
 \newpage
 %\frontmatter
+\thispagestyle{empty}
+
+\voffset=0.0pt
+\topmargin=0.0pt
+\textwidth=460.72124pt
+\oddsidemargin=0.0pt
+\evensidemargin=0.0pt
+\textheight=621.0pt
+
+
 
 %\listoftodos
 %\mainmatter
