@@ -1,6 +1,8 @@
 %!TEX root = ../main.tex
 
 \newpage
+\thispagestyle{empty}
+\vspace*{-2cm}
 %%%
 %%
 %% Quatrième de couverture (last cover page of the memoirs)
@@ -12,34 +14,49 @@
 
 \bigskip
 \noindent\fbox{\parbox{\textwidth}{
-{\bf Titre : }  Titre en français
+{\bf Titre : }  Sur l'apprentissage non supervisée en haute dimension 
 
 \medskip
-{\bf Mots Clefs : }  Mettre de 3 à 6 mots clefs
+{\bf Mots Clefs : } clustering, aggrégation, haute dimension, estimation densité, mélanges.
+
 
 \medskip
-{\bf Résumé : } 
-
-
-\vspace{7cm}
-
+{\bf Résumé : }
+\small
+Deux sujet sont traités dans cette thèse: le clustering en haute dimension et l'estimation de densités de mélange.
+L'estimation des paramètres d'une loi mélange est un problème difficile en haute dimension.
+Trois méthodes sont présentées pour résoudre ce problème: la première est une estimation des matrices de covariances avec hypothèse de parcimonie, les deux autres visent à estimer le nombre de composantes du mélange.
+La deuxième partie étudie l'estimateur du maximum de vraisemblance d'une densité sous l'hypothèse
+qu'elle est bien approximée par un mélange de plusieurs densités données.
+Nous réalisons une étude statistique des performances de l'estimateur par rapport à la perte de
+Kullback-Leibler et établissons des bornes de risque sous la forme d'inégalités d'oracle exacte.
+Nous introduisons la notion d’agrégation (presque)-D-parcimonieuse et des bornes inférieures sont établies.
+Enfin, nous proposons un algorithme qui réalise l'agrégation en Kullback-Leibler de composantes d'un dictionnaire. Nous comparons sa performance avec différentes méthodes. Nous proposons ensuite une méthode pour construire le dictionnaire de densités et l’étudions de manière numérique.
+\vspace{0.5cm}
 }}
 
 \bigskip
 \noindent\fbox{\parbox{\textwidth}{
-{\bf Title : }  Title in english
+{\bf Title : }  On unsupervised learning in high dimension
 
 \medskip
-{\bf Keys words : }  3 to 6  key words (in english)
+{\bf Keys words : }  clustering, aggregation, high dimension, density estimation, mixtures.
 
 \medskip
-{\bf Abstract : } 
-
-
-\vspace{7cm}
-
+{\bf Abstract : }
+\small
+Two subjects are treated in this thesis: high-dimensional clustering and estimation of mixture densities.
+The estimation of the parameters of a mixture law is a difficult problem in high dimension.
+Three methods are presented to solve this problem: the first is an estimation of covariance matrices with sparsity hypothesis, the other two are aimed at estimating the number of components of the mixture.
+The second part studies the maximum likelihood estimator of a density under the assumption
+that it is well approximated by a mixture of several given densities.
+We perform a statistical study of the performance of the estimator with respect to the loss of
+Kullback-Leibler and establish risk bounds in the form of exact oracle inequalities.
+We introduce the concept of (nearly)-D-sparse aggregation and lower bounds are established.
+Finally, we propose an algorithm that performs Kullback-Leibler aggregation of components of a dictionary. We compare its performance with different methods. We then propose a method to build the dictionary of densities and study it experimentally.
+\vspace{0.5cm}
 }}
-
+\vspace{0.5cm}
 \vfill
 \hfill \includegraphics[width=1cm]{pictoParis-Saclay.jpg}
 \end{document}
