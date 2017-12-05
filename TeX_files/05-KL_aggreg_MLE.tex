@@ -57,7 +57,7 @@ the Kullback-Leibler divergence
 \end{cases}
 \end{equation}
 which has the advantage of bypassing identifiability
-issues. One can also consider the (well-specified) setting where $f^*=f_{\bbeta^*}$ for some $\bbeta^*\in\BB^K_+$
+issues. One can also consider the (well-specified) setting where $f^*=f_{\bpi^*}$ for some $\bpi^*\in\BB^K_+$
 and measure the quality of estimation through a distance between the vectors $\hat\bpi$ and $\bpi^*$ (such as
 the $\ell_1$-norm $\|\hat\bpi-\bpi^*\|_1$ or the Euclidean norm $\|\hat\bpi-\bpi^*\|_2$).
 
@@ -247,7 +247,7 @@ where the oracle is expected to be sparse, the remainder term of the bound in \e
 is slightly looser than that of \eqref{boundDevTwo}.
 
 
-A first and simple consequence of \Cref{th:1} is obtained by taking $J=\varnothing$ in the right hand
+A first and simple consequence of \Cref{maintheo1} is obtained by taking $J=\varnothing$ in the right hand
 side of the first inequality. Then, $\|\bpi_{J^c}\|_1=\|\bpi\|_1=1$ and we get
 \begin{equation}
 \KL(f^*|| f_{\hat\bpi}) \leq \inf_{\bpi \in \BB_+^K}
@@ -329,7 +329,7 @@ factor is bounded away from zero), but inequality \eqref{MSaggr} has the advanta
 of being exact.
 
 We can also apply  \eqref{boundExpTwo} to the problem of convex aggregation with
-small dictionary, that is for $K$ smaller than  $n^{\nicefrac12}$. Upper bounding $|J|$ by $|K|$,
+small dictionary, that is for $K$ smaller than  $n^{\nicefrac12}$. Upper bounding $|J|$ by $K$,
 we get
 \begin{equation}
 \Ex[\KL(f^*|| f_{\hat\bpi})] \leq \inf_{\bpi \in \BB_+^K}
@@ -342,7 +342,7 @@ bound provides a rate of convex aggregation of the order of $\frac{K\log K}{n}$.
 logarithmic term, this rate is known to be optimal for convex aggregation in the model of
 regression.
 
-Finally, considering all the sets $J$ of cardinal smaller than $D$ (with $D\le K$) and
+Finally, considering all the sets $J$ of cardinality smaller than $D$ (with $D\le K$) and
 setting $\bar\kappa_{\bSigma}(D,1) = \inf_{J:|J|\le D} \bar\kappa_{\bSigma}(J,1)$, we
 deduce from \eqref{boundExpTwo} that
 \begin{equation}
@@ -491,7 +491,7 @@ This strategy leads to the next result.
 \end{proposition}
 
 
-In simple words, this result tells us that the wight estimator $\hat\bpi$  attains the
+In simple words, this result tells us that the weight estimator $\hat\bpi$  attains the
 minimax rate of estimation $|J^* |(\frac{\log(K)}{n})^{\nicefrac12}$ over the intersection of the
 $\ell_1$ and $\ell_0$ balls, when the error is measured by the $\ell_1$-norm, provided
 that the compatibility factor of the dictionary $\calF$ is bounded away from zero.
@@ -666,7 +666,7 @@ We proceed with applying the following result \citep[Lemma~2]{BDGP}.
 	For any pair of vectors $\bpi,\bpi'\in\RR^K$, for any pair of scalars $\mu>0$ and $\gamma>1$, for any $K\times K$
 	symmetric matrix $\bfA$ and for any set $J \subset [p]$, the following inequality is true
 	\begin{equation}
-	2\mu\gamma^{-1}(\| \bpi-\hat\bpi\|_1 + \gamma \|\bpi\|_1 - \gamma \|\hat\bpi\|_1 )-\|\bfA(\bpi-\hat\bpi)\|_2^2 \leq
+	2\mu\gamma^{-1}(\| \bpi-\bpi'\|_1 + \gamma \|\bpi\|_1 - \gamma \|\bpi'\|_1 )-\|\bfA(\bpi-\bpi')\|_2^2 \leq
 	4\mu \| \bpi_{J^c}\|_1 + \frac{(\gamma+1)^2\mu^2|J|}{\gamma^2\kappa_{\bfA^2}(J,c_{\gamma})},
 	\end{equation}
 	where $c_{\gamma}=(\gamma+1)/(\gamma-1)$.
@@ -799,7 +799,7 @@ Combining \eqref{eqSixThreeF}, \eqref{eqSixThreeFv} and \eqref{eqSixThreeOne}, w
 %%%%%%%%%%%%%%%%%%%%% ================================================== %%%%%%%%%%%%%%%%%%%%%
 
 
-Using the strong convexity of the function $u\mapsto \log u$ over the interval $[m,M]$ and
+Using the strong convexity of the function $u\mapsto -\log u$ over the interval $[m,M]$ and
 the fact that $\bpi^*$ minimizes the convex function $\bpi\mapsto\KL(f^*||f_{\bpi})$, we get
 \begin{equation}
 \KL(f^*||f_{\hat\bpi}) \ge \KL(f^*||f_{\bpi^*})+\frac1{2M^2} \|\hat\bSigma_n^{\nicefrac12}(\hat\bpi-
@@ -1177,7 +1177,7 @@ to the Euclidean distance between the weight vectors $\bpi$ and $\bpi'$.
 	\end{equation}
 \end{lemma}
 \begin{proof}
-	Using the Taylor expansion, one can check that for any $u\in[1/L,L]$, we
+	Using the Taylor expansion, one can check that for any $u\in[1/V,V]$, we
 	have $(1-u)+ \frac{1}{2V^2}(u-1)^2 \leq -\log u \leq (1-u)+\frac{V^2}{2}(u-1)^2$.
 	Therefore,
 	\begin{equation}
@@ -1294,7 +1294,7 @@ when we consider the worst case  error for $f^*$ belonging to the set $\calH_\ca
 	We use the fact that $d$ is the largest integer satisfying 
 	\eqref{eqFvSxOa}. Therefore, either $d+1>D$ or 
 	\begin{equation}\label{eqFvSxTha}
-	(d+1)^2\log\Big(1+\frac{e  K}{d+1}\Big)\le A_1 n.
+	(d+1)^2\log\Big(1+\frac{e  K}{d+1}\Big)\ge A_1 n.
 	\end{equation}
 	If $d\ge D$, then the claim of the proposition follows from \eqref{eqFvSxTwa}, since
 	$d\log(1+eK/d)\ge D\log(1+eK/D)$. On the other hand, if \eqref{eqFvSxTha} is true, then
@@ -1343,7 +1343,7 @@ holds for the worst case error when $f^*$ belongs to the set $\calH_\calF(\gamma
 	\end{equation}
 	Let us first consider the case $d \leq (K-1)/2$. According to \Cref{rigollet8.3}, there 
 	exists a subset $\Omega \subset \Omega_{d}^{K-1}$ of cardinality $L$ satisfying 
-	$\log L\geq C_1\log\big(1+\frac{e(K-1)}{d}\big)$ and $\|\bomega^{(\ell)}-\bomega^{(\ell')}\|_1\geq d/4$
+	$\log L\geq C_1d\log\big(1+\frac{e(K-1)}{d}\big)$ and $\|\bomega^{(\ell)}-\bomega^{(\ell')}\|_1\geq d/4$
 	for any pair of distinct elements $\bomega,\bomega'$ taken from $\Omega$. With these 
 	binary vectors in hand, we define the set $\calD \subset \BB_+^K$ of cardinality $L$ as follows:
 	\begin{equation}
