@@ -13,6 +13,14 @@
 \usepackage{minitoc}
 \setcounter{minitocdepth}{1}
 
+%blank page
+\usepackage{afterpage}
+
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
 
 %maths
 \usepackage{amsmath}
@@ -447,5 +455,6 @@ ENSAE-X Centre d'\'economie, statistique et sociologie, UMR 9194 CNRS\\
 
 \bibliographystyle{plain}
 \bibliography{ref}
+\afterpage{\blankpage}
 \include{TeX_files/4emecouv}
 \end{document}
